@@ -9,7 +9,6 @@ import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.*;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.io.NPath;
-import net.thevpc.nuts.text.NTextStyle;
 import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.nuts.util.NMsg;
 
@@ -78,41 +77,16 @@ public class NBackup implements NApplication {
 
             @Override
             public boolean nextOption(NArg option, NCmdLine cmdLine, NCmdLineContext context) {
-                if (cmdLine.withNextEntry((v, a) -> {
-                    options.config.setRemoteServer(v);
-                }, "--server")) {
-                    return true;
-                } else if (cmdLine.withNextEntry((v, a) -> {
-                    options.config.setRemoteUser(v);
-                }, "--user")) {
-                    return true;
-                } else if (cmdLine.withNextEntry((v, a) -> {
-                    options.config.setLocalPath(v);
-                }, "--local")) {
-                    return true;
-                } else if (cmdLine.withNextEntry((v, a) -> {
-                    addPath(v);
-                }, "--add-path")) {
-                    return true;
-                } else if (cmdLine.withNextEntry((v, a) -> {
-                    options.config.getPaths().removeIf(x -> Objects.equals(String.valueOf(x).trim(), v.trim()));
-                }, "--remove-path")) {
-                    return true;
-                } else if (cmdLine.withNextFlag((v, a) -> {
-                    options.config.getPaths().clear();
-                }, "--clear-paths")) {
-                    return true;
-                } else if (cmdLine.withNextFlag((v, a) -> {
-                    options.cmd = Cmd.SAVE;
-                }, "--save")) {
-                    return true;
-                } else if (cmdLine.withNextFlag((v, a) -> {
-                    options.cmd = Cmd.SHOW;
-                }, "--show")) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return cmdLine.withFirst(
+                        c->c.with("--server").consumeEntry((v,a)->options.config.setRemoteServer(v))
+                        , c->c.with("--user").consumeEntry((v,a)->options.config.setRemoteUser(v))
+                        , c->c.with("--local").consumeEntry((v,a)->options.config.setRemoteUser(v))
+                        , c->c.with("--add-path").consumeEntry((v,a)->addPath(v))
+                        , c->c.with("--remove-path").consumeEntry((v,a)->options.config.getPaths().removeIf(x -> Objects.equals(String.valueOf(x).trim(), v.trim())))
+                        , c->c.with("--clear-paths").consumeFlag((v,a)->options.config.getPaths().clear())
+                        , c->c.with("--save").consumeFlag((v,a)->options.cmd = Cmd.SAVE)
+                        , c->c.with("--show").consumeFlag((v,a)->options.cmd = Cmd.SHOW)
+                );
             }
 
             @Override
