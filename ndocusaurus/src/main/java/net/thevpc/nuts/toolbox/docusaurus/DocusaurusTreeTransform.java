@@ -71,7 +71,7 @@ public class DocusaurusTreeTransform extends MdElementTransformBase {
     @Override
     protected MdElement transformUnNumberedItem(MdElementPath<MdUnNumberedItem> path) {
         MdUnNumberedItem e = path.getElement();
-        return new MdUnNumberedItem(e.getType(),e.type().depth(),transformElement(path.append(e.getValue()))
+        return new MdUnNumberedItem(e.getType(),e.getPrefix(),e.type().depth(),transformElement(path.append(e.getValue()))
                 ,transformArray(e.getChildren(),path)
         );
     }
