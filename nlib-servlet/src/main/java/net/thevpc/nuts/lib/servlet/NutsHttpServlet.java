@@ -27,11 +27,11 @@ package net.thevpc.nuts.lib.servlet;
 
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.io.NIOException;
-import net.thevpc.nuts.toolbox.nutsserver.AdminServerConfig;
-import net.thevpc.nuts.toolbox.nutsserver.DefaultNWorkspaceServerManager;
-import net.thevpc.nuts.toolbox.nutsserver.NServer;
-import net.thevpc.nuts.toolbox.nutsserver.http.AbstractNHttpServletFacadeContext;
-import net.thevpc.nuts.toolbox.nutsserver.http.NHttpServletFacade;
+import net.thevpc.nuts.toolbox.nserver.AdminServerConfig;
+import net.thevpc.nuts.toolbox.nserver.DefaultNWorkspaceServerManager;
+import net.thevpc.nuts.toolbox.nserver.NServer;
+import net.thevpc.nuts.toolbox.nserver.http.AbstractNHttpServletFacadeContext;
+import net.thevpc.nuts.toolbox.nserver.http.NHttpServletFacade;
 import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.nuts.util.NStringUtils;
 

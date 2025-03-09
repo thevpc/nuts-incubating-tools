@@ -1,6 +1,7 @@
 package net.thevpc.nuts.toolbox.ndb;
 
 import net.thevpc.nuts.NApp;
+import net.thevpc.nuts.NAppRunOptions;
 import net.thevpc.nuts.NApplication;
 import net.thevpc.nuts.NSession;
 import net.thevpc.nuts.cmdline.NCmdLine;
@@ -12,7 +13,7 @@ import net.thevpc.nuts.toolbox.ndb.sql.postgres.NPostgresSupport;
 public class NdbMain implements NApplication {
 
     public static void main(String[] args) {
-        new NdbMain().runAndExit(args);
+        new NdbMain().run(NAppRunOptions.ofExit(args));
     }
 
     @Override

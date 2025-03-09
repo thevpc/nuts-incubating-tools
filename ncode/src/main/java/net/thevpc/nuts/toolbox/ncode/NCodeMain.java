@@ -12,7 +12,7 @@ import net.thevpc.nuts.*;
  */
 public class NCodeMain implements NApplication {
     public static void main(String[] args) {
-        new NCodeMain().runAndExit(args);
+        new NCodeMain().run(NAppRunOptions.ofExit(args));
     }
 
     @Override
