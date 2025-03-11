@@ -20,7 +20,7 @@ import java.util.Objects;
 public class NBackup implements NApplication {
 
     public static void main(String[] args) {
-        new NBackup().run(NAppRunOptions.ofExit(args));
+        new NBackup().main(NMainArgs.ofExit(args));
     }
 
     @Override

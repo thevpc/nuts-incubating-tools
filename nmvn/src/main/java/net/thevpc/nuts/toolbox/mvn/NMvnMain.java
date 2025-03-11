@@ -36,7 +36,7 @@ public class NMvnMain implements NApplication {
     }
 
     public static void main(String[] args) {
-        new NMvnMain().run(NAppRunOptions.ofExit(args));
+        new NMvnMain().main(NMainArgs.ofExit(args));
     }
 
     @Override

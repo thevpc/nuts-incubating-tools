@@ -10,7 +10,7 @@ import net.thevpc.nuts.toolbox.ntomcat.util.ApacheTomcatRepositoryModel;
 public class NTomcatMain implements NApplication {
 
     public static void main(String[] args) {
-        new NTomcatMain().run(NAppRunOptions.ofExit(args));
+        new NTomcatMain().main(NMainArgs.ofExit(args));
     }
 
     @Override

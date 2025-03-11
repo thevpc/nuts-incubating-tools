@@ -61,7 +61,7 @@ public class App implements NApplication {
         // just create an instance and call runAndExit in the main method
         // this method ensures that exist code is well propagted
         // from exceptions to caller processes
-        new App().run(NAppRunOptions.ofExit(args));
+        new App().main(NMainArgs.ofExit(args));
     }
 
     @Override

@@ -29,7 +29,7 @@ public class NServerMain implements NApplication {
     public static final Pattern HOST_PATTERN = Pattern.compile("((<?protocol>(http|https|admin))://)?(<host>[a-zA-Z0-9_-]+)(<port>:[0-9]+)?");
 
     public static void main(String[] args) {
-        new NServerMain().run(NAppRunOptions.ofExit(args));
+        new NServerMain().main(NMainArgs.ofExit(args));
     }
 
     private CountDownLatch lock = new CountDownLatch(1);
