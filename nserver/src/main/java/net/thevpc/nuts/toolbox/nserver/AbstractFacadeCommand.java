@@ -55,7 +55,7 @@ public abstract class AbstractFacadeCommand implements FacadeCommand {
         Map<String, List<String>> parameters = context.getParameters();
         List<String> ulList = parameters.get("ul");
         String userLogin = (ulList == null || ulList.isEmpty()) ? null : ulList.get(0);
-        List<String> upList = parameters.get("ul");
+        List<String> upList = parameters.get("up");
         String userPasswordS = (upList == null || upList.isEmpty()) ? null : upList.get(0);
 
         char[] userPassword = userPasswordS == null ? null : userPasswordS.toCharArray();
