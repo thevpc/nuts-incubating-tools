@@ -68,7 +68,7 @@
         </dependency>
         <dependency>
             <groupId>net.thevpc.nuts.lib</groupId>
-            <artifactId>nlib-md</artifactId>
+            <artifactId>nmarkdown</artifactId>
             <version>0.8.5.0</version>
         </dependency>
         <dependency>
@@ -78,7 +78,7 @@
         </dependency>
         <dependency>
             <groupId>net.thevpc.nuts.lib</groupId>
-            <artifactId>nlib-doc</artifactId>
+            <artifactId>ndoc-lib</artifactId>
             <version>0.8.5.0</version>
         </dependency>
         <dependency>
