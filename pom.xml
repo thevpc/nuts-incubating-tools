@@ -10,7 +10,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>ndexer</module>
-        <module>ndb</module>
         <module>ncode</module>
         <module>nbackup</module>
         <module>ntomcat</module>
