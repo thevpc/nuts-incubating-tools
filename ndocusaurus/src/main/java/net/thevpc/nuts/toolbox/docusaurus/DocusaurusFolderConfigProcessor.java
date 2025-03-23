@@ -1,12 +1,12 @@
 package net.thevpc.nuts.toolbox.docusaurus;
 
+import net.thevpc.nsite.context.NDocContext;
+import net.thevpc.nsite.mimetype.MimeTypeConstants;
+import net.thevpc.nsite.processor.NDocProcessor;
+import net.thevpc.nsite.util.FileProcessorUtils;
 import net.thevpc.nuts.elem.NArrayElement;
 import net.thevpc.nuts.elem.NObjectElement;
 import net.thevpc.nuts.io.NPath;
-import net.thevpc.nuts.lib.doc.mimetype.MimeTypeConstants;
-import net.thevpc.nuts.lib.doc.processor.NDocProcessor;
-import net.thevpc.nuts.lib.doc.context.NDocContext;
-import net.thevpc.nuts.lib.doc.util.FileProcessorUtils;
 
 import java.io.InputStream;
 import java.io.OutputStream;

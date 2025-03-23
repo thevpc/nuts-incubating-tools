@@ -20,6 +20,7 @@
         <module>nwork</module>
         <module>ntalk-agent</module>
         <module>ndocusaurus</module>
+        <module>nmvn</module>
     </modules>
     <properties>
     </properties>

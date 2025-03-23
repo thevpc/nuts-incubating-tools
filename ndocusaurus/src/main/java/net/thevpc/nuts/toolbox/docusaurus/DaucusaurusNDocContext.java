@@ -1,9 +1,7 @@
 package net.thevpc.nuts.toolbox.docusaurus;
 
+import net.thevpc.nsite.context.NDocContext;
 import net.thevpc.nuts.io.NPath;
-import net.thevpc.nuts.lib.doc.context.NDocContext;
-
-import java.nio.file.Path;
 
 class DaucusaurusNDocContext extends NDocContext {
     public DaucusaurusNDocContext() {

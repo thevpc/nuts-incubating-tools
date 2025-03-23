@@ -1,42 +1,43 @@
 package net.thevpc.nuts.toolbox.docusaurus;
 
+import net.thevpc.nsite.context.NDocContext;
+import net.thevpc.nsite.executor.NDocExprEvaluator;
+import net.thevpc.nsite.executor.expr.DefaultNDocExprEvaluator;
+import net.thevpc.nsite.executor.nsh.ProcessCmd;
+import net.thevpc.nsite.util.StringUtils;
 import net.thevpc.nuts.NOut;
 import net.thevpc.nuts.NSession;
 import net.thevpc.nuts.io.NTerminal;
-import net.thevpc.nuts.lib.doc.context.NDocContext;
-import net.thevpc.nuts.lib.doc.executor.NDocExprEvaluator;
-import net.thevpc.nuts.lib.doc.executor.nsh.ProcessCmd;
-import net.thevpc.nuts.lib.doc.util.StringUtils;
-import net.thevpc.nuts.toolbox.nsh.eval.NShellContext;
-import net.thevpc.nuts.toolbox.nsh.nodes.NShellVar;
-import net.thevpc.nuts.toolbox.nsh.nodes.NShellVarListener;
-import net.thevpc.nuts.toolbox.nsh.nodes.NShellVariables;
-import net.thevpc.nuts.toolbox.nsh.nshell.NShell;
-import net.thevpc.nuts.toolbox.nsh.nshell.NShellConfiguration;
+import net.thevpc.nsh.eval.NshContext;
+import net.thevpc.nsh.parser.nodes.NshVar;
+import net.thevpc.nsh.parser.nodes.NshVarListener;
+import net.thevpc.nsh.parser.nodes.NshVariables;
+import net.thevpc.nsh.Nsh;
+import net.thevpc.nsh.NshConfig;
 
 public class DocusaurusNshEvaluator implements NDocExprEvaluator {
-    private NShell shell;
+    private Nsh shell;
     private NDocContext fileTemplater;
 
     public DocusaurusNshEvaluator(NDocContext fileTemplater) {
         this.fileTemplater = fileTemplater;
-        shell = new NShell(new NShellConfiguration().setIncludeDefaultBuiltins(true).setIncludeExternalExecutor(true));
+        shell = new Nsh(new NshConfig().setIncludeDefaultBuiltins(true).setIncludeExternalExecutor(true));
         shell.getRootContext().setSession(shell.getRootContext().getSession().copy());
         shell.getRootContext().vars().addVarListener(
-                new NShellVarListener() {
+                new NshVarListener() {
                     @Override
-                    public void varAdded(NShellVar nShellVar, NShellVariables vars, NShellContext context) {
-                        setVar(nShellVar.getName(), nShellVar.getValue());
+                    public void varAdded(NshVar nshVar, NshVariables vars, NshContext context) {
+                        setVar(nshVar.getName(), nshVar.getValue());
                     }
 
                     @Override
-                    public void varValueUpdated(NShellVar nShellVar, String oldValue, NShellVariables vars, NShellContext context) {
-                        setVar(nShellVar.getName(), nShellVar.getValue());
+                    public void varValueUpdated(NshVar nshVar, String oldValue, NshVariables vars, NshContext context) {
+                        setVar(nshVar.getName(), nshVar.getValue());
                     }
 
                     @Override
-                    public void varRemoved(NShellVar nShellVar, NShellVariables vars, NShellContext context) {
-                        setVar(nShellVar.getName(), null);
+                    public void varRemoved(NshVar nshVar, NshVariables vars, NshContext context) {
+                        setVar(nshVar.getName(), null);
                     }
                 }
         );
@@ -56,7 +57,7 @@ public class DocusaurusNshEvaluator implements NDocExprEvaluator {
                 .setTerminal(NTerminal.ofMem())
                 .callWith(
                         () -> {
-                            NShellContext ctx = shell.createInlineContext(
+                            NshContext ctx = shell.createInlineContext(
                                     shell.getRootContext(),
                                     context.getSourcePath().orElseGet(() -> "nsh"), new String[0]
                             );

@@ -83,13 +83,13 @@ $> nuts search
 
 $> nuts search 'net.thevpc.nuts.toolbox:*' --anywhere
  
-        net.thevpc.nuts.toolbox:nsh#${{latestRuntimeVersion}}
+        net.thevpc.nsh:nsh#${{latestRuntimeVersion}}
         net.thevpc.nuts.toolbox:ndoc#${{latestRuntimeVersion}}
         net.thevpc.nuts.toolbox:ndexer#${{latestRuntimeVersion}}
         net.thevpc.nuts.toolbox:njob#${{latestRuntimeVersion}}
         net.thevpc.nuts.toolbox:nmvn#${{latestRuntimeVersion}}
         net.thevpc.nuts.toolbox:nwork#${{latestRuntimeVersion}}
-        net.thevpc.nuts.toolbox:nsh#${{latestRuntimeVersion}}
+        net.thevpc.nsh:nsh#${{latestRuntimeVersion}}
         net.thevpc.nuts.toolbox:ntomcat#${{latestRuntimeVersion}}
         net.thevpc.nuts.toolbox:ntalk-agent#${{latestRuntimeVersion}}
         net.thevpc.nuts.toolbox:ndiff#${{latestRuntimeVersion}}

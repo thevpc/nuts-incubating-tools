@@ -115,7 +115,7 @@ public class DocusaurusFolder implements DocusaurusFileOrFolder {
                 }
             }
             if (config == null) {
-                config = NElements.of().ofObject().build();
+                config = NElements.of().ofEmptyObject();
             }
             if (title == null || title.trim().isEmpty()) {
                 title = path.getName();
@@ -153,7 +153,7 @@ public class DocusaurusFolder implements DocusaurusFileOrFolder {
     }
 
     public static DocusaurusFolder ofRoot(DocusaurusFileOrFolder[] children, MdElement tree, String path) {
-        return new DocusaurusFolder("/", "/", 0, NElements.of().ofObject().build(), children, tree, path);
+        return new DocusaurusFolder("/", "/", 0, NElements.of().ofEmptyObject(), children, tree, path);
     }
 
     public static DocusaurusFolder of(String longId, String title, int order, NObjectElement config, DocusaurusFileOrFolder[] children, String path) {

@@ -72,8 +72,8 @@ public class ApacheTomcatRepositoryModel implements NRepositoryModel {
             }
             if (found) {
                 // http://tomcat.apache.org/whichversion.html
-                int i = id.getVersion().getNumber(0).flatMap(NLiteral::asInt).orElse(-1);
-                int j = id.getVersion().getNumber(1).flatMap(NLiteral::asInt).orElse(-1);
+                int i = id.getVersion().getIntegerAt(0).orElse(-1);
+                int j = id.getVersion().getIntegerAt(1).orElse(-1);
                 String javaVersion = "";
                 if (i <= 0) {
                     //

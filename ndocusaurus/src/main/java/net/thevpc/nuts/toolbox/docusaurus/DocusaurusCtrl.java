@@ -5,16 +5,16 @@
  */
 package net.thevpc.nuts.toolbox.docusaurus;
 
+import net.thevpc.nsite.NDocProjectConfig;
+import net.thevpc.nsite.context.NDocContext;
+import net.thevpc.nsite.mimetype.DefaultNDocMimeTypeResolver;
+import net.thevpc.nsite.mimetype.MimeTypeConstants;
+import net.thevpc.nsite.util.FileProcessorUtils;
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.elem.NObjectElement;
 import net.thevpc.nuts.io.NIOException;
 import net.thevpc.nuts.io.NPath;
-import net.thevpc.nuts.lib.doc.*;
-import net.thevpc.nuts.lib.doc.context.NDocContext;
-import net.thevpc.nuts.lib.doc.mimetype.DefaultNDocMimeTypeResolver;
-import net.thevpc.nuts.lib.doc.mimetype.MimeTypeConstants;
-import net.thevpc.nuts.lib.doc.util.FileProcessorUtils;
 import net.thevpc.nuts.util.NComparator;
 import net.thevpc.nuts.util.NMsg;
 
@@ -110,7 +110,7 @@ public class DocusaurusCtrl {
         if (genSidebarMenu) {
             DocusaurusFolder root = project.getPhysicalDocsFolder();
             root = new DocusaurusFolder(
-                    "someSidebar", "someSidebar", 0, NElements.of().ofObject().build(), root.getChildren(),
+                    "someSidebar", "someSidebar", 0, NElements.of().ofEmptyObject(), root.getChildren(),
                     root.getContent(),
                     project.getPhysicalDocsFolderBasePath().toString()
             );

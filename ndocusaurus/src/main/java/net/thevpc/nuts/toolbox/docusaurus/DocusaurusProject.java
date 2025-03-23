@@ -1,9 +1,9 @@
 package net.thevpc.nuts.toolbox.docusaurus;
 
 import net.thevpc.nuts.elem.NElement;
-import net.thevpc.nuts.elem.NElementEntry;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.elem.NObjectElement;
+import net.thevpc.nuts.elem.NPairElement;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.lib.md.MdElement;
 
@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class DocusaurusProject {
 
@@ -202,7 +203,7 @@ public class DocusaurusProject {
             }
         }
         if (json == null) {
-            return NElements.of().ofObject().build();
+            return NElements.of().ofEmptyObject();
         }
         return NElements.of().json()
                 .parse(json, NElement.class);
@@ -288,8 +289,8 @@ public class DocusaurusProject {
             List<DocusaurusFileOrFolder> aa = new ArrayList<>();
             int order = 0;
             //detect effective folder from children
-            for (NElementEntry member : a.asObject().get()) {
-                DocusaurusFileOrFolder[] cc = LJSON_to_DocusaurusFileOrFolder_list(member.getValue(), root);
+            for (NPairElement member : a.asObject().get().pairs().collect(Collectors.toList())) {
+                DocusaurusFileOrFolder[] cc = LJSON_to_DocusaurusFileOrFolder_list(member.value(), root);
                 String rootPath = root.getPath();
                 NPath parentPath = detectFileParent(cc);
                 if (parentPath == null) {
@@ -300,10 +301,10 @@ public class DocusaurusProject {
                     }
                 }
                 aa.add(new DocusaurusFolder(
-                        member.getKey().asString().get(),//no id  here!
-                        member.getKey().asString().get(),
+                        member.key().asString().get(),//no id  here!
+                        member.key().asString().get(),
                         ++order,
-                        NElements.of().ofObject().build(),
+                        NElements.of().ofEmptyObject(),
                         cc,
                         resolveFolderContent(parentPath), parentPath == null ? null : parentPath.toString()
                 ));
@@ -342,7 +343,7 @@ public class DocusaurusProject {
         DocusaurusFileOrFolder[] someSidebars = LJSON_to_DocusaurusFileOrFolder_list(getSidebars()
                 .get("someSidebar").orNull(), getPhysicalDocsFolder());
         return new DocusaurusFolder("/", "/", 0,
-                NElements.of().ofObject().build(), someSidebars, resolveFolderContent(getPhysicalDocsFolderBasePath()),
+                NElements.of().ofEmptyObject(), someSidebars, resolveFolderContent(getPhysicalDocsFolderBasePath()),
                 getPhysicalDocsFolder().getPath()
         );
     }

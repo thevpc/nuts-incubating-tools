@@ -2,7 +2,7 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.thevpc.nuts.toolbox</groupId>
+    <groupId>net.thevpc.nserver</groupId>
     <artifactId>nserver</artifactId>
     <version>0.8.5.0</version>
     <packaging>jar</packaging>
@@ -63,11 +63,7 @@
 
     <dependencies>
         <dependency><groupId>net.thevpc.nuts</groupId><artifactId>nuts-lib</artifactId><version>0.8.5.0</version></dependency>
-        <dependency>
-            <groupId>net.thevpc.nuts.toolbox</groupId>
-            <artifactId>nsh</artifactId>
-            <version>0.8.5.0</version>
-        </dependency>
+        <dependency><groupId>net.thevpc.nsh</groupId><artifactId>nsh</artifactId><version>0.8.5.0</version></dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -92,7 +88,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Automatic-Module-Name>net.thevpc.nuts.toolbox.nserver</Automatic-Module-Name>
+                            <Automatic-Module-Name>net.thevpc.nserver</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -205,7 +201,7 @@
                         <configuration>
                             <archive>
                                 <manifestEntries>
-                                    <Automatic-Module-Name>net.thevpc.nuts.toolbox.nserver</Automatic-Module-Name>
+                                    <Automatic-Module-Name>net.thevpc.nserver</Automatic-Module-Name>
                                 </manifestEntries>
                             </archive>
                         </configuration>
