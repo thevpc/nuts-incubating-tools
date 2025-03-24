@@ -65,7 +65,7 @@
             <version>0.8.5</version>
         </dependency>
         <dependency>
-            <groupId>net.thevpc.nuts.toolbox</groupId>
+            <groupId>net.thevpc.nserver</groupId>
             <artifactId>nserver</artifactId>
             <version>0.8.5.0</version>
         </dependency>
