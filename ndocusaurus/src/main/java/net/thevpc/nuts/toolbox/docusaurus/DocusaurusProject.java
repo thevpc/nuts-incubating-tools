@@ -277,7 +277,7 @@ public class DocusaurusProject {
         if (a.isString()) {
             return new DocusaurusFileOrFolder[]{
                 //DocusaurusUtils.concatPath(path, member.getValue().asString())
-                root.getPage(a.asString().get(), true, null)
+                root.getPage(a.asStringValue().get(), true, null)
             };
         } else if (a.isArray()) {
             List<DocusaurusFileOrFolder> aa = new ArrayList<>();
@@ -289,7 +289,7 @@ public class DocusaurusProject {
             List<DocusaurusFileOrFolder> aa = new ArrayList<>();
             int order = 0;
             //detect effective folder from children
-            for (NPairElement member : a.asObject().get().pairs().collect(Collectors.toList())) {
+            for (NPairElement member : a.asObject().get().pairs()) {
                 DocusaurusFileOrFolder[] cc = LJSON_to_DocusaurusFileOrFolder_list(member.value(), root);
                 String rootPath = root.getPath();
                 NPath parentPath = detectFileParent(cc);
@@ -301,8 +301,8 @@ public class DocusaurusProject {
                     }
                 }
                 aa.add(new DocusaurusFolder(
-                        member.key().asString().get(),//no id  here!
-                        member.key().asString().get(),
+                        member.key().asStringValue().get(),//no id  here!
+                        member.key().asStringValue().get(),
                         ++order,
                         NElements.of().ofEmptyObject(),
                         cc,

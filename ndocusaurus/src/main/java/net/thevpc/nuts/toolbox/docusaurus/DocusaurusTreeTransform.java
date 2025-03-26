@@ -5,7 +5,6 @@
  */
 package net.thevpc.nuts.toolbox.docusaurus;
 
-import net.thevpc.nuts.*;
 import net.thevpc.nuts.elem.NArrayElement;
 import net.thevpc.nuts.elem.NElement;
 import net.thevpc.nuts.elem.NElements;
@@ -138,7 +137,7 @@ public class DocusaurusTreeTransform extends MdElementTransformBase {
                             String tt = "Unknown";
                             NElement v = NElements.of().parse(tabItem.getProperties().get("value"));
                             if (v != null) {
-                                tt = v.asString().get();
+                                tt = v.asStringValue().get();
                             }
                             MdElement u = transformXml(path.append(tabItem));
                             sub.put(tt, u);
@@ -165,7 +164,7 @@ public class DocusaurusTreeTransform extends MdElementTransformBase {
                 String tt = "Unknown";
                 NElement v = NElements.of().parse(e.getProperties().get("value"));
                 if (v != null) {
-                    tt = v.asString().get();
+                    tt = v.asStringValue().get();
                 }
                 String props = DocusaurusUtils.skipJsonJSXBrackets(path.getParentPath().getElement().asXml().getProperties().get("values"));
                 for (NElement a : NElements.of().parse(props).asArray().orElse(NArrayElement.ofEmpty())) {

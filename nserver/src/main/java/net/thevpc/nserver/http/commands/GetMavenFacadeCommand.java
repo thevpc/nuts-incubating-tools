@@ -59,7 +59,7 @@ public class GetMavenFacadeCommand extends AbstractFacadeCommand {
 
                     xml.push("properties");
                     for (NDescriptorProperty e : d.getProperties()) {
-                        xml.append(e.getName(), e.getValue().asString().get());
+                        xml.append(e.getName(), e.getValue().asStringValue().get());
                     }
                     xml.pop();
 

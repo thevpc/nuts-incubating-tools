@@ -210,7 +210,7 @@ public class ApacheTomcatRepositoryModel implements NRepositoryModel {
         if (version.compareTo("4.1.27") == 0) {
             bin = "binaries";
         }
-        return HTTPS_ARCHIVE_APACHE_ORG_DIST_TOMCAT + "tomcat-" + version.get(0).flatMap(NLiteral::asString).orElse("unknown") + "/v" + version + "/" + bin + "/" + prefix + version + extension;
+        return HTTPS_ARCHIVE_APACHE_ORG_DIST_TOMCAT + "tomcat-" + version.get(0).flatMap(NLiteral::asStringValue).orElse("unknown") + "/v" + version + "/" + bin + "/" + prefix + version + extension;
     }
 
     public String getIdLocalFile(NId id, NFetchMode fetchMode, NRepository repository) {

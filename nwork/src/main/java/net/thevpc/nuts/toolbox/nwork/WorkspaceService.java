@@ -144,7 +144,7 @@ public class WorkspaceService {
         int count = 0;
         while (cmdLine.hasNext()) {
             if (cmdLine.peek().get().isNonOption()) {
-                String expression = cmdLine.next().flatMap(NLiteral::asString).get();
+                String expression = cmdLine.next().flatMap(NLiteral::asStringValue).get();
                 if (cmdLine.isExecMode()) {
                     setScanEnabled(Paths.get(expression), enable);
                     count++;
@@ -165,7 +165,7 @@ public class WorkspaceService {
         cmd.setCommandName("nwork list");
         while (cmd.hasNext()) {
             if ((a = cmd.nextNonOption().orNull()) != null) {
-                filters.add(a.asString().get());
+                filters.add(a.asStringValue().get());
             } else {
                 session.configureLast(cmd);
             }
@@ -221,7 +221,7 @@ public class WorkspaceService {
                 reset = a.getBooleanValue().get();
             } else if (cmdLine.peek().get().isNonOption()) {
                 String folder = cmdLine.nextNonOption(NArgName.of("Folder"))
-                        .flatMap(NLiteral::asString).get();
+                        .flatMap(NLiteral::asStringValue).get();
                 run = true;
                 toScan.add(new File(folder));
             } else {
@@ -252,7 +252,7 @@ public class WorkspaceService {
                 where = a.getStringValue().get();
             } else if (cmdLine.peek().get().isNonOption()) {
                 String folder = cmdLine.nextNonOption(NArgName.of("Folder"))
-                        .flatMap(NLiteral::asString).get();
+                        .flatMap(NLiteral::asStringValue).get();
                 toScan.add(new File(folder));
             } else {
                 session.configureLast(cmdLine);
@@ -345,7 +345,7 @@ public class WorkspaceService {
             } else if (cmd.isNextOption()) {
                 cmd.setCommandName("nwork check").throwUnexpectedArgument();
             } else {
-                filters.add(cmd.next().flatMap(NLiteral::asString).get());
+                filters.add(cmd.next().flatMap(NLiteral::asStringValue).get());
             }
         }
 
@@ -399,7 +399,7 @@ public class WorkspaceService {
                             for (NDescriptorProperty entry : pom.getProperties()) {
                                 String k = "${" + entry.getName() + "}";
                                 if (currentVersion.equals(k)) {
-                                    currentVersion = entry.getValue().asString().get();
+                                    currentVersion = entry.getValue().asStringValue().get();
                                     break;
                                 }
                             }
