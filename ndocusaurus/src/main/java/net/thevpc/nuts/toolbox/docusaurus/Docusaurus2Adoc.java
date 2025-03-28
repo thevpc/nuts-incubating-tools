@@ -52,7 +52,7 @@ public class Docusaurus2Adoc {
                 .orElse(NArrayElement.ofEmpty());
         List<String> headersList = new ArrayList<>();
         for (NElement jsonItem : headersJson) {
-            headersList.add(jsonItem.asStringValue().get());
+            headersList.add(jsonItem.asString().get());
         }
         this.projectName = project.getProjectName();
         this.projectTitle = project.getTitle();

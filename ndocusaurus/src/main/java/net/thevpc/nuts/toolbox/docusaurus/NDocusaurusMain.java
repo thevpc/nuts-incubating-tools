@@ -41,7 +41,7 @@ public class NDocusaurusMain implements NApplication {
 
             @Override
             public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine, NCmdLineContext context) {
-                switch (nonOption.asStringValue().get()) {
+                switch (nonOption.asString().get()) {
                     case "start": {
                         cmdLine.withNextFlag((v, a) -> start = v);
                         return true;

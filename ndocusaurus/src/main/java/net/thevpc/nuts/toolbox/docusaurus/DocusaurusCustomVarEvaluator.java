@@ -47,12 +47,12 @@ class DocusaurusCustomVarEvaluator implements Function<String, Object> {
                     return null;
                 }
                 if (config.isString()) {
-                    return config.asStringValue().get();
+                    return config.asString().get();
                 }
                 if (config.isArray()) {
                     return config.asArray().get().stream().map(Object::toString).toArray(String[]::new);
                 }
-                return config.asStringValue().get();
+                return config.asString().get();
             }
         }
     }

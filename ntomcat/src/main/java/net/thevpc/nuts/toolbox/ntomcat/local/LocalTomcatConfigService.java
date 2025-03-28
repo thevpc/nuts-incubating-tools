@@ -417,7 +417,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 int x = b.getResultCode();
                 String txt = b.getGrabbedOutString();
                 session.eout().add(
-                        elem.ofObject()
+                        elem.ofObjectBuilder()
                                 .set("command", "catalina-start")
                                 .set("result-code", x)
                                 .set("catalina-out", txt)
@@ -433,7 +433,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 int x = b.getResultCode();
                 String txt = b.getGrabbedOutString();
                 session.eout().add(
-                        elem.ofObject()
+                        elem.ofObjectBuilder()
                                 .set("command", "catalina-stop")
                                 .set("result-code", x)
                                 .set("catalina-out", txt)
@@ -462,7 +462,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 session.out().print(NMsg.ofC("%s Tomcat already started on port " + getHttpConnectorPort() + ".\n", getFormattedPrefix(getName())));
             } else {
                 session.eout().add(
-                        NElements.of().ofObject()
+                        NElements.of().ofObjectBuilder()
                                 .set("config-name", getName())
                                 .set("command", "start")
                                 .set("result", "already-started")
@@ -633,7 +633,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 session.out().print(NMsg.ofC("%s Tomcat started on port " + getHttpConnectorPort() + ".\n", getFormattedPrefix(getName())));
             } else {
                 session.eout().add(elem
-                        .ofObject()
+                        .ofObjectBuilder()
                         .set("command", "wait-for-running")
                         .set("time", 0)
                         .set("result", "success")
@@ -650,7 +650,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                     return AppStatus.RUNNING;
                 } else {
                     session.eout().add(elem
-                            .ofObject()
+                            .ofObjectBuilder()
                             .set("command", "wait-for-running")
                             .set("time", 0)
                             .set("result", "success")
@@ -660,7 +660,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             } else {
                 if (!session.isPlainOut()) {
                     session.eout().add(elem
-                            .ofObject()
+                            .ofObjectBuilder()
                             .set("command", "wait-for-running")
                             .set("time", 0)
                             .set("result", "fail")
@@ -682,7 +682,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                     session.out().print(NMsg.ofC("%s Tomcat started on port " + getHttpConnectorPort() + ".\n", getFormattedPrefix(getName())));
                 } else {
                     session.eout().add(elem
-                            .ofObject()
+                            .ofObjectBuilder()
                             .set("command", "wait-for-running")
                             .set("config-name", getName())
                             .set("http-connector-port", getHttpConnectorPort())
@@ -699,7 +699,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 session.out().print(NMsg.ofC("%s Tomcat out of memory.\n", getFormattedPrefix(getName())));
             } else {
                 session.eout().add(elem
-                        .ofObject()
+                        .ofObjectBuilder()
                         .set("command", "wait-for-running")
                         .set("config-name", getName())
                         .set("http-connector-port", getHttpConnectorPort())
@@ -722,7 +722,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 session.out().print(NMsg.ofC("%s Tomcat stopped.\n", getFormattedPrefix(getName())));
             } else {
                 session.eout().add(NElements.of()
-                        .ofObject()
+                        .ofObjectBuilder()
                         .set("command", "wait-for-stopped")
                         .set("config-name", getName())
                         .set("http-connector-port", getHttpConnectorPort())
@@ -746,7 +746,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                     session.out().print(NMsg.ofC("%s Tomcat stopped.\n", getFormattedPrefix(getName())));
                 } else {
                     session.eout().add(NElements.of()
-                            .ofObject()
+                            .ofObjectBuilder()
                             .set("command", "wait-for-stopped")
                             .set("config-name", getName())
                             .set("http-connector-port", getHttpConnectorPort())
@@ -768,7 +768,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                         session.out().print(NMsg.ofC("%s Tomcat process killed (%s).\n", getFormattedPrefix(getName()), ps.getPid()));
                     } else {
                         session.eout().add(NElements.of()
-                                .ofObject()
+                                .ofObjectBuilder()
                                 .set("command", "wait-for-stopped")
                                 .set("config-name", getName())
                                 .set("http-connector-port", getHttpConnectorPort())
@@ -784,7 +784,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                         session.out().print(NMsg.ofC("%s Tomcat process could not be killed ( %s).\n", getFormattedPrefix(getName()), ps.getPid()));
                     } else {
                         session.eout().add(NElements.of()
-                                .ofObject()
+                                .ofObjectBuilder()
                                 .set("command", "wait-for-stopped")
                                 .set("config-name", getName())
                                 .set("http-connector-port", getHttpConnectorPort())
@@ -805,7 +805,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 session.out().print(NMsg.ofC("%s Tomcat process could not be terminated (%s).\n", getFormattedPrefix(getName()), ps.getPid()));
             } else {
                 session.eout().add(NElements.of()
-                        .ofObject()
+                        .ofObjectBuilder()
                         .set("command", "wait-for-stopped")
                         .set("config-name", getName())
                         .set("http-connector-port", getHttpConnectorPort())
@@ -821,7 +821,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             session.out().print(NMsg.ofC("%s\n", getFormattedError("Tomcat stopped")));
         } else {
             session.eout().add(NElements.of()
-                    .ofObject()
+                    .ofObjectBuilder()
                     .set("command", "wait-for-stopped")
                     .set("config-name", getName())
                     .set("http-connector-port", getHttpConnectorPort())

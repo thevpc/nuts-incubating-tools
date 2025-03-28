@@ -137,7 +137,7 @@ public class DocusaurusTreeTransform extends MdElementTransformBase {
                             String tt = "Unknown";
                             NElement v = NElements.of().parse(tabItem.getProperties().get("value"));
                             if (v != null) {
-                                tt = v.asStringValue().get();
+                                tt = v.asString().get();
                             }
                             MdElement u = transformXml(path.append(tabItem));
                             sub.put(tt, u);
@@ -164,7 +164,7 @@ public class DocusaurusTreeTransform extends MdElementTransformBase {
                 String tt = "Unknown";
                 NElement v = NElements.of().parse(e.getProperties().get("value"));
                 if (v != null) {
-                    tt = v.asStringValue().get();
+                    tt = v.asString().get();
                 }
                 String props = DocusaurusUtils.skipJsonJSXBrackets(path.getParentPath().getElement().asXml().getProperties().get("values"));
                 for (NElement a : NElements.of().parse(props).asArray().orElse(NArrayElement.ofEmpty())) {

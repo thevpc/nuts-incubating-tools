@@ -95,7 +95,7 @@ public class NServerMain implements NApplication {
                 break;
             }
             count++;
-            s = cmdLine.nextNonOption(NArgName.of("ServerName")).flatMap(NLiteral::asStringValue).get();
+            s = cmdLine.nextNonOption(NArgName.of("ServerName")).flatMap(NLiteral::asString).get();
             if (cmdLine.isExecMode()) {
                 serverManager.stopServer(s);
             }
@@ -120,13 +120,13 @@ public class NServerMain implements NApplication {
             } else if ((a = cmdLine.nextEntry("-a", "--address").orNull()) != null) {
                 servers.current().addr = a.getStringValue().get();
             } else if ((a = cmdLine.nextEntry("-p", "--port").orNull()) != null) {
-                servers.current().port = a.getValue().asIntValue().get();
+                servers.current().port = a.getValue().asInt().get();
             } else if ((a = cmdLine.nextEntry("-h", "--host").orNull()) != null || (a = cmdLine.nextNonOption().orNull()) != null) {
                 StringBuilder s = new StringBuilder();
                 if (a.key().equals("-h") || a.key().equals("--host")) {
                     s.append(a.getStringValue());
                 } else {
-                    s.append(a.asStringValue());
+                    s.append(a.asString());
                 }
                 HostStr u = parseHostStr(s.toString(), session, true);
                 if (u.protocol.isEmpty()) {
@@ -134,13 +134,13 @@ public class NServerMain implements NApplication {
                 }
                 servers.add().set(u);
             } else if ((a = cmdLine.nextEntry("-l", "--backlog").orNull()) != null) {
-                servers.current().port = a.getValue().asIntValue().get();
+                servers.current().port = a.getValue().asInt().get();
             } else if ((a = cmdLine.nextEntry("--ssl-certificate").orNull()) != null) {
                 servers.current().sslCertificate = a.getStringValue().get();
             } else if ((a = cmdLine.nextEntry("--ssl-passphrase").orNull()) != null) {
                 servers.current().sslPassphrase = a.getStringValue().get();
             } else if ((a = cmdLine.nextEntry("-w", "--workspace").orNull()) != null) {
-                String ws = a.asStringValue().get();
+                String ws = a.asString().get();
                 String serverContext = "";
                 if (ws.contains("@")) {
                     serverContext = ws.substring(0, ws.indexOf('@'));
@@ -319,13 +319,13 @@ public class NServerMain implements NApplication {
             } else if ((a = cmdLine.nextEntry("-a", "--address").orNull()) != null) {
                 servers.current().addr = a.getStringValue().get();
             } else if ((a = cmdLine.nextEntry("-p", "--port").orNull()) != null) {
-                servers.current().port = a.getValue().asIntValue().get();
+                servers.current().port = a.getValue().asInt().get();
             } else if ((a = cmdLine.nextEntry("-h", "--host").orNull()) != null || (a = cmdLine.nextNonOption().orNull()) != null) {
                 StringBuilder s = new StringBuilder();
                 if (a.key().equals("-h") || a.key().equals("--host")) {
                     s.append(a.getStringValue());
                 } else {
-                    s.append(a.asStringValue());
+                    s.append(a.asString());
                 }
                 HostStr u = parseHostStr(s.toString(), session, false);
                 servers.add().set(u);

@@ -88,7 +88,7 @@ public abstract class AbstractNHttpServletFacadeContext implements NHttpServletF
     @Override
     public void sendResponseFile(int code, NPath file) {
         if (file != null && file.isRegularFile()) {
-            sendResponseHeaders(code, file.getContentLength());
+            sendResponseHeaders(code, file.contentLength());
             NCp.of().from(file).to(getResponseBody()).run();
         } else {
             sendError(404, "File not found");

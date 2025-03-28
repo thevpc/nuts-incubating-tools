@@ -59,10 +59,10 @@ public class NMvnMain implements NApplication {
                     command = "get";
                 } else {
                     command = "default";
-                    args2.add(cmd.next().flatMap(NLiteral::asStringValue).get());
+                    args2.add(cmd.next().flatMap(NLiteral::asString).get());
                 }
             } else {
-                args2.add(cmd.next().flatMap(NLiteral::asStringValue).get());
+                args2.add(cmd.next().flatMap(NLiteral::asString).get());
             }
         }
         if (command == null) {

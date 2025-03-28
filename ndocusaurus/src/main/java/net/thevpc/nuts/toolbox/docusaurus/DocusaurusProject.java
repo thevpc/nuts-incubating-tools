@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class DocusaurusProject {
 
@@ -277,7 +276,7 @@ public class DocusaurusProject {
         if (a.isString()) {
             return new DocusaurusFileOrFolder[]{
                 //DocusaurusUtils.concatPath(path, member.getValue().asString())
-                root.getPage(a.asStringValue().get(), true, null)
+                root.getPage(a.asString().get(), true, null)
             };
         } else if (a.isArray()) {
             List<DocusaurusFileOrFolder> aa = new ArrayList<>();
@@ -301,8 +300,8 @@ public class DocusaurusProject {
                     }
                 }
                 aa.add(new DocusaurusFolder(
-                        member.key().asStringValue().get(),//no id  here!
-                        member.key().asStringValue().get(),
+                        member.key().asString().get(),//no id  here!
+                        member.key().asString().get(),
                         ++order,
                         NElements.of().ofEmptyObject(),
                         cc,

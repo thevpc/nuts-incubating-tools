@@ -23,7 +23,7 @@ public class NIndexerUtils {
 
     public static Path getCacheDir(String entity) {
         String k = "NutsIndexerUtils.CACHE." + entity;
-        String m = NWorkspace.of().getProperty(k).flatMap(NLiteral::asStringValue).orNull();
+        String m = NWorkspace.of().getProperty(k).flatMap(NLiteral::asString).orNull();
         if (m == null) {
             m = NWorkspace.of()
                     .getStoreLocation(NId.getForClass(NIndexerUtils.class).get(),

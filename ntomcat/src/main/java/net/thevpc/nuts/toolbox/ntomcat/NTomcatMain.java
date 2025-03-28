@@ -30,7 +30,7 @@ public class NTomcatMain implements NApplication {
         boolean skipFirst = false;
         if (cmdLine.hasNext()) {
             NArg a = cmdLine.peek().get();
-            String s = a.asStringValue().orElse("");
+            String s = a.asString().orElse("");
             if ((s.equals   ("--remote") || s.equals("-r"))) {
                 cmdLine.skip();
                 local = false;

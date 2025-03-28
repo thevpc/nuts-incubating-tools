@@ -37,13 +37,13 @@ class DocusaurusFolderConfigProcessor implements NDocProcessor {
                         || "doc".equals(config.getString("name").orNull())
         ) {
             String[] sources = config.getArray("sources").orElse(NArrayElement.ofEmpty())
-                    .stream().map(x -> x.asStringValue().orElse(null))
+                    .stream().map(x -> x.asString().orElse(null))
                     .filter(Objects::nonNull).toArray(String[]::new);
             if (sources.length == 0) {
                 throw new IllegalArgumentException("missing doc sources in " + source);
             }
             String[] packages = config.getArray("packages").orElse(NArrayElement.ofEmpty())
-                    .stream().map(x -> x.asStringValue().orNull()).filter(Objects::nonNull).toArray(String[]::new);
+                    .stream().map(x -> x.asString().orNull()).filter(Objects::nonNull).toArray(String[]::new);
             String target = context.getPathTranslator().translatePath(source.getParent().toString());
             if (target == null) {
                 throw new IllegalArgumentException("invalid source " + source.getParent());

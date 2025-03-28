@@ -101,14 +101,14 @@ public class Docusaurus2Asciidoctor {
         NObjectElement asciiDoctorConfig = project.getConfigAsciiDoctor();
         config.setBin(asciiDoctorConfig.getStringByPath("pdf","command","bin").get());
         config.setArgs(asciiDoctorConfig.getArrayByPath("pdf","command","args").get()
-                .stream().map(x->x.asStringValue().get()).toArray(String[]::new));
+                .stream().map(x->x.asString().get()).toArray(String[]::new));
         config.setWorkDir(toCanonicalFile(Paths.get(project.getDocusaurusBaseFolder())).toString());
         config.setBaseDir(toCanonicalFile(Paths.get(getAsciiDoctorBaseFolder())).toString());
         config.setInputAdoc(getAdocFile().toString());
         NElement output = asciiDoctorConfig.getByPath("pdf","output"). get();
         String pdfFile=project.getProjectName();
         if(output.isString()){
-            String s=output.asStringValue().get().trim();
+            String s=output.asString().get().trim();
             if(!s.isEmpty()){
                 if(s.endsWith("/") ||s.endsWith("\\")){
                     s+=project.getProjectName()+".pdf";
