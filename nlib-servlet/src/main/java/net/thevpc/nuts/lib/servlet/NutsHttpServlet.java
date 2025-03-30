@@ -277,12 +277,12 @@ public class NutsHttpServlet extends HttpServlet {
         }
 
         @Override
-        public String getRequestHeaderFirstValue(String header) {
+        public String getRequestHeader(String header) {
             return req.getHeader(header);
         }
 
         @Override
-        public List<String> getRequestHeaderAllValues(String header) {
+        public List<String> getRequestHeaders(String header) {
             return Collections.list(req.getHeaders(header));
         }
 
@@ -296,7 +296,7 @@ public class NutsHttpServlet extends HttpServlet {
         }
 
         @Override
-        public Map<String, List<String>> getParameters() {
+        public Map<String, List<String>> getRequestParameters() {
             Map<String, List<String>> m = new LinkedHashMap<>();
             for (String s : Collections.list(req.getParameterNames())) {
                 for (String v : req.getParameterValues(s)) {

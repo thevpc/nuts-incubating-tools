@@ -10,3 +10,8 @@
 /nwork/target/
 nlib-servlet/target
 nlib-talk-agent/target
+/nserver/nserver-cli-lib/target/
+/nserver/nserver-cli/target/
+/nserver/nserver/target/
+/nserver/nserver-lib/target/
+
