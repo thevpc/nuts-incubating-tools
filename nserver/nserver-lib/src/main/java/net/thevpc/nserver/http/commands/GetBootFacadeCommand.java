@@ -1,8 +1,11 @@
 package net.thevpc.nserver.http.commands;
 
+import net.thevpc.nhttp.server.api.NWebHttpException;
 import net.thevpc.nuts.*;
 import net.thevpc.nserver.AbstractFacadeCommand;
 import net.thevpc.nserver.FacadeCommandContext;
+import net.thevpc.nuts.util.NMsgCode;
+import net.thevpc.nuts.web.NHttpCode;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,9 +23,9 @@ public class GetBootFacadeCommand extends AbstractFacadeCommand {
     @Override
     public void executeImpl(FacadeCommandContext context) throws IOException {
         String version = null;
-        for (Map.Entry<String, List<String>> e : context.getRequestParameters().entrySet()) {
+        for (Map.Entry<String, List<String>> e : context.getQueryParams().entrySet()) {
             if (e.getKey().equals("version")) {
-                version = e.getValue().toString();
+                version = e.getValue().get(0);
             } else {
                 version = e.getKey();
             }
@@ -32,18 +35,18 @@ public class GetBootFacadeCommand extends AbstractFacadeCommand {
                     .findFirst().orNull();
             if (def != null && def.getContent().isPresent()) {
                 context.addResponseHeader("content-disposition", "attachment; filename=\"nuts-" + def.getId().getVersion().toString() + ".jar\"");
-                context.sendResponseFile(200, def.getContent().orNull());
+                context.setFileResponse(def.getContent().orNull()).sendResponse();
             } else {
-                context.sendError(404, "File Note Found");
+                throw new NWebHttpException("Nuts not Found",new NMsgCode("NOT_FOUND"), NHttpCode.NOT_FOUND);
             }
         } else {
             NDefinition def = NFetchCmd.of(NId.get(NConstants.Ids.NUTS_API).get().builder().setVersion(version).build())
                     .setContent(true).getResultDefinition();
             if (def != null && def.getContent().isPresent()) {
                 context.addResponseHeader("content-disposition", "attachment; filename=\"nuts-" + def.getId().getVersion().toString() + ".jar\"");
-                context.sendResponseFile(200, def.getContent().orNull());
+                context.setFileResponse(def.getContent().orNull()).sendResponse();
             } else {
-                context.sendError(404, "File Note Found");
+                throw new NWebHttpException("Nuts not Found",new NMsgCode("NOT_FOUND"), NHttpCode.NOT_FOUND);
             }
         }
     }

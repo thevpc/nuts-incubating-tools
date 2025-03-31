@@ -1,11 +1,15 @@
 package net.thevpc.nserver.http.commands;
 
+import net.thevpc.nhttp.server.api.NWebHttpException;
 import net.thevpc.nserver.util.NServerUtils;
 import net.thevpc.nserver.util.XmlHelper;
 import net.thevpc.nuts.*;
 import net.thevpc.nserver.AbstractFacadeCommand;
 import net.thevpc.nserver.FacadeCommandContext;
+import net.thevpc.nuts.util.NMsgCode;
 import net.thevpc.nuts.util.NStream;
+import net.thevpc.nuts.web.NHttpCode;
+import net.thevpc.nuts.web.NHttpMethod;
 
 import java.io.IOException;
 import java.net.URI;
@@ -34,8 +38,8 @@ public class GetMavenFacadeCommand extends AbstractFacadeCommand {
                 NDefinition fetch = NFetchCmd.of(id)
                         .getResultDefinition();
                 NDescriptor d = fetch.getDescriptor();
-                if(context.isHeadMethod()){
-                    context.sendResponseHeaders(200,-1);
+                if (context.getMethod() == NHttpMethod.HEAD) {
+                    context.setTextResponse("");
                     return;
                 }
                 try {
@@ -97,12 +101,12 @@ public class GetMavenFacadeCommand extends AbstractFacadeCommand {
                         xml.pop();
                         xml.pop();
                     }
-                    context.sendResponseBytes(200, xml.toXmlBytes());
+                    context.setXmlResponse(new String(xml.toXmlBytes())).sendResponse();
                 } catch (Exception ex) {
-                    context.sendError(500, ex.toString());
+                    context.setErrorResponse(ex).sendResponse();
                 }
             } else {
-                context.sendError(404, "File Note Found");
+                context.setErrorResponse(new NWebHttpException("File Note Found", new NMsgCode("NOT_FOUND"), NHttpCode.NOT_FOUND));
             }
         } else if (n.endsWith(".jar")) {
             if (split.size() >= 4) {
@@ -111,25 +115,25 @@ public class GetMavenFacadeCommand extends AbstractFacadeCommand {
                         .setVersion(split.get(split.size() - 2)).build();
                 NDefinition fetch = NFetchCmd.of(id)
                         .getResultDefinition();
-                if(fetch.getContent().isPresent()) {
-                    if (context.isHeadMethod()) {
-                        context.sendResponseHeaders(200, -1);
+                if (fetch.getContent().isPresent()) {
+                    if (context.getMethod() == NHttpMethod.HEAD) {
+                        context.setXmlResponse("").sendResponse();
                         return;
                     }
-                    context.sendResponseFile(200, fetch.getContent().orNull());
-                }else{
-                    context.sendError(404, "File Note Found");
+                    context.setFileResponse(fetch.getContent().orNull()).sendResponse();
+                } else {
+                    context.setErrorResponse(new NWebHttpException("File Note Found", new NMsgCode("NOT_FOUND"), NHttpCode.NOT_FOUND));
                 }
             } else {
-                context.sendError(404, "File Note Found");
+                context.setErrorResponse(new NWebHttpException("File Note Found", new NMsgCode("NOT_FOUND"), NHttpCode.NOT_FOUND));
             }
         } else if (n.equals("maven-metadata.xml")) {
             if (split.size() >= 3) {
                 NId id = NIdBuilder.of().setArtifactId(split.get(split.size() - 2))
                         .setGroupId(String.join(".", split.subList(0, split.size() - 2))).build();
                 NStream<NId> resultIds = NSearchCmd.of().addId(id).setDistinct(true).setSorted(true).getResultIds();
-                if(context.isHeadMethod()){
-                    context.sendResponseHeaders(200,-1);
+                if (context.getMethod() == NHttpMethod.HEAD) {
+                    context.setXmlResponse("").sendResponse();
                     return;
                 }
                 try {
@@ -149,15 +153,15 @@ public class GetMavenFacadeCommand extends AbstractFacadeCommand {
                         xml.pop();
                     }
                     xml.pop();
-                    context.sendResponseBytes(200, xml.toXmlBytes());
+                    context.setXmlResponse(new String(xml.toXmlBytes()));
                 } catch (Exception ex) {
-                    context.sendError(500, ex.toString());
+                    context.setErrorResponse(ex);
                 }
             } else {
-                context.sendError(404, "File Note Found");
+                context.setErrorResponse(new NWebHttpException("File Note Found", new NMsgCode("NOT_FOUND"), NHttpCode.NOT_FOUND));
             }
         } else {
-            context.sendError(404, "File Note Found");
+            context.setErrorResponse(new NWebHttpException("File Note Found", new NMsgCode("NOT_FOUND"), NHttpCode.NOT_FOUND));
         }
 
     }

@@ -26,11 +26,9 @@
 package net.thevpc.nuts.lib.servlet;
 
 import net.thevpc.nuts.*;
-import net.thevpc.nuts.io.NIOException;
 import net.thevpc.nserver.AdminServerConfig;
 import net.thevpc.nserver.DefaultNWorkspaceServerManager;
 import net.thevpc.nserver.NServer;
-import net.thevpc.nserver.http.AbstractNHttpServletFacadeContext;
 import net.thevpc.nserver.http.NHttpServletFacade;
 import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.nuts.util.NStringUtils;
@@ -41,11 +39,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -214,102 +208,4 @@ public class NutsHttpServlet extends HttpServlet {
         facade.execute(new ServletNHttpServletFacadeContext(req, resp));
     }
 
-    private static class ServletNHttpServletFacadeContext extends AbstractNHttpServletFacadeContext {
-        private final HttpServletRequest req;
-        private final HttpServletResponse resp;
-
-        public ServletNHttpServletFacadeContext(HttpServletRequest req, HttpServletResponse resp) {
-            this.req = req;
-            this.resp = resp;
-        }
-
-        @Override
-        public String getRequestMethod() {
-            return req.getMethod();
-        }
-
-        @Override
-        public URI getRequestURI() {
-            try {
-                String cp = req.getContextPath();
-                String uri = req.getRequestURI();
-                if (uri.startsWith(cp)) {
-                    uri = uri.substring(cp.length());
-                    if (uri.startsWith(req.getServletPath())) {
-                        uri = uri.substring(req.getServletPath().length());
-                    }
-                }
-                return new URI(uri);
-            } catch (URISyntaxException e) {
-                throw new NIOException(e);
-            }
-        }
-
-        @Override
-        public OutputStream getResponseBody() {
-            try {
-                return resp.getOutputStream();
-            } catch (IOException ex) {
-                throw new NIOException(ex);
-            }
-        }
-
-        @Override
-        public void sendError(int code, String msg) {
-            try {
-                resp.sendError(code, msg);
-            } catch (IOException ex) {
-                throw new NIOException(ex);
-            }
-        }
-
-        @Override
-        public void sendResponseHeaders(int code, long length) {
-            if (length > 0) {
-                resp.setHeader("Content-length", Long.toString(length));
-            }
-            resp.setStatus(code);
-        }
-
-        @Override
-        public Set<String> getRequestHeaderKeys(String header) {
-            return new HashSet<>(Collections.list(req.getHeaderNames()));
-        }
-
-        @Override
-        public String getRequestHeader(String header) {
-            return req.getHeader(header);
-        }
-
-        @Override
-        public List<String> getRequestHeaders(String header) {
-            return Collections.list(req.getHeaders(header));
-        }
-
-        @Override
-        public InputStream getRequestBody() {
-            try {
-                return req.getInputStream();
-            } catch (IOException ex) {
-                throw new NIOException(ex);
-            }
-        }
-
-        @Override
-        public Map<String, List<String>> getRequestParameters() {
-            Map<String, List<String>> m = new LinkedHashMap<>();
-            for (String s : Collections.list(req.getParameterNames())) {
-                for (String v : req.getParameterValues(s)) {
-                    List<String> li = m.computeIfAbsent(s, d -> new ArrayList<>());
-                    li.add(v);
-                }
-            }
-            return m;//HttpUtils.queryToMap(getRequestURI().getQuery());
-        }
-
-        @Override
-        public void addResponseHeader(String name, String value) {
-            resp.addHeader(name, value);
-        }
-    }
 }

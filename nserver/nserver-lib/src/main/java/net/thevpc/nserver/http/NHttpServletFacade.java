@@ -10,32 +10,33 @@
  * other 'things' . Its based on an extensible architecture to help supporting a
  * large range of sub managers / repositories.
  * <br>
- *
- * Copyright [2020] [thevpc]  
- * Licensed under the GNU LESSER GENERAL PUBLIC LICENSE Version 3 (the "License"); 
+ * <p>
+ * Copyright [2020] [thevpc]
+ * Licensed under the GNU LESSER GENERAL PUBLIC LICENSE Version 3 (the "License");
  * you may  not use this file except in compliance with the License. You may obtain
  * a copy of the License at https://www.gnu.org/licenses/lgpl-3.0.en.html
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an 
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
- * either express or implied. See the License for the specific language 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  * <br> ====================================================================
  */
 package net.thevpc.nserver.http;
 
+import net.thevpc.nhttp.server.api.NWebHttpException;
+import net.thevpc.nhttp.server.api.NWebServerHttpContext;
 import net.thevpc.nserver.http.commands.*;
-import net.thevpc.nuts.NSearchCmd;
 import net.thevpc.nuts.NWorkspace;
 import net.thevpc.nserver.util.NServerUtils;
-import net.thevpc.nuts.NId;
-import net.thevpc.nserver.AbstractFacadeCommand;
 import net.thevpc.nserver.FacadeCommand;
 import net.thevpc.nserver.FacadeCommandContext;
+import net.thevpc.nuts.util.NMsgCode;
+import net.thevpc.nuts.web.NHttpCode;
+import net.thevpc.nuts.web.NHttpMethod;
 
 import java.io.*;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -123,7 +124,7 @@ public class NHttpServletFacade {
         return ii;
     }
 
-    public void execute(NHttpServletFacadeContext context)  {
+    public void execute(NWebServerHttpContext context) {
         String requestPath = context.getRequestURI().getPath();
         URLInfo ii = parse(requestPath, false);
         NWorkspace workspace = workspaces.get(ii.context);
@@ -134,37 +135,45 @@ public class NHttpServletFacade {
             }
         }
         if (workspace == null) {
-            context.sendError(404, "workspace not found");
-            return;
+            throw new NWebHttpException("workspace not found", new NMsgCode("WORKSPACE_NOT_FOUND"), NHttpCode.NOT_FOUND);
         }
         FacadeCommand facadeCommand = commands.get(ii.command);
         if (facadeCommand == null) {
             if (ii.command.isEmpty()) {
-                context.sendError(404, "missing command");
+                context.setErrorResponse(new NWebHttpException("missing command", new NMsgCode("COMMAND_NOT_FOUND"), NHttpCode.NOT_FOUND))
+                        .sendResponse();
             } else {
-                context.sendError(404, "NShellCommandNode Not found : " + ii.command);
+                context.setErrorResponse(new NWebHttpException("missing command", new NMsgCode("COMMAND_NOT_FOUND", ii.command), NHttpCode.NOT_FOUND))
+                        .sendResponse();
             }
         } else {
             NWorkspace finalWorkspace = workspace;
             URLInfo finalIi = ii;
-            workspace.runWith(()->{
+            workspace.runWith(() -> {
                 try {
                     try {
                         facadeCommand.execute(new FacadeCommandContext(context, serverId, finalIi.command, finalIi.path, finalWorkspace));
+                    } catch (NWebHttpException ex) {
+                        //LOG.log(Level.SEVERE, "HTTP ERROR : " + ex, ex);
+                        context.setErrorResponse(ex).sendResponse();
                     } catch (SecurityException ex) {
-                        LOG.log(Level.SEVERE, "SERVER ERROR : " + ex, ex);
 //                    ex.printStackTrace();
-                        context.sendError(403, ex.toString());
+                        context.setErrorResponse(new NWebHttpException("Forbidden", new NMsgCode("FORBIDDEN"), NHttpCode.FORBIDDEN))
+                                .sendResponse();
                     } catch (Exception ex) {
-                        LOG.log(Level.SEVERE, "SERVER ERROR : " + ex, ex);
+                        NWebHttpException we = context.wrapException(ex);
+                        context.setErrorResponse(we)
+                                .sendResponse();
 //                    ex.printStackTrace();
-                        context.sendError(500, ex.toString());
+                    }
+                    if(!context.isResponseSent()){
+                        context.setTextResponse("").sendResponse();
                     }
                 } finally {
-                    if (!context.isHeadMethod()) {
+                    if (context.getMethod() != NHttpMethod.HEAD) {
                         try {
-                            context.getResponseBody().flush();
-                            context.getResponseBody().close();
+                            OutputStream responseBody = context.getResponseBody();
+                            responseBody.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -181,31 +190,4 @@ public class NHttpServletFacade {
         String path;
     }
 
-    public class SearchVersionsFacadeCommand extends AbstractFacadeCommand {
-
-        public SearchVersionsFacadeCommand() {
-            super("find-versions");
-        }
-
-        @Override
-        public void executeImpl(FacadeCommandContext context) throws IOException {
-            Map<String, List<String>> parameters = context.getRequestParameters();
-            List<String> idList = parameters.get("id");
-            String id = (idList==null || idList.isEmpty())?null: idList.get(0);
-            boolean transitive = parameters.containsKey("transitive");
-            List<NId> fetch = null;
-            try {
-                fetch = NSearchCmd.of()
-                        .setTransitive(transitive)
-                        .addId(id).getResultIds().toList();
-            } catch (Exception exc) {
-                //
-            }
-            if (fetch != null) {
-                context.sendResponseText(200, NServerUtils.iteratorNutsIdToString(fetch.iterator()));
-            } else {
-                context.sendError(404, "Nuts not Found");
-            }
-        }
-    }
 }

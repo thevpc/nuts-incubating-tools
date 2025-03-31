@@ -1,5 +1,6 @@
 package net.thevpc.nserver.http.commands;
 
+import net.thevpc.nhttp.server.api.NWebHttpException;
 import net.thevpc.nuts.*;
 
 import net.thevpc.nuts.io.NCp;
@@ -10,6 +11,9 @@ import net.thevpc.nserver.FacadeCommandContext;
 import net.thevpc.nserver.util.ItemStreamInfo;
 import net.thevpc.nserver.util.MultipartStreamHelper;
 import net.thevpc.nuts.util.NBlankable;
+import net.thevpc.nuts.util.NMsg;
+import net.thevpc.nuts.util.NMsgCode;
+import net.thevpc.nuts.web.NHttpCode;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,10 +29,13 @@ public class DeployFacadeCommand extends AbstractFacadeCommand {
 
     @Override
     public void executeImpl(FacadeCommandContext context) throws IOException {
-        String boundary = context.getRequestHeader("Content-type");
+        String boundary = context.getRequestHeader("Content-type").orNull();
         if (NBlankable.isBlank(boundary)) {
-            context.sendError(400, "invalid NShellCommandNode arguments : " + getName() + " . invalid format.");
-            return;
+            throw new NWebHttpException(
+                    NMsg.ofC("invalid Command arguments : %s : invalid format", getName()).toString(),
+                    new NMsgCode("INVALID_COMMAND", getName()),
+                    NHttpCode.BAD_REQUEST
+            );
         }
         MultipartStreamHelper stream = new MultipartStreamHelper(context.getRequestBody(), boundary);
         NDescriptor descriptor = null;
@@ -67,13 +74,17 @@ public class DeployFacadeCommand extends AbstractFacadeCommand {
             }
         }
         if (contentFile == null) {
-            context.sendError(400, "invalid NShellCommandNode arguments : " + getName() + " : missing file");
+            throw new NWebHttpException(
+                    NMsg.ofC("invalid Command arguments : %s : missing file", getName()).toString(),
+                    new NMsgCode("INVALID_COMMAND", getName()),
+                    NHttpCode.BAD_REQUEST
+            );
         }
         NId id = NDeployCmd.of().setContent(NPath.of(contentFile))
                 .setSha1(receivedContentHash)
                 .setDescriptor(descriptor)
                 .getResult().get(0);
 //                NutsId id = workspace.deploy(content, descriptor, null);
-        context.sendResponseText(200, id.toString());
+        context.setTextResponse(id.toString()).sendResponse();
     }
 }

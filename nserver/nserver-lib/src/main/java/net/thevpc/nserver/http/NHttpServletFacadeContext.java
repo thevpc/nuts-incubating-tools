@@ -25,7 +25,7 @@
  */
 package net.thevpc.nserver.http;
 
-import net.thevpc.nserver.http.commands.FormDataItem;
+import net.thevpc.nhttp.server.api.FormDataItem;
 import net.thevpc.nuts.format.NContentType;
 import net.thevpc.nuts.io.NIOException;
 import net.thevpc.nuts.io.NPath;

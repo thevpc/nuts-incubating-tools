@@ -1,5 +1,6 @@
 package net.thevpc.nserver.http.commands;
 
+import net.thevpc.nhttp.server.api.NWebHttpException;
 import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.nuts.NSearchCmd;
 import net.thevpc.nserver.AbstractFacadeCommand;
@@ -10,6 +11,8 @@ import net.thevpc.nserver.util.MultipartStreamHelper;
 import net.thevpc.nserver.util.NServerUtils;
 import net.thevpc.nuts.NId;
 import net.thevpc.nserver.http.NHttpServletFacade;
+import net.thevpc.nuts.util.NMsgCode;
+import net.thevpc.nuts.web.NHttpCode;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -26,10 +29,13 @@ public class SearchFacadeCommand extends AbstractFacadeCommand {
     @Override
     public void executeImpl(FacadeCommandContext context) throws IOException {
         //Content-type
-        String boundary = context.getRequestHeader("Content-type");
+        String boundary = context.getRequestHeader("Content-type").orNull();
         if (NBlankable.isBlank(boundary)) {
-            context.sendError(400, "Invalid NShellCommandNode Arguments : " + getName() + " . Invalid format.");
-            return;
+            throw new NWebHttpException(
+                    "Invalid NShellCommandNode Arguments : " + getName() + " . Invalid format.",
+                    new NMsgCode("INVALID_ARGUMENT_FORMAT", getName()),
+                    NHttpCode.BAD_REQUEST
+            );
         }
         MultipartStreamHelper stream = new MultipartStreamHelper(context.getRequestBody(), boundary);
         boolean transitive = true;
@@ -57,6 +63,7 @@ public class SearchFacadeCommand extends AbstractFacadeCommand {
                 .setTransitive(transitive)
                 .addScripts(js).addId(pattern).getResultIds().iterator();
 //                    Writer ps = new OutputStreamWriter(context.getResponseBody());
-        context.sendResponseText(200, NServerUtils.iteratorNutsIdToString(it));
+        context.setTextResponse(NServerUtils.iteratorNutsIdToString(it))
+                .sendResponse();
     }
 }

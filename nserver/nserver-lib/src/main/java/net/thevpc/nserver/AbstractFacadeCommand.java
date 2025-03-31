@@ -52,9 +52,8 @@ public abstract class AbstractFacadeCommand implements FacadeCommand {
 
     @Override
     public void execute(FacadeCommandContext context) throws IOException, LoginException {
-        Map<String, List<String>> parameters = context.getRequestParameters();
-        String userLogin = context.getRequestParameter("ul");
-        String userPasswordS = context.getRequestParameter("up");
+        String userLogin = context.getQueryParam("ul").orNull();
+        String userPasswordS = context.getQueryParam("up").orNull();
         char[] userPassword = userPasswordS == null ? null : userPasswordS.toCharArray();
         NWorkspaceSecurityManager secu = NWorkspaceSecurityManager.of();
         userLogin = userLogin == null ? null : new String(secu.getCredentials(userLogin.toCharArray()));

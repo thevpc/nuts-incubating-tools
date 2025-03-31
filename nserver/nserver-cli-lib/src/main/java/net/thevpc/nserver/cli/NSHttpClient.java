@@ -1,6 +1,10 @@
 package net.thevpc.nserver.cli;
 
+import net.thevpc.nuts.io.NInputContentProvider;
+import net.thevpc.nuts.io.NInputSource;
+import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.util.NBlankable;
+import net.thevpc.nuts.util.NMapBuilder;
 import net.thevpc.nuts.util.NStringUtils;
 import net.thevpc.nuts.web.NWebCli;
 import net.thevpc.nuts.web.NWebRequest;
@@ -41,6 +45,36 @@ public class NSHttpClient {
         return NWebCli.of().POST(resolveUrl("version"))
                 .doWith(this::prepareSecurity)
                 .run().getContentAsString();
+    }
+
+    public NInputSource getFile(String remotePath) {
+        return NWebCli.of().POST(resolveUrl("get-file"))
+                .setJsonRequestBody(
+                        NMapBuilder.ofLinked()
+                                .put("path", remotePath)
+                )
+                .doWith(this::prepareSecurity)
+                .run().getContent();
+    }
+
+    public void getFile(String remotePath, String localPath) {
+        NPath.of(localPath).mkParentDirs().copyFromInputStreamProvider(getFile(remotePath));
+    }
+
+    public void putFile(String localPath, String remotePath) {
+        NWebCli.of().POST(resolveUrl("put-file"))
+                .addFormData("content", NPath.of(localPath))
+                .addFormData("path", remotePath)
+                .doWith(this::prepareSecurity)
+                .run().getContent();
+    }
+
+    public void putFile(NInputContentProvider localPath, String remotePath) {
+        NWebCli.of().POST(resolveUrl("put-file"))
+                .addFormData("content", localPath)
+                .addFormData("path", remotePath)
+                .doWith(this::prepareSecurity)
+                .run().getContent();
     }
 
     private void prepareSecurity(NWebRequest r) {

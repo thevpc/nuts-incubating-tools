@@ -25,7 +25,7 @@
  */
 package net.thevpc.nserver.http;
 
-import net.thevpc.nserver.http.commands.FormDataItem;
+import net.thevpc.nhttp.server.api.FormDataItem;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.format.NContentType;
 import net.thevpc.nuts.io.*;
@@ -201,7 +201,7 @@ public abstract class AbstractNHttpServletFacadeContext implements NHttpServletF
         if (formData != null) {
             return formData;
         }
-        String multipartRequestBoundary = this.getMultipartRequestBoundary();
+        String multipartRequestBoundary = this.getMultipartRequestBoundary().orNull();
         if (NBlankable.isBlank(multipartRequestBoundary)) {
             return formData = new HashMap<>();
         }

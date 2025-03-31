@@ -1,9 +1,13 @@
 package net.thevpc.nserver.http.commands;
 
+import net.thevpc.nhttp.server.api.NWebHttpException;
 import net.thevpc.nuts.NFetchCmd;
 import net.thevpc.nuts.NId;
 import net.thevpc.nserver.AbstractFacadeCommand;
 import net.thevpc.nserver.FacadeCommandContext;
+import net.thevpc.nuts.util.NLiteral;
+import net.thevpc.nuts.util.NMsgCode;
+import net.thevpc.nuts.web.NHttpCode;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,10 +20,8 @@ public class ResolveIdFacadeCommand extends AbstractFacadeCommand {
 
     @Override
     public void executeImpl(FacadeCommandContext context) throws IOException {
-        Map<String, List<String>> parameters = context.getRequestParameters();
-        List<String> idList = parameters.get("id");
-        String id = (idList==null || idList.isEmpty())?null: idList.get(0);
-        boolean transitive = parameters.containsKey("transitive");
+        String id = context.getQueryParam("id").orNull();
+        boolean transitive = NLiteral.of(context.getQueryParam("transitive").orNull()).asBoolean().orElse(true);
         NId fetch = null;
         try {
             fetch = NFetchCmd.of(id)
@@ -29,9 +31,9 @@ public class ResolveIdFacadeCommand extends AbstractFacadeCommand {
             //
         }
         if (fetch != null) {
-            context.sendResponseText(200, fetch.toString());
+            context.setTextResponse(fetch.toString()).sendResponse();
         } else {
-            context.sendError(404, "Nuts not Found");
+            context.setErrorResponse(new NWebHttpException("Not Found", new NMsgCode("NOT_FOUND",id), NHttpCode.NOT_FOUND));
         }
     }
 }

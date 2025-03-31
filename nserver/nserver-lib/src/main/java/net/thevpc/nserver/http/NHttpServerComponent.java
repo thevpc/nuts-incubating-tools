@@ -27,10 +27,11 @@
 package net.thevpc.nserver.http;
 
 import com.sun.net.httpserver.*;
+import net.thevpc.nhttp.server.DefaultNHttpServer;
+import net.thevpc.nhttp.server.api.*;
 import net.thevpc.nuts.*;
 
 import net.thevpc.nuts.io.NIOException;
-import net.thevpc.nuts.io.NInputSource;
 import net.thevpc.nuts.io.NPrintStream;
 import net.thevpc.nuts.spi.NSupportLevelContext;
 import net.thevpc.nuts.text.NTextStyle;
@@ -112,15 +113,7 @@ public class NHttpServerComponent implements NServerComponent {
         NWorkspace ws = NWorkspace.get().get();
         NSession invokerSession = ws.currentSession();
         NHttpServerConfig httpConfig = (NHttpServerConfig) config;
-        Map<String, NWorkspace> workspaces = httpConfig.getWorkspaces();
-        if (workspaces.isEmpty()) {
-            workspaces.put("", invokerSession.getWorkspace());
-        }
         String serverId = httpConfig.getServerId();
-        InetAddress address = httpConfig.getAddress();
-        int port = httpConfig.getPort();
-        int backlog = httpConfig.getBacklog();
-        Executor executor = httpConfig.getExecutor();
         if (NBlankable.isBlank(serverId)) {
             String serverName = NServerConstants.DEFAULT_HTTP_SERVER;
             try {
@@ -138,135 +131,64 @@ public class NHttpServerComponent implements NServerComponent {
             serverId = serverName;//+ "-" + new File(workspace.getWorkspaceLocation()).getName();
         }
         NSession session = invokerSession;
+        Map<String, NWorkspace> workspaces = httpConfig.getWorkspaces();
+        if (workspaces.isEmpty()) {
+            workspaces.put("", invokerSession.getWorkspace());
+        }
         this.facade = new NHttpServletFacade(serverId, workspaces);
-        if (port <= 0) {
-            port = NServerConstants.DEFAULT_HTTP_SERVER_PORT;
-        }
-        if (backlog <= 0) {
-            backlog = 10;
-        }
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(address, port);
-        final HttpServer server;
-        try {
-            server = httpConfig.isTls() ? HttpsServer.create(inetSocketAddress, backlog) : HttpServer.create(inetSocketAddress, backlog);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-        if (executor == null) {
-            int corePoolSize = httpConfig.getExecutorCorePoolSize();
-            if (corePoolSize <= 0) {
-                corePoolSize = 4;
-            }
-            int maxPoolSize = httpConfig.getExecutorMaximumPoolSize();
-            if (maxPoolSize <= 0) {
-                maxPoolSize = 100;
-            }
-            if (maxPoolSize <= corePoolSize) {
-                maxPoolSize = corePoolSize;
-            }
-            int idleSeconds = httpConfig.getExecutorIdleTimeSeconds();
-            if (idleSeconds <= 0) {
-                idleSeconds = 30;
-            }
-            int queueSize = httpConfig.getExecutorQueueSize();
-            if (queueSize <= 0) {
-                queueSize = maxPoolSize;
-            }
-            if (queueSize > 1000) {
-                queueSize = 1000;
-            }
-            executor = new ThreadPoolExecutor(corePoolSize, maxPoolSize, idleSeconds, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(queueSize));
-        }
-        server.setExecutor(executor);
-        if (httpConfig.isTls()) {
-            NAssert.requireNonBlank(httpConfig.getSslKeystorePassphrase(), "sslKeystorePassphrase");
-            NAssert.requireNonBlank(httpConfig.getSslKeystoreCertificate(), "sslKeystoreCertificate");
-            try {
-                SSLContext sslContext = SSLContext.getInstance("TLS");
-
-                // initialise the keystore
-                char[] password = httpConfig.getSslKeystorePassphrase();
-                KeyStore ks = KeyStore.getInstance("JKS");
-                try {
-                    ks.load(new ByteArrayInputStream(httpConfig.getSslKeystoreCertificate()), password);
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-
-                // setup the key manager text
-                KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-                kmf.init(ks, password);
-
-                // setup the trust manager text
-                TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-                tmf.init(ks);
-
-                // setup the HTTPS context and parameters
-                sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-                ((HttpsServer) server).setHttpsConfigurator(new HttpsConfigurator(sslContext) {
-                    public void configure(HttpsParameters params) {
-                        try {
-                            // initialise the SSL context
-                            SSLContext c = SSLContext.getDefault();
-                            SSLEngine engine = c.createSSLEngine();
-                            params.setNeedClientAuth(false);
-                            params.setCipherSuites(engine.getEnabledCipherSuites());
-                            params.setProtocols(engine.getEnabledProtocols());
-
-                            // get the default parameters
-                            SSLParameters defaultSSLParameters = c.getDefaultSSLParameters();
-                            params.setSSLParameters(defaultSSLParameters);
-                        } catch (Exception ex) {
-                            if (LOG.isLoggable(Level.CONFIG)) {
-                                LOG.log(Level.CONFIG, "failed to create HTTPS port");
-                            }
-                            session.err().println("```error failed to create HTTPS port```");
+        DefaultNHttpServer server = new DefaultNHttpServer();
+        server
+                .setServerName(serverId)
+                .setConfigurator(()->{
+                    NPrintStream out = session.out();
+                    if (workspaces.size() == 1) {
+                        out.print("Serving workspace : ");
+                        for (Map.Entry<String, NWorkspace> entry : workspaces.entrySet()) {
+                            String k = entry.getKey();
+                            NWorkspace ws2 = entry.getValue();
+                            ws2.runWith(() -> {
+                                if ("".equals(k)) {
+                                    out.println(NWorkspace.of().getWorkspaceLocation());
+                                } else {
+                                    out.println((NMsg.ofC("%s : %s", k, NWorkspace.of().getWorkspaceLocation())));
+                                }
+                            });
+                        }
+                    } else {
+                        out.println("Serving workspaces:");
+                        for (Map.Entry<String, NWorkspace> entry : workspaces.entrySet()) {
+                            String k = NStringUtils.firstNonBlank(entry.getKey(), "<default>");
+                            NWorkspace ws2 = entry.getValue();
+                            ws2.runWith(() -> {
+                                out.println(NMsg.ofC("\t%s : %s", k, NWorkspace.of().getWorkspaceLocation()));
+                            });
                         }
                     }
-                });
-            } catch (GeneralSecurityException e) {
-                throw new NIllegalArgumentException(NMsg.ofPlain("start server failed"), e);
-            }
-        }
+                })
+                .setOptions(new NWebServerOptions()
+                        .setHostName(httpConfig.getAddress() == null ? null : httpConfig.getAddress().getHostName())
+                        .setPort(httpConfig.getPort()<=0?8899:httpConfig.getPort())
+                        .setTls(httpConfig.isTls())
+                        .setBacklog(httpConfig.getBacklog())
+                        .setMaxConnexions(httpConfig.getExecutorMaximumPoolSize())
+                )
+                .setContextResolver(container -> container
+                        .createContext()
+                        .setHandler(
+                                rc -> {
+                                    facade.execute(rc);
+                                }
+                        )
+                        .bind()
+                )
+                .setHeader(NMsg.ofC("%s Server v%s (%s) (c) %s",
+                        NMsg.ofStyledPrimary1(serverId),
+                        NApp.of().getId().get().getVersion(),
+                        "build-2025",
+                        2025))
+                .start();
 
-        server.createContext("/", new HttpHandler() {
-            @Override
-            public void handle(final HttpExchange httpExchange) {
 
-                facade.execute(new EmbeddedNHttpServletFacadeContext(httpExchange));
-            }
-        });
-        server.start();
-        NPrintStream out = session.out();
-        NTexts factory = NTexts.of();
-        out.println(NMsg.ofC("Nuts Http Service '%s' running %s at %s", serverId,
-                factory.ofStyled(
-                        (httpConfig.isTls() ? "https" : "http"), NTextStyle.primary1()
-                ),
-                inetSocketAddress));
-        if (workspaces.size() == 1) {
-            out.print("Serving workspace : ");
-            for (Map.Entry<String, NWorkspace> entry : workspaces.entrySet()) {
-                String k = entry.getKey();
-                NWorkspace ws2 = entry.getValue();
-                ws2.runWith(() -> {
-                    if ("".equals(k)) {
-                        out.println(NWorkspace.of().getWorkspaceLocation());
-                    } else {
-                        out.println((NMsg.ofC("%s : %s", k, NWorkspace.of().getWorkspaceLocation())));
-                    }
-                });
-            }
-        } else {
-            out.println("Serving workspaces:");
-            for (Map.Entry<String, NWorkspace> entry : workspaces.entrySet()) {
-                String k = NStringUtils.firstNonBlank(entry.getKey(), "<default>");
-                NWorkspace ws2 = entry.getValue();
-                ws2.runWith(() -> {
-                    out.println(NMsg.ofC("\t%s : %s", k, NWorkspace.of().getWorkspaceLocation()));
-                });
-            }
-        }
         final String finalServerId = serverId;
         return new NServer() {
             boolean running = true;
@@ -285,7 +207,7 @@ public class NHttpServerComponent implements NServerComponent {
             public boolean stop() {
                 if (running) {
                     running = false;
-                    server.stop(0);
+                    server.stop();
                     return true;
                 } else {
                     return false;

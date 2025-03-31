@@ -6,15 +6,9 @@ import net.thevpc.nuts.io.*;
 import net.thevpc.nuts.NSession;
 import net.thevpc.nserver.AbstractFacadeCommand;
 import net.thevpc.nserver.FacadeCommandContext;
-import net.thevpc.nuts.util.NStringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
 
 public class ExecFacadeCommand extends AbstractFacadeCommand {
     public ExecFacadeCommand() {
@@ -64,6 +58,7 @@ public class ExecFacadeCommand extends AbstractFacadeCommand {
         int result = session.callWith(() -> NExecCmd.of()
                 .addCommand(cmd.toStringList())
                 .getResultCode());
-        context.sendResponseText(200, result + "\n" + session.out().toString());
+        context.setTextResponse(result + "\n" + session.out().toString())
+                .sendResponse();
     }
 }

@@ -11,7 +11,7 @@ public class Test1 {
         NWorkspace ws = Nuts.openInheritedWorkspace().share();
         NWebCli wc = NWebCli.of();
         String r = wc.POST("http://localhost:8899/exec")
-                .setBody("version")
+                .setRequestBody("version")
                 .run().getContentAsString();
         System.out.println(r);
     }
