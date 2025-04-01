@@ -1,8 +1,8 @@
 ##) SYNOPSIS:
-==nuts-server== **\<global-options\>** {{<command>}} **\<command-options\>** \[\[id\]=location\]
+==nserver== **\<global-options\>** {{<command>}} **\<command-options\>** \[\[id\]=location\]
 manage nuts server instances
 
-==nuts-server== {{start}} \<mode\>  **\<command-options\>**
+==nserver== {{start}} \<mode\>  **\<command-options\>**
     start new server instance
     modes are :
         **--http**                         : enable http mode
@@ -20,22 +20,22 @@ manage nuts server instances
 
         **-w** | **--workspace**  \[<ALIAS>\]\@<VALUE>    : register workspace with alias
 
-==nuts-server== {{stop}} \<name\> ...
+==nserver== {{stop}} \<name\> ...
     stop servers named
 
 
-==nuts-server== {{list}}
+==nserver== {{list}}
     list server instances
 
 
 ##) EXAMPLES:
 
-nuts-server start --http
+nserver start --http
 
-nuts-server start --http -w .
+nserver start --http -w .
 
-nuts-server start --http -w /home/me/mt-workspace
+nserver start --http -w /home/me/mt-workspace
 
-nuts-server start --http -p 8080 -w default@/home/me/mt-workspace
+nserver start --http -p 8080 -w default@/home/me/mt-workspace
 
-nuts-server start --http -p 8080 -w default@/home/me/mt-workspace -w other@other-workspace
+nserver start --http -p 8080 -w default@/home/me/mt-workspace -w other@other-workspace

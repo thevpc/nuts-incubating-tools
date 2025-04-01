@@ -26,6 +26,7 @@ public class GetMavenFacadeCommand extends AbstractFacadeCommand {
 
     @Override
     public void executeImpl(FacadeCommandContext context) throws IOException {
+        context.requireAuth();
         URI uri = context.getRequestURI();
 //        System.out.println("get-mvn " + uri.toString());
         List<String> split = NServerUtils.split(uri.toString(), "/");

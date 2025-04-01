@@ -20,6 +20,7 @@ public class FetchHashFacadeCommand extends AbstractFacadeCommand {
 
     @Override
     public void executeImpl(FacadeCommandContext context) throws IOException {
+        context.requireAuth();
         String id = context.getQueryParam("id").orNull();
         boolean transitive = NLiteral.of(context.getQueryParam("transitive").orNull()).asBoolean().orElse(true);
         String hash = null;

@@ -28,6 +28,7 @@ public class SearchFacadeCommand extends AbstractFacadeCommand {
 
     @Override
     public void executeImpl(FacadeCommandContext context) throws IOException {
+        context.requireAuth();
         //Content-type
         String boundary = context.getRequestHeader("Content-type").orNull();
         if (NBlankable.isBlank(boundary)) {

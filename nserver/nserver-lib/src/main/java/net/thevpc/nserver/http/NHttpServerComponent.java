@@ -34,31 +34,19 @@ import net.thevpc.nuts.*;
 import net.thevpc.nuts.io.NIOException;
 import net.thevpc.nuts.io.NPrintStream;
 import net.thevpc.nuts.spi.NSupportLevelContext;
-import net.thevpc.nuts.text.NTextStyle;
-import net.thevpc.nuts.text.NTexts;
 import net.thevpc.nserver.NServer;
 import net.thevpc.nserver.NServerComponent;
 import net.thevpc.nserver.NServerConstants;
 import net.thevpc.nserver.ServerConfig;
-import net.thevpc.nuts.util.NAssert;
 import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.nuts.util.NMsg;
 import net.thevpc.nuts.util.NStringUtils;
 
-import javax.net.ssl.*;
 import java.io.*;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URLDecoder;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -139,7 +127,21 @@ public class NHttpServerComponent implements NServerComponent {
         DefaultNHttpServer server = new DefaultNHttpServer();
         server
                 .setServerName(serverId)
-                .setConfigurator(()->{
+                .setHeader(NMsg.ofC("%s Server v%s (%s) (c) %s",
+                        NMsg.ofStyledPrimary1(serverId),
+                        NApp.of().getId().get().getVersion(),
+                        "build-2025",
+                        2025))
+                .setOptions(new NWebServerOptions()
+                        .setHostName(httpConfig.getAddress() == null ? null : httpConfig.getAddress().getHostName())
+                        .setPort(httpConfig.getPort() <= 0 ? 8899 : httpConfig.getPort())
+                        .setTls(httpConfig.isTls())
+                        .setBacklog(httpConfig.getBacklog())
+                        .setMaxConnexions(httpConfig.getExecutorMaximumPoolSize())
+                );
+        server
+                .addContext("/")
+                .setConfigurator(() -> {
                     NPrintStream out = session.out();
                     if (workspaces.size() == 1) {
                         out.print("Serving workspace : ");
@@ -165,29 +167,10 @@ public class NHttpServerComponent implements NServerComponent {
                         }
                     }
                 })
-                .setOptions(new NWebServerOptions()
-                        .setHostName(httpConfig.getAddress() == null ? null : httpConfig.getAddress().getHostName())
-                        .setPort(httpConfig.getPort()<=0?8899:httpConfig.getPort())
-                        .setTls(httpConfig.isTls())
-                        .setBacklog(httpConfig.getBacklog())
-                        .setMaxConnexions(httpConfig.getExecutorMaximumPoolSize())
-                )
-                .setContextResolver(container -> container
-                        .createContext()
-                        .setHandler(
-                                rc -> {
-                                    facade.execute(rc);
-                                }
-                        )
-                        .bind()
-                )
-                .setHeader(NMsg.ofC("%s Server v%s (%s) (c) %s",
-                        NMsg.ofStyledPrimary1(serverId),
-                        NApp.of().getId().get().getVersion(),
-                        "build-2025",
-                        2025))
-                .start();
-
+                .setUserResolver(new FileBasedNWebUserResolver())
+                .setHandler(rc -> facade.execute(rc))
+        ;
+        server.start();
 
         final String finalServerId = serverId;
         return new NServer() {
@@ -304,4 +287,5 @@ public class NHttpServerComponent implements NServerComponent {
         }
 
     }
+
 }

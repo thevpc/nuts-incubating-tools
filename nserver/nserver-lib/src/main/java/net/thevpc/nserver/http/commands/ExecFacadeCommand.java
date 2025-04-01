@@ -1,5 +1,6 @@
 package net.thevpc.nserver.http.commands;
 
+import net.thevpc.nhttp.server.api.FormDataItem;
 import net.thevpc.nuts.NExecCmd;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.io.*;
@@ -9,56 +10,51 @@ import net.thevpc.nserver.FacadeCommandContext;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class ExecFacadeCommand extends AbstractFacadeCommand {
     public ExecFacadeCommand() {
         super("exec");
     }
 
+    public static class CommandRequest {
+        public String command;
+    }
+
     @Override
     public void executeImpl(FacadeCommandContext context) throws IOException {
-
-//                String boundary = context.getRequestHeaderFirstValue("Content-type");
-//                if (StringUtils.isEmpty(boundary)) {
-//                    context.sendError(400, "Invalid NShellCommandNode Arguments : " + getName() + " . Invalid format.");
-//                    return;
-//                }
-//                MultipartStreamHelper stream = new MultipartStreamHelper(context.getRequestBody(), boundary);
-//                NutsDescriptor descriptor = null;
-//                String receivedContentHash = null;
-//                InputStream content = null;
-//                File contentFile = null;
-//                for (ItemStreamInfo info : stream) {
-//                    String name = info.resolveVarInHeader("Content-Disposition", "name");
-//                    switch (name) {
-//                        case "descriptor":
-//                            descriptor = CoreNutsUtils.parseNutsDescriptor(info.getContent(), true);
-//                            break;
-//                        case "content-hash":
-//                            receivedContentHash = CoreSecurityUtils.evalSHA1(info.getContent(), true);
-//                            break;
-//                        case "content":
-//                            contentFile = CoreIOUtils.createTempFile(descriptor, false);
-//                            CoreIOUtils.copy(info.getContent(), contentFile, true, true);
-//                            break;
-//                    }
-//                }
-//                if (contentFile == null) {
-//                    context.sendError(400, "Invalid NShellCommandNode Arguments : " + getName() + " : Missing File");
-//                }
-        NCmdLine cmd = NCmdLine.parseDefault(context.getRequestBodyAsString()).get();
+        context.requireAuth();
+        CommandRequest r = new CommandRequest();
+        r.command = context.getFormaData("command").get().getSource().readString();
+        FormDataItem in = context.getFormaData("in").orNull();
+        List<String> stringList = NCmdLine.parseDefault(r.command).get().toStringList();
         NSession session = NSession.of().copy();
         NMemoryPrintStream out = NPrintStream.ofMem(NTerminalMode.FILTERED);
         NMemoryPrintStream err = out; // NPrintStream.ofMem()
-        session.setTerminal(NTerminal.of(
-                new ByteArrayInputStream(new byte[0]),
-                out,
-                err
-        ));
-        int result = session.callWith(() -> NExecCmd.of()
-                .addCommand(cmd.toStringList())
-                .getResultCode());
-        context.setTextResponse(result + "\n" + session.out().toString())
-                .sendResponse();
+        if (in != null) {
+            session.setTerminal(NTerminal.of(
+                    in.getSource().getInputStream(),
+                    out,
+                    err
+            ));
+            stringList.addAll(0, Arrays.asList("nsh", "-s"));
+            int result = session.callWith(() -> NExecCmd.of()
+                    .addCommand(stringList)
+                    .getResultCode());
+            context.setTextResponse(result + "\n" + session.out().toString())
+                    .sendResponse();
+        } else {
+            session.setTerminal(NTerminal.of(
+                    new ByteArrayInputStream(new byte[0]),
+                    out,
+                    err
+            ));
+            int result = session.callWith(() -> NExecCmd.of()
+                    .addCommand(stringList)
+                    .getResultCode());
+            context.setTextResponse(result + "\n" + session.out().toString())
+                    .sendResponse();
+        }
     }
 }

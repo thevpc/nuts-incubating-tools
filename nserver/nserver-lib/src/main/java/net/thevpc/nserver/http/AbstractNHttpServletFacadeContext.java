@@ -96,7 +96,7 @@ public abstract class AbstractNHttpServletFacadeContext implements NHttpServletF
     @Override
     public void sendResponseFile(int code, NPath file) {
         if (file != null && file.isRegularFile()) {
-            String contentType = file.getContentType();
+            String contentType = file.contentType();
             if (!NBlankable.isBlank(contentType)) {
                 addResponseHeader("Content-Type", contentType);
             }

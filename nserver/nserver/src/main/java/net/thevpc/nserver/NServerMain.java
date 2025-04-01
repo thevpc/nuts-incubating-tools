@@ -37,8 +37,8 @@ public class NServerMain implements NApplication {
     @Override
     public void run() {
         NSession session = NSession.get().get();
-        NCmdLine cmdLine = NApp.of().getCmdLine().setCommandName("nuts-server");
-        cmdLine.setCommandName("nuts-server");
+        NCmdLine cmdLine = NApp.of().getCmdLine().setCommandName("nserver");
+        cmdLine.setCommandName("nserver");
         while (cmdLine.hasNext()) {
             if (cmdLine.next("start").isPresent()) {
                 start(session, cmdLine);
@@ -61,7 +61,7 @@ public class NServerMain implements NApplication {
 
     private void list(NSession session, NCmdLine cmdLine) {
         NWorkspaceServerManager serverManager = new DefaultNWorkspaceServerManager(session.getWorkspace());
-        cmdLine.setCommandName("nuts-server list").throwUnexpectedArgument();
+        cmdLine.setCommandName("nserver list").throwUnexpectedArgument();
         if (cmdLine.isExecMode()) {
             List<NServer> servers = serverManager.getServers();
             NPrintStream out = session.out();
@@ -148,7 +148,7 @@ public class NServerMain implements NApplication {
                 }
                 if (servers.current().workspaceLocations.containsKey(serverContext)) {
                     throw new NIllegalArgumentException(
-                            NMsg.ofC("nuts-server: server workspace context already defined %s", serverContext));
+                            NMsg.ofC("nserver: server workspace context already defined %s", serverContext));
                 }
                 servers.current().workspaceLocations.put(serverContext, ws);
             } else {
@@ -231,7 +231,7 @@ public class NServerMain implements NApplication {
                     }
                     default:
                         throw new NIllegalArgumentException(
-                                NMsg.ofC("nuts-server: unsupported server type %s", server.serverType)
+                                NMsg.ofC("nserver: unsupported server type %s", server.serverType)
                         );
                 }
                 serverManager.startServer(config0);

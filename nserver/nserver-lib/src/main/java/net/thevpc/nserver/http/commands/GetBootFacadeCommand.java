@@ -22,6 +22,7 @@ public class GetBootFacadeCommand extends AbstractFacadeCommand {
 
     @Override
     public void executeImpl(FacadeCommandContext context) throws IOException {
+        context.requireAuth();
         String version = null;
         for (Map.Entry<String, List<String>> e : context.getQueryParams().entrySet()) {
             if (e.getKey().equals("version")) {

@@ -19,8 +19,8 @@ public class NClientMain implements NApplication {
     @Override
     public void run() {
         NSession session = NSession.get().get();
-        NCmdLine cmdLine = NApp.of().getCmdLine().setCommandName("nuts-server");
-        cmdLine.setCommandName("nuts-server");
+        NCmdLine cmdLine = NApp.of().getCmdLine().setCommandName("nserver");
+        cmdLine.setCommandName("nserver");
     }
 
 

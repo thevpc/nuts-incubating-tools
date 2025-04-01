@@ -29,6 +29,7 @@ public class DeployFacadeCommand extends AbstractFacadeCommand {
 
     @Override
     public void executeImpl(FacadeCommandContext context) throws IOException {
+        context.requireAuth();
         String boundary = context.getRequestHeader("Content-type").orNull();
         if (NBlankable.isBlank(boundary)) {
             throw new NWebHttpException(

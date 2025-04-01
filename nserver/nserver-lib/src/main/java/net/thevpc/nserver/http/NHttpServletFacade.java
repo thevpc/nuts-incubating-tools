@@ -25,7 +25,7 @@
 package net.thevpc.nserver.http;
 
 import net.thevpc.nhttp.server.api.NWebHttpException;
-import net.thevpc.nhttp.server.api.NWebServerHttpContext;
+import net.thevpc.nhttp.server.api.NWebCallContext;
 import net.thevpc.nserver.http.commands.*;
 import net.thevpc.nuts.NWorkspace;
 import net.thevpc.nserver.util.NServerUtils;
@@ -66,6 +66,11 @@ public class NHttpServletFacade {
         register(new GetBootFacadeCommand());
         register(new GetFileFacadeCommand());
         register(new PutFileFacadeCommand());
+        register(new DirectoryListInfosCommand());
+        register(new DirectoryListNamesCommand());
+        register(new DirectoryListDigestCommand());
+        register(new FileDigestCommand());
+        register(new LoginFacadeCommand());
     }
 
     public Map<String, NWorkspace> getWorkspaces() {
@@ -124,7 +129,7 @@ public class NHttpServletFacade {
         return ii;
     }
 
-    public void execute(NWebServerHttpContext context) {
+    public void execute(NWebCallContext context) {
         String requestPath = context.getRequestURI().getPath();
         URLInfo ii = parse(requestPath, false);
         NWorkspace workspace = workspaces.get(ii.context);
@@ -166,7 +171,7 @@ public class NHttpServletFacade {
                                 .sendResponse();
 //                    ex.printStackTrace();
                     }
-                    if(!context.isResponseSent()){
+                    if (!context.isResponseSent()) {
                         context.setTextResponse("").sendResponse();
                     }
                 } finally {

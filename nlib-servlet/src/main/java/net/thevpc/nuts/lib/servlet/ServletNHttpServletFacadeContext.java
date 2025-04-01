@@ -21,13 +21,48 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.logging.Level;
 
-class ServletNHttpServletFacadeContext implements NWebServerHttpContext {
+class ServletNHttpServletFacadeContext implements NWebCallContext {
     private final HttpServletRequest req;
     private final HttpServletResponse resp;
 
     public ServletNHttpServletFacadeContext(HttpServletRequest req, HttpServletResponse resp) {
         this.req = req;
         this.resp = resp;
+    }
+
+    @Override
+    public NWebHttpException wrapException(Throwable ex) {
+        return null;
+    }
+
+    @Override
+    public void close() {
+
+    }
+
+    @Override
+    public boolean isResponseSent() {
+        return false;
+    }
+
+    @Override
+    public String createTokenHash(NWebToken token) {
+        return "";
+    }
+
+    @Override
+    public String createTokenHash(NWebUser user) {
+        return "";
+    }
+
+    @Override
+    public NWebToken createAccessToken(NWebUser user) {
+        return null;
+    }
+
+    @Override
+    public void initializeConfig() {
+
     }
 
     @Override
@@ -111,7 +146,7 @@ class ServletNHttpServletFacadeContext implements NWebServerHttpContext {
         return m;//HttpUtils.queryToMap(getRequestURI().getQuery());
     }
 
-    public NWebServerHttpContext addResponseHeader(String name, String value) {
+    public NWebCallContext addResponseHeader(String name, String value) {
         resp.addHeader(name, value);
         return this;
     }
@@ -166,17 +201,17 @@ class ServletNHttpServletFacadeContext implements NWebServerHttpContext {
     }
 
     @Override
-    public NWebServerHttpContext setResponseContentType(String contentType) {
+    public NWebCallContext setResponseContentType(String contentType) {
         return null;
     }
 
     @Override
-    public NWebServerHttpContext setErrorCode(NMsgCode errorCode) {
+    public NWebCallContext setErrorCode(NMsgCode errorCode) {
         return null;
     }
 
     @Override
-    public NWebServerHttpContext sendResponseHeaders() {
+    public NWebCallContext sendResponseHeaders() {
         return null;
     }
 
@@ -186,22 +221,22 @@ class ServletNHttpServletFacadeContext implements NWebServerHttpContext {
     }
 
     @Override
-    public NWebServerHttpContext requireAuth() {
+    public NWebCallContext requireAuth() {
         return null;
     }
 
     @Override
-    public NWebServerHttpContext trace(Level level, NMsg msg) {
+    public NWebCallContext trace(Level level, NMsg msg) {
         return null;
     }
 
     @Override
-    public NWebServerHttpContext requireMethod(NHttpMethod... m) {
+    public NWebCallContext requireMethod(NHttpMethod... m) {
         return null;
     }
 
     @Override
-    public NWebServerHttpContext throwNoFound() {
+    public NWebCallContext throwNoFound() {
         return null;
     }
 
@@ -216,7 +251,7 @@ class ServletNHttpServletFacadeContext implements NWebServerHttpContext {
     }
 
     @Override
-    public NWebServerHttpContext setUser(NWebUser user) {
+    public NWebCallContext setUser(NWebUser user) {
         return null;
     }
 
@@ -226,12 +261,12 @@ class ServletNHttpServletFacadeContext implements NWebServerHttpContext {
     }
 
     @Override
-    public NWebServerHttpContext setToken(NWebToken token) {
+    public NWebCallContext setToken(NWebToken token) {
         return null;
     }
 
     @Override
-    public NWebServerHttpContext runWithUnsafe(NUnsafeRunnable callable) throws Throwable {
+    public NWebCallContext runWithUnsafe(NUnsafeRunnable callable) throws Throwable {
         return null;
     }
 
@@ -251,7 +286,7 @@ class ServletNHttpServletFacadeContext implements NWebServerHttpContext {
     }
 
     @Override
-    public NWebServerHttpContext setResponseHeader(String name, String value) {
+    public NWebCallContext setResponseHeader(String name, String value) {
         return null;
     }
 
@@ -261,7 +296,7 @@ class ServletNHttpServletFacadeContext implements NWebServerHttpContext {
     }
 
     @Override
-    public NWebServerHttpContext setResponseCode(NHttpCode responseCode) {
+    public NWebCallContext setResponseCode(NHttpCode responseCode) {
         return null;
     }
 
@@ -291,47 +326,47 @@ class ServletNHttpServletFacadeContext implements NWebServerHttpContext {
     }
 
     @Override
-    public NWebServerHttpContext setTextResponse(String value) {
+    public NWebCallContext setTextResponse(String value) {
         return null;
     }
 
     @Override
-    public NWebServerHttpContext setXmlResponse(String value) {
+    public NWebCallContext setXmlResponse(String value) {
         return null;
     }
 
     @Override
-    public NWebServerHttpContext setJsonResponse(Object value) {
+    public NWebCallContext setJsonResponse(Object value) {
         return null;
     }
 
     @Override
-    public NWebServerHttpContext setBytesResponse(byte[] value) {
+    public NWebCallContext setBytesResponse(byte[] value) {
         return null;
     }
 
     @Override
-    public NWebServerHttpContext setFileResponse(NPath value) {
+    public NWebCallContext setFileResponse(NPath value) {
         return null;
     }
 
     @Override
-    public NWebServerHttpContext setErrorResponse(NMsgCode errorCode) {
+    public NWebCallContext setErrorResponse(NMsgCode errorCode) {
         return null;
     }
 
     @Override
-    public NWebServerHttpContext sendResponse() {
+    public NWebCallContext sendResponse() {
         return null;
     }
 
     @Override
-    public NWebServerHttpContext setErrorResponse(NWebHttpException ex) {
+    public NWebCallContext setErrorResponse(NWebHttpException ex) {
         return null;
     }
 
     @Override
-    public NWebServerHttpContext setErrorResponse(Throwable ex) {
+    public NWebCallContext setErrorResponse(Throwable ex) {
         return null;
     }
 }

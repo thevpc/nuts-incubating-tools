@@ -19,6 +19,7 @@ public class PutFileFacadeCommand extends AbstractFacadeCommand {
 
     @Override
     public void executeImpl(FacadeCommandContext context) throws IOException {
+        context.requireAuth();
         PutFileRequest r = new PutFileRequest();
         r.path = context.getFormaData("path").get().getSource().readString();
         FormDataItem content = context.getFormaData("content").get();
