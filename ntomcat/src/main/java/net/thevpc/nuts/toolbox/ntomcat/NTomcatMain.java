@@ -20,7 +20,7 @@ public class NTomcatMain implements NApplication {
         if (apacheRepo == null) {
             NWorkspace.of().addRepository(
                     new NAddRepositoryOptions()
-                            .setRepositoryModel(new ApacheTomcatRepositoryModel(session.getWorkspace()))
+                            .setRepositoryModel(new ApacheTomcatRepositoryModel())
                             .setTemporary(true)
                             
             );

@@ -18,9 +18,7 @@ import java.util.function.Function;
 
 public class ApacheTomcatRepositoryModel implements NRepositoryModel {
     public static final String HTTPS_ARCHIVE_APACHE_ORG_DIST_TOMCAT = "https://archive.apache.org/dist/tomcat/";
-    private NWorkspace workspace;
-    public ApacheTomcatRepositoryModel(NWorkspace workspace) {
-        this.workspace=workspace;
+    public ApacheTomcatRepositoryModel() {
     }
 
     @Override
@@ -60,7 +58,7 @@ public class ApacheTomcatRepositoryModel implements NRepositoryModel {
             } catch (MalformedURLException e) {
 
             }
-            NSession session = workspace.currentSession();
+            NSession session = NSession.of();
             if (url != null) {
                 session.getTerminal().printProgress(NMsg.ofC("peek %s", url));
                 try (InputStream inputStream = url.openStream()) {

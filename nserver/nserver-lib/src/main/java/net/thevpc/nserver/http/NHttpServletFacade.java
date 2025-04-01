@@ -157,7 +157,7 @@ public class NHttpServletFacade {
             workspace.runWith(() -> {
                 try {
                     try {
-                        facadeCommand.execute(new FacadeCommandContext(context, serverId, finalIi.command, finalIi.path, finalWorkspace));
+                        facadeCommand.execute(new FacadeCommandContext(context, serverId, finalIi.command, finalIi.path));
                     } catch (NWebHttpException ex) {
                         //LOG.log(Level.SEVERE, "HTTP ERROR : " + ex, ex);
                         context.setErrorResponse(ex).sendResponse();

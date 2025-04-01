@@ -27,7 +27,6 @@ package net.thevpc.nserver;
 
 import net.thevpc.nhttp.server.api.NWebCallContext;
 import net.thevpc.nhttp.server.api.NWebCallContextAdapter;
-import net.thevpc.nuts.NWorkspace;
 
 /**
  * Created by vpc on 1/24/17.
@@ -35,14 +34,12 @@ import net.thevpc.nuts.NWorkspace;
 public class FacadeCommandContext extends NWebCallContextAdapter {
 
     private NWebCallContext base;
-    private NWorkspace workspace;
     private String serverId;
     private String command;
     private String path;
 
-    public FacadeCommandContext(NWebCallContext base, String serverId, String command, String path, NWorkspace workspace) {
+    public FacadeCommandContext(NWebCallContext base, String serverId, String command, String path) {
         this.base = base;
-        this.workspace = workspace;
         this.serverId = serverId;
         this.command = command;
         this.path = path;
@@ -52,9 +49,6 @@ public class FacadeCommandContext extends NWebCallContextAdapter {
         return command;
     }
 
-    public NWorkspace getWorkspace() {
-        return workspace;
-    }
 
     public String getServerId() {
         return serverId;
