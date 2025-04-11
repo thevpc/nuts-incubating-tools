@@ -32,7 +32,7 @@ public class ApacheTomcatRepositoryModel implements NRepositoryModel {
     }
 
     @Override
-    public NIterator<NId> searchVersions(NId id, NIdFilter filter, NFetchMode fetchMode, NRepository repository) {
+    public NIterator<NId> searchVersions(NId id, NDefinitionFilter filter, NFetchMode fetchMode, NRepository repository) {
         if (fetchMode != NFetchMode.REMOTE) {
             return null;
         }
@@ -128,7 +128,7 @@ public class ApacheTomcatRepositoryModel implements NRepositoryModel {
     }
 
     @Override
-    public NIterator<NId> search(NIdFilter filter, NPath[] basePaths, NFetchMode fetchMode, NRepository repository) {
+    public NIterator<NId> search(NDefinitionFilter filter, NPath[] basePaths, NFetchMode fetchMode, NRepository repository) {
         if (fetchMode != NFetchMode.REMOTE) {
             return NIterator.ofEmpty();
         }
