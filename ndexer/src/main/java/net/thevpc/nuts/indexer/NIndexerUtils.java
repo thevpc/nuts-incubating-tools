@@ -71,6 +71,7 @@ public class NIndexerUtils {
         _condPut(entity, "name", id.getArtifactId());
         _condPut(entity, "namespace", id.getRepository());
         _condPut(entity, "group", id.getGroupId());
+        _condPut(entity, "classifier", id.getClassifier());
         _condPut(entity, "version", id.getVersion().getValue());
         _condPut(entity, "face", id.getFace());
         _condPut(entity, NConstants.IdProperties.OS, String.join(",",id.getCondition().getOs()));
@@ -79,7 +80,6 @@ public class NIndexerUtils {
         _condPut(entity, NConstants.IdProperties.PLATFORM, String.join(",",id.getCondition().getPlatform()));
         _condPut(entity, NConstants.IdProperties.PROFILE, String.join(",",id.getCondition().getProfiles()));
         _condPut(entity, NConstants.IdProperties.DESKTOP, String.join(",",id.getCondition().getDesktopEnvironment()));
-        _condPut(entity, NConstants.IdProperties.CLASSIFIER, id.getClassifier());
 //        _condPut(entity, NutsConstants.IdProperties.ALTERNATIVE, id.getAlternative());
         _condPut(entity, "stringId", id.toString());
         return entity;
@@ -90,6 +90,7 @@ public class NIndexerUtils {
         _condPut(entity, "name", dependency.getArtifactId());
         _condPut(entity, "namespace", dependency.getRepository());
         _condPut(entity, "group", dependency.getGroupId());
+        _condPut(entity, "classifier", dependency.getGroupId());
         _condPut(entity, "version", dependency.getVersion().getValue());
         NId id2 = dependency.toId().builder()
                 .setFace(StringUtils.isEmpty(dependency.toId().getFace()) ? "default" : dependency.toId().getFace())
@@ -102,7 +103,6 @@ public class NIndexerUtils {
         _condPut(entity, NConstants.IdProperties.PLATFORM, String.join(",",id2.getCondition().getPlatform()));
         _condPut(entity, NConstants.IdProperties.PROFILE, String.join(",",id2.getCondition().getProfiles()));
         _condPut(entity, NConstants.IdProperties.DESKTOP, String.join(",",id2.getCondition().getDesktopEnvironment()));
-        _condPut(entity, NConstants.IdProperties.CLASSIFIER, id2.getClassifier());
 
 //        _condPut(entity, NutsConstants.IdProperties.ALTERNATIVE, dependency.getId().getAlternative());
         _condPut(entity, "stringId", id2.toString());
@@ -132,13 +132,13 @@ public class NIndexerUtils {
                 .add(new PhraseQuery.Builder().add(new Term("name", name)).build(), BooleanClause.Occur.MUST)
                 .add(new PhraseQuery.Builder().add(new Term("namespace", namespace)).build(), BooleanClause.Occur.MUST)
                 .add(new PhraseQuery.Builder().add(new Term("group", group)).build(), BooleanClause.Occur.MUST)
+                .add(new PhraseQuery.Builder().add(new Term("classifier", classifier)).build(), BooleanClause.Occur.MUST)
                 .add(new PhraseQuery.Builder().add(new Term("version", version)).build(), BooleanClause.Occur.MUST)
                 .add(new PhraseQuery.Builder().add(new Term(NConstants.IdProperties.OS, os)).build(), BooleanClause.Occur.MUST)
                 .add(new PhraseQuery.Builder().add(new Term(NConstants.IdProperties.OS_DIST, osDist)).build(), BooleanClause.Occur.MUST)
                 .add(new PhraseQuery.Builder().add(new Term(NConstants.IdProperties.ARCH, arch)).build(), BooleanClause.Occur.MUST)
                 .add(new PhraseQuery.Builder().add(new Term(NConstants.IdProperties.PLATFORM, platform)).build(), BooleanClause.Occur.MUST)
                 .add(new PhraseQuery.Builder().add(new Term(NConstants.IdProperties.DESKTOP, desktopEnvironment)).build(), BooleanClause.Occur.MUST)
-                .add(new PhraseQuery.Builder().add(new Term(NConstants.IdProperties.CLASSIFIER, classifier)).build(), BooleanClause.Occur.MUST)
 //                .add(new PhraseQuery.Builder().add(new Term(NutsConstants.IdProperties.ALTERNATIVE, alternative)).build(), BooleanClause.Occur.MUST)
                 .add(new BooleanClause(new MatchAllDocsQuery(), BooleanClause.Occur.SHOULD))
                 .build();
@@ -149,6 +149,7 @@ public class NIndexerUtils {
                 .setArtifactId(NStringUtils.trim(map.get("name")))
                 .setRepository(NStringUtils.trim(map.get("namespace")))
                 .setGroupId(NStringUtils.trim(map.get("group")))
+                .setClassifier(NStringUtils.trim(map.get("classifier")))
                 .setVersion(NStringUtils.trim(map.get("version")))
                 .setCondition(
                         NEnvConditionBuilder.of()
@@ -159,7 +160,6 @@ public class NIndexerUtils {
                                 .setPlatform(Arrays.asList(NStringUtils.trim(map.get(NConstants.IdProperties.PLATFORM))))
                                 .setDesktopEnvironment(Arrays.asList(NStringUtils.trim(map.get(NConstants.IdProperties.DESKTOP))))
                 )
-                .setClassifier(NStringUtils.trim(map.get(NConstants.IdProperties.CLASSIFIER)))
 //                .setAlternative(trim(map.get(NutsConstants.IdProperties.ALTERNATIVE)))
                 .build();
     }
