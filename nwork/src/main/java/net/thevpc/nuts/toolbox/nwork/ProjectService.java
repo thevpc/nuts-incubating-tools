@@ -190,23 +190,23 @@ public class ProjectService {
                 throw new NExecutionException(NMsg.ofPlain("missing repository. try 'nwork set -r vpc-public-maven' or something like that"), NExecutionException.ERROR_2);
             }
             try {
-                NSession s = null;
+                NWorkspace ws = null;
                 if (a.getNutsWorkspace() != null && a.getNutsWorkspace().trim().length() > 0 && !a.getNutsWorkspace().equals(NWorkspace.of().getWorkspaceLocation().toString())) {
-                    s = Nuts.openWorkspace(
+                    ws = Nuts.openWorkspace(
                             NWorkspaceOptionsBuilder.of()
                                     .setOpenMode(NOpenMode.OPEN_OR_ERROR)
                                     .setReadOnly(true)
                                     .setWorkspace(a.getNutsWorkspace())
-                    ).currentSession();
-                    s.setAll(NSession.of());
+                                    .build()
+                    );
                 } else {
-                    s = NSession.of();
+                    ws = NWorkspace.of();
                 }
 
-                List<NDefinition> found = s.callWith(() -> NSearchCmd.of()
+                List<NDefinition> found = ws.callWith(() -> NSearchCmd.of()
                         .addId(sid)
                         .addRepositoryFilter(NRepositoryFilters.of().byName(nutsRepository))
-                        .setLatest(true).setContent(true).getResultDefinitions().toList()
+                        .setLatest(true).getResultDefinitions().toList()
                 );
                 if (found.size() > 0) {
                     NPath p = found.get(0).getContent().orNull();
@@ -242,19 +242,19 @@ public class ProjectService {
                         NDescriptor g = NDescriptorParser.of()
                                 .setDescriptorStyle(NDescriptorStyle.MAVEN)
                                 .parse(new File(f, "pom.xml")).get();
-                        NSession s = null;
+                        NWorkspace ws = null;
                         if (a.getNutsWorkspace() != null && a.getNutsWorkspace().trim().length() > 0 && !a.getNutsWorkspace().equals(NWorkspace.of().getWorkspaceLocation().toString())) {
-                            s = Nuts.openWorkspace(
+                            ws = Nuts.openWorkspace(
                                     NWorkspaceOptionsBuilder.of()
                                             .setOpenMode(NOpenMode.OPEN_OR_ERROR)
                                             .setReadOnly(true)
                                             .setWorkspace(a.getNutsWorkspace())
-                            ).currentSession();
-                            s.setAll(NSession.of());
+                                            .build()
+                            );
                         } else {
-                            s = NSession.of();
+                            ws = NWorkspace.of();
                         }
-                        List<NId> found = s.callWith(()->NSearchCmd.of()
+                        List<NId> found = ws.callWith(()->NSearchCmd.of()
                                 .addId(g.getId().getGroupId() + ":" + g.getId().getArtifactId())
                                 .addRepositoryFilter(NRepositoryFilters.of().byName(nutsRepository))
                                 .setLatest(true).getResultIds().toList());

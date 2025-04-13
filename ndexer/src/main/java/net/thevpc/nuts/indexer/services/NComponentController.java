@@ -244,8 +244,6 @@ public class NComponentController {
                                 )
                                 .addId(id)
                                 .setFailFast(false)
-                                .setContent(false)
-                                .setEffective(true)
                                 .getResultDefinitions().iterator();
                         if (it.hasNext()) {
                             NDefinition definition = it.next();

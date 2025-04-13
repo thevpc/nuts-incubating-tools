@@ -148,7 +148,7 @@ public class NutsComponentService {
         if (_workspace != null) {
             NutsId _id = searchId(workspace, name, namespace, group, version, os, osdist, null, face, scope, null);
             if (_id != null) {
-                NutsDefinition d = _workspace.fetch().setContent(true).setId(_id).getResultDefinition();
+                NutsDefinition d = _workspace.fetch().setId(_id).getResultDefinition();
                 if (d != null) {
                     NPath filePath = d.getPath();
                     System.out.println(filePath);
