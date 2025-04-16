@@ -11,6 +11,7 @@ import net.thevpc.nuts.elem.NObjectElement;
 import net.thevpc.nuts.NSession;
 import net.thevpc.nuts.lib.md.convert.Adoc2Pdf;
 import net.thevpc.nuts.lib.md.convert.Adoc2PdfConfig;
+import net.thevpc.nuts.util.NLiteral;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -99,16 +100,16 @@ public class Docusaurus2Asciidoctor {
     public Adoc2PdfConfig getAdoc2PdfConfig() {
         Adoc2PdfConfig config = new Adoc2PdfConfig();
         NObjectElement asciiDoctorConfig = project.getConfigAsciiDoctor();
-        config.setBin(asciiDoctorConfig.getStringByPath("pdf","command","bin").get());
+        config.setBin(asciiDoctorConfig.getByPath("pdf","command","bin").map(NElement::asLiteral).flatMap(NLiteral::asString).get());
         config.setArgs(asciiDoctorConfig.getArrayByPath("pdf","command","args").get()
-                .stream().map(x->x.asString().get()).toArray(String[]::new));
+                .stream().map(x->x.asLiteral().asString().get()).toArray(String[]::new));
         config.setWorkDir(toCanonicalFile(Paths.get(project.getDocusaurusBaseFolder())).toString());
         config.setBaseDir(toCanonicalFile(Paths.get(getAsciiDoctorBaseFolder())).toString());
         config.setInputAdoc(getAdocFile().toString());
         NElement output = asciiDoctorConfig.getByPath("pdf","output"). get();
         String pdfFile=project.getProjectName();
         if(output.isString()){
-            String s=output.asString().get().trim();
+            String s=output.asLiteral().asString().get().trim();
             if(!s.isEmpty()){
                 if(s.endsWith("/") ||s.endsWith("\\")){
                     s+=project.getProjectName()+".pdf";

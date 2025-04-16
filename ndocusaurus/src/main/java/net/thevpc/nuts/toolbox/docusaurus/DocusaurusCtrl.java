@@ -11,11 +11,13 @@ import net.thevpc.nsite.mimetype.DefaultNDocMimeTypeResolver;
 import net.thevpc.nsite.mimetype.MimeTypeConstants;
 import net.thevpc.nsite.util.FileProcessorUtils;
 import net.thevpc.nuts.*;
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.elem.NObjectElement;
 import net.thevpc.nuts.io.NIOException;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.util.NComparator;
+import net.thevpc.nuts.util.NLiteral;
 import net.thevpc.nuts.util.NMsg;
 
 import java.io.*;
@@ -124,7 +126,7 @@ public class DocusaurusCtrl {
             }
             base.resolve("sidebars.js").writeString(s);
         }
-        if (isBuildPdf() && !project.getConfigAsciiDoctor().getStringByPath("path").isEmpty()) {
+        if (isBuildPdf() && !project.getConfigAsciiDoctor().getByPath("path").map(NElement::asLiteral).flatMap(NLiteral::asString).isEmpty()) {
             Docusaurus2Asciidoctor d2a = new Docusaurus2Asciidoctor(project);
             NOut.print(NMsg.ofC("build adoc file : %s%n", d2a.getAdocFile()));
             d2a.createAdocFile();
@@ -134,7 +136,8 @@ public class DocusaurusCtrl {
         if (isBuildWebSite()) {
             NOut.print(NMsg.ofC("build website%n"));
             runNativeCommand(base, getEffectiveNpmCommandPath(), "run-script", "build");
-            String copyBuildPath = project.getConfigCustom().getStringByPath("copyBuildPath")
+            String copyBuildPath = project.getConfigCustom().getByPath("copyBuildPath")
+                    .map(NElement::asLiteral).flatMap(NLiteral::asString)
                     .get();
             if (copyBuildPath != null && copyBuildPath.length() > 0) {
                 String fromPath = base.resolve("build").normalize().toString();
