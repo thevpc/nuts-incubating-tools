@@ -137,7 +137,7 @@ public class DocusaurusTreeTransform extends MdElementTransformBase {
                             String tt = "Unknown";
                             NElement v = NElements.of().parse(tabItem.getProperties().get("value"));
                             if (v != null) {
-                                tt = v.asString().get();
+                                tt = v.asStringValue().get();
                             }
                             MdElement u = transformXml(path.append(tabItem));
                             sub.put(tt, u);
@@ -152,7 +152,7 @@ public class DocusaurusTreeTransform extends MdElementTransformBase {
                 }
                 List<MdElement> res=new ArrayList<>();
                 for (NElement row : rows) {
-                    MdElement r = sub.get(row.asObject().orElse(NObjectElement.ofEmpty()).getString("value").orElse(""));
+                    MdElement r = sub.get(row.asObject().orElse(NObjectElement.ofEmpty()).getStringValue("value").orElse(""));
                     if(r!=null){
                         res.add(r);
                     }
@@ -164,12 +164,12 @@ public class DocusaurusTreeTransform extends MdElementTransformBase {
                 String tt = "Unknown";
                 NElement v = NElements.of().parse(e.getProperties().get("value"));
                 if (v != null) {
-                    tt = v.asString().get();
+                    tt = v.asStringValue().get();
                 }
                 String props = DocusaurusUtils.skipJsonJSXBrackets(path.getParentPath().getElement().asXml().getProperties().get("values"));
                 for (NElement a : NElements.of().parse(props).asArray().orElse(NArrayElement.ofEmpty())) {
-                    if (tt.equals(a.asObject().orElse(NObjectElement.ofEmpty()).getString("value").orNull())) {
-                        tt = a.asObject().orElse(NObjectElement.ofEmpty()).getString("label").orNull();
+                    if (tt.equals(a.asObject().orElse(NObjectElement.ofEmpty()).getStringValue("value").orNull())) {
+                        tt = a.asObject().orElse(NObjectElement.ofEmpty()).getStringValue("label").orNull();
                         break;
                     }
                 }

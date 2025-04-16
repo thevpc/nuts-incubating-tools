@@ -450,7 +450,7 @@ public class RemoteTomcat {
         } else if (args.hasNext() && args.isNextOption()) {
             return null;
         } else {
-            return (loadServiceBase(args.next().flatMap(NLiteral::asString).get()));
+            return (loadServiceBase(args.next().get().getImage()));
         }
     }
 

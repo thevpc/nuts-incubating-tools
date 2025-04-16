@@ -45,7 +45,7 @@ public class Docusaurus2Asciidoctor {
         String pdfOutput = project.getConfigAsciiDoctor()
                 .getObject("pdf")
                 .orElse(NObjectElement.ofEmpty())
-                .getString("output").orNull();
+                .getStringValue("output").orNull();
         String pn=null;
         if(pdfOutput!=null && pdfOutput.endsWith(".pdf")){
             String pn0 = Paths.get(pdfOutput).getFileName().toString();
@@ -137,13 +137,13 @@ public class Docusaurus2Asciidoctor {
                 return r;
             }
             if (varName.startsWith("asciidoctor.")) {
-                return asciiDoctorConfig.getString(varName.substring("asciidoctor.".length())).get();
+                return asciiDoctorConfig.getStringValue(varName.substring("asciidoctor.".length())).get();
             }
             if (varName.startsWith("docusaurus.")) {
-                return project.getConfig().getString(varName.substring("docusaurus.".length())).get();
+                return project.getConfig().getStringValue(varName.substring("docusaurus.".length())).get();
             }
             //if (varName.startsWith("docusaurus.")) {
-                return project.getConfig().getString(varName).get();
+                return project.getConfig().getStringValue(varName).get();
             //}
             //return null;
         });
@@ -151,7 +151,7 @@ public class Docusaurus2Asciidoctor {
     }
 
     private String getAsciiDoctorBaseFolder() {
-        String s = project.getConfigAsciiDoctor().getString("path").get();
+        String s = project.getConfigAsciiDoctor().getStringValue("path").get();
         if (!new File(s).isAbsolute()) {
             s = project.getDocusaurusBaseFolder() + "/" + s;
         }

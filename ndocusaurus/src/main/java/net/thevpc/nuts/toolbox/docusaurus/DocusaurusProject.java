@@ -109,11 +109,11 @@ public class DocusaurusProject {
     }
 
     public String getTitle() {
-        return getConfig().getString("title").get();
+        return getConfig().getStringValue("title").get();
     }
 
     public String getProjectName() {
-        return getConfig().getString("projectName").get();
+        return getConfig().getStringValue("projectName").get();
     }
 
     public NObjectElement getConfigBaseConfig() {
@@ -276,7 +276,7 @@ public class DocusaurusProject {
         if (a.isString()) {
             return new DocusaurusFileOrFolder[]{
                 //DocusaurusUtils.concatPath(path, member.getValue().asString())
-                root.getPage(a.asString().get(), true, null)
+                root.getPage(a.asStringValue().get(), true, null)
             };
         } else if (a.isArray()) {
             List<DocusaurusFileOrFolder> aa = new ArrayList<>();
@@ -300,8 +300,8 @@ public class DocusaurusProject {
                     }
                 }
                 aa.add(new DocusaurusFolder(
-                        member.key().asString().get(),//no id  here!
-                        member.key().asString().get(),
+                        member.key().asStringValue().get(),//no id  here!
+                        member.key().asStringValue().get(),
                         ++order,
                         NElements.of().ofEmptyObject(),
                         cc,

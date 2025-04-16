@@ -77,7 +77,7 @@ class NCodeMainCmdProcessor implements NCmdLineRunner {
 
     @Override
     public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine, NCmdLineContext context) {
-        paths.add(cmdLine.next().flatMap(NLiteral::asString).get());
+        paths.add(cmdLine.next().get().getImage());
         return true;
     }
 

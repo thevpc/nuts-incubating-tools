@@ -144,7 +144,7 @@ public class WorkspaceService {
         int count = 0;
         while (cmdLine.hasNext()) {
             if (cmdLine.peek().get().isNonOption()) {
-                String expression = cmdLine.next().flatMap(NLiteral::asString).get();
+                String expression = cmdLine.next().get().getImage();
                 if (cmdLine.isExecMode()) {
                     setScanEnabled(Paths.get(expression), enable);
                     count++;
@@ -345,7 +345,7 @@ public class WorkspaceService {
             } else if (cmd.isNextOption()) {
                 cmd.setCommandName("nwork check").throwUnexpectedArgument();
             } else {
-                filters.add(cmd.next().flatMap(NLiteral::asString).get());
+                filters.add(cmd.next().get().getImage());
             }
         }
 
