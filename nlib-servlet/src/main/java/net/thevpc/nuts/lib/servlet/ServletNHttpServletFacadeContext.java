@@ -306,12 +306,12 @@ class ServletNHttpServletFacadeContext implements NWebCallContext {
     }
 
     @Override
-    public Map<String, FormDataItem> getFormaDataMap() {
+    public Map<String, FormDataItem> getFormDataMap() {
         return Collections.emptyMap();
     }
 
     @Override
-    public NOptional<FormDataItem> getFormaData(String name) {
+    public NOptional<FormDataItem> getFormData(String name) {
         return null;
     }
 

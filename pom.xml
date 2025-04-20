@@ -15,7 +15,6 @@
         <module>ncode</module>
         <module>nbackup</module>
         <module>ntomcat</module>
-        <module>nserver</module>
         <module>nlib-servlet</module>
         <module>nlib-talk-agent</module>
         <module>ndiff</module>
