@@ -46,21 +46,6 @@ class ServletNHttpServletFacadeContext implements NWebCallContext {
     }
 
     @Override
-    public String createTokenHash(NWebToken token) {
-        return "";
-    }
-
-    @Override
-    public String createTokenHash(NWebUser user) {
-        return "";
-    }
-
-    @Override
-    public NWebToken createAccessToken(NWebUser user) {
-        return null;
-    }
-
-    @Override
     public void initializeConfig() {
 
     }
@@ -226,7 +211,47 @@ class ServletNHttpServletFacadeContext implements NWebCallContext {
     }
 
     @Override
-    public NWebCallContext trace(Level level, NMsg msg) {
+    public NWebCallContext info(NMsg msg) {
+        return null;
+    }
+
+    @Override
+    public NWebCallContext error(NMsg msg) {
+        return null;
+    }
+
+    @Override
+    public NWebCallContext trace(NHttpLogMsg msg) {
+        return null;
+    }
+
+    @Override
+    public NOptional<String> getApiKeyRequestHeader() {
+        return null;
+    }
+
+    @Override
+    public NOptional<String> getRealmRequestHeader() {
+        return null;
+    }
+
+    @Override
+    public NLoginResult authenticateWithCredentials(NAuthenticationRequest authenticationRequest) {
+        return null;
+    }
+
+    @Override
+    public NLoginResult authenticateWithRefreshToken(String refreshToken) {
+        return null;
+    }
+
+    @Override
+    public NWebUser authenticateWithAccessToken(String accessToken) {
+        return null;
+    }
+
+    @Override
+    public NWebContext getWebContext() {
         return null;
     }
 
