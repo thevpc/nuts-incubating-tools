@@ -26,6 +26,7 @@ public class NWorkspacePool {
                 o = Nuts.openWorkspace(NWorkspaceOptionsBuilder.of()
                         .setInstallCompanions(false)
                         .setWorkspace(ws)
+                        .build()
                 );
             }
             pool.put(ws, o);

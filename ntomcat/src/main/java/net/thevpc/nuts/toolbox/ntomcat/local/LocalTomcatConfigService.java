@@ -522,7 +522,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 cv = "[" + catalinaVersion + "," + catalinaVersion + ".99999]";
             }
             String cid="org.apache.catalina:apache-tomcat";//+"#"+cv;
-            cid= NIdBuilder.of().setAll(NId.get(cid).get()).setCondition(
+            cid= NIdBuilder.of().copyFrom(NId.get(cid).get()).setCondition(
                     NEnvConditionBuilder.of()
                             .addPlatform(NWorkspace.of().getPlatform().toString())
             ).toString();
@@ -530,15 +530,14 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             NSearchCmd searchLatestCommand = NSearchCmd.of().addId(cid)
                     .setLatest(true);
             NDefinition r = searchLatestCommand
-                    .setInstallStatus(NInstallStatusFilters.of().byDeployed(true))
+                    .setDefinitionFilter(NDefinitionFilters.of().byDeployed(true))
                     .getResultDefinitions().findFirst().orNull();
             if (r == null) {
-                r = getSession().copy().setFetchStrategy(NFetchStrategy.OFFLINE).callWith(()->searchLatestCommand.setInstallStatus(NInstallStatusFilters.of()
-                                .byInstalled(false))
+                r = getSession().copy().setFetchStrategy(NFetchStrategy.OFFLINE).callWith(()->searchLatestCommand.setDefinitionFilter(NDefinitionFilters.of().byInstalled(false))
                         .getResultDefinitions().findFirst().orNull());
             }
             if (r == null) {
-                r = getSession().copy().setFetchStrategy(NFetchStrategy.ONLINE).callWith(()->searchLatestCommand.setInstallStatus(NInstallStatusFilters.of().byInstalled(false)).getResultDefinitions().findFirst().get());
+                r = getSession().copy().setFetchStrategy(NFetchStrategy.ONLINE).callWith(()->searchLatestCommand.setDefinitionFilter(NDefinitionFilters.of().byInstalled(false)).getResultDefinitions().findFirst().get());
             }
             if (r.getInstallInformation().get().isInstalledOrRequired()) {
                 return r;
@@ -559,7 +558,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                         .addId(finalR.getId())
                         .getResult().findFirst().get());
                 //this is a workaround. Def returned by install does not include all information!
-                catalinaNDefinition = searchLatestCommand.setInstallStatus(NInstallStatusFilters.of().byInstalled(true))
+                catalinaNDefinition = searchLatestCommand.setDefinitionFilter(NDefinitionFilters.of().byInstalled(true))
                         .getResultDefinitions().findFirst().orNull();
             }
         }

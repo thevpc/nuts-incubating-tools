@@ -277,7 +277,7 @@ public class RemoteTomcat {
         NArg a;
         while (args.hasNext()) {
             if (args.peek().get().isNonOption()) {
-                name = args.nextNonOption().flatMap(NLiteral::asString).get();
+                name = args.nextNonOption().flatMap(NArg::asString).get();
                 RemoteTomcatConfigService c = loadTomcatConfig(name);
                 c.shutdown();
             } else {

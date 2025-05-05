@@ -180,7 +180,7 @@ public class ApacheTomcatRepositoryModel implements NRepositoryModel {
                                                                                 String v0 = s3.substring(finalPrefix.length(), s3.length() - 4);
                                                                                 NVersion v = NVersion.get(v0).get();
                                                                                 NId id2 = idBuilder.setVersion(v).build();
-                                                                                if (filter == null || filter.acceptId(id2)) {
+                                                                                if (filter == null || filter.acceptDefinition(repository.)) {
                                                                                     return id2;
                                                                                 }
                                                                                 return null;
