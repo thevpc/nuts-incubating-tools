@@ -993,7 +993,6 @@ public class LocalTomcat {
     }
 
     public LocalTomcatDomainConfigService nextLocalTomcatDomainConfigService(NCmdLine args, NOpenMode autoCreate) {
-        NSession session = getSession();
         if (args.hasNext()) {
             NArg o = args.nextNonOption().orNull();
             if (o != null) {
@@ -1005,7 +1004,6 @@ public class LocalTomcat {
     }
 
     public LocalTomcatAppConfigService nextLocalTomcatAppConfigService(NCmdLine args, NOpenMode autoCreate) {
-        NSession session = getSession();
         if (args.hasNext()) {
             NArg o = args.nextNonOption().orNull();
             if (o != null) {
@@ -1022,7 +1020,6 @@ public class LocalTomcat {
     }
 
     public LocalTomcatServiceBase readBaseServiceArg(NCmdLine args, NOpenMode autoCreate) {
-        NSession session = getSession();
         NArg a;
         if ((a = args.nextEntry("--name").orNull()) != null) {
             return (loadServiceBase(a.getStringValue().get(), autoCreate));
@@ -1031,7 +1028,7 @@ public class LocalTomcat {
         } else if ((a = args.nextEntry("--domain").orNull()) != null) {
             return (loadDomain(a.getStringValue().get(), autoCreate));
             //TODO: should remove this line?
-        } else if (args.hasNext() && args.isNextOption() && args.peek().get().isDouble()) {
+        } else if (args.hasNext() && args.isNextOption() && NLiteral.of(args.peek().get()).isDouble()) {
             return null;
         } else if (args.hasNext() && args.isNextOption()) {
             return null;

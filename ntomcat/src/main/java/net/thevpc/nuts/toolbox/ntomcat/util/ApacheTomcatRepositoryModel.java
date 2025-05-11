@@ -15,9 +15,12 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.Function;
+import net.thevpc.nuts.spi.NDefinitionFactory;
 
 public class ApacheTomcatRepositoryModel implements NRepositoryModel {
+
     public static final String HTTPS_ARCHIVE_APACHE_ORG_DIST_TOMCAT = "https://archive.apache.org/dist/tomcat/";
+
     public ApacheTomcatRepositoryModel() {
     }
 
@@ -144,58 +147,55 @@ public class ApacheTomcatRepositoryModel implements NRepositoryModel {
                                 .flatMapStream(
                                         NFunction.of(
                                                 new Function<NPath, NStream<NId>>() {
-                                                    @Override
-                                                    public NStream<NId> apply(NPath x3) {
-                                                        String s2n = x3.getName();
-                                                        String prefix = "apache-tomcat-";
-                                                        String bin = "bin";
-                                                        if (
-                                                                s2n.endsWith("-alpha/") || s2n.endsWith("-beta/")
-                                                                        || s2n.endsWith("-copyforpermissions/") || s2n.endsWith("-original/")
-                                                                        || s2n.matches(".*-RC[0-9]+/") || s2n.matches(".*-M[0-9]+/")
-                                                        ) {
-                                                            //will ignore all alpha versions
-                                                            return NStream.ofEmpty();
-                                                        }
-                                                        NVersion version = NVersion.get(s2n.substring(1, s2n.length() - 1)).get();
-                                                        if (version.compareTo("4.1.32") < 0) {
-                                                            prefix = "jakarta-tomcat-";
-                                                        }
-                                                        if (version.compareTo("4.1.27") == 0) {
-                                                            bin = "binaries";
-                                                        }
-                                                        boolean checkBin = false;
-                                                        if (checkBin) {
-                                                            String finalPrefix = prefix;
-                                                            return x3.resolve(bin)
-                                                                    .stream()
-                                                                    .filter(
-                                                                            NPredicate.<NPath>of((NPath x4) -> x4.getName().matches(finalPrefix + "[0-9]+\\.[0-9]+\\.[0-9]+\\.zip"))
-                                                                                    .withDesc(NEDesc.of("name.isZip"))
-
-                                                                    )
-                                                                    .map(NFunction.<NPath, NId>of(
-                                                                            (NPath x5) -> {
-                                                                                String s3 = x5.getName();
-                                                                                String v0 = s3.substring(finalPrefix.length(), s3.length() - 4);
-                                                                                NVersion v = NVersion.get(v0).get();
-                                                                                NId id2 = idBuilder.setVersion(v).build();
-                                                                                if (filter == null || filter.acceptDefinition(repository.)) {
-                                                                                    return id2;
-                                                                                }
-                                                                                return null;
-                                                                            }).<NId>withDesc(NEDesc.of("toZip")))
-                                                                    .<NId>nonNull();
-                                                        } else {
-                                                            NId id2 = idBuilder.setVersion(version).build();
-                                                            if (filter == null || filter.acceptId(id2)) {
-                                                                return NStream.ofSingleton(id2);
-                                                            }
-                                                            return NStream.ofEmpty();
-                                                        }
-
+                                            @Override
+                                            public NStream<NId> apply(NPath x3) {
+                                                String s2n = x3.getName();
+                                                String prefix = "apache-tomcat-";
+                                                String bin = "bin";
+                                                if (s2n.endsWith("-alpha/") || s2n.endsWith("-beta/")
+                                                        || s2n.endsWith("-copyforpermissions/") || s2n.endsWith("-original/")
+                                                        || s2n.matches(".*-RC[0-9]+/") || s2n.matches(".*-M[0-9]+/")) {
+                                                    //will ignore all alpha versions
+                                                    return NStream.ofEmpty();
+                                                }
+                                                NVersion version = NVersion.get(s2n.substring(1, s2n.length() - 1)).get();
+                                                if (version.compareTo("4.1.32") < 0) {
+                                                    prefix = "jakarta-tomcat-";
+                                                }
+                                                if (version.compareTo("4.1.27") == 0) {
+                                                    bin = "binaries";
+                                                }
+                                                boolean checkBin = false;
+                                                if (checkBin) {
+                                                    String finalPrefix = prefix;
+                                                    return x3.resolve(bin)
+                                                            .stream()
+                                                            .filter(
+                                                                    NPredicate.<NPath>of((NPath x4) -> x4.getName().matches(finalPrefix + "[0-9]+\\.[0-9]+\\.[0-9]+\\.zip"))
+                                                                            .withDesc(NEDesc.of("name.isZip"))
+                                                            )
+                                                            .map(NFunction.<NPath, NId>of(
+                                                                    (NPath x5) -> {
+                                                                        String s3 = x5.getName();
+                                                                        String v0 = s3.substring(finalPrefix.length(), s3.length() - 4);
+                                                                        NVersion v = NVersion.get(v0).get();
+                                                                        NId id2 = idBuilder.setVersion(v).build();
+                                                                        if (filter == null || filter.acceptDefinition(NDefinitionFactory.of().byId(id2, repository))) {
+                                                                            return id2;
+                                                                        }
+                                                                        return null;
+                                                                    }).<NId>withDesc(NEDesc.of("toZip")))
+                                                            .<NId>nonNull();
+                                                } else {
+                                                    NId id2 = idBuilder.setVersion(version).build();
+                                                    if (filter == null || filter.acceptDefinition(NDefinitionFactory.of().byId(id2, repository))) {
+                                                        return NStream.ofSingleton(id2);
                                                     }
-                                                }).withDesc(NEDesc.of("flatMap")))
+                                                    return NStream.ofEmpty();
+                                                }
+
+                                            }
+                                        }).withDesc(NEDesc.of("flatMap")))
                 ).withDesc(NEDesc.of("flatMap"))).iterator();
     }
 
@@ -238,5 +238,4 @@ public class ApacheTomcatRepositoryModel implements NRepositoryModel {
 //            return NutsVersion.of("[3.3,4[").get().filter(session).acceptVersion(cv, session);
 //        }
 //    }
-
 }
