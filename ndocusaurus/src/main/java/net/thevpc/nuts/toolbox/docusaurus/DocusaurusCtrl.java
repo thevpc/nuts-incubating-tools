@@ -77,7 +77,7 @@ public class DocusaurusCtrl {
             base = NPath.of(project.getDocusaurusBaseFolder()).toAbsolute().normalize();
         boolean genSidebarMenu = project.getConfigDocusaurusExtra()
                 .asObject().orElse(NObjectElement.ofEmpty())
-                .getBooleanByPath("generateSidebarMenu")
+                .getBooleanValueByPath("generateSidebarMenu")
                 .orElse(false);
         NPath basePath = base;
         NPath preProcessor = getPreProcessorBaseDir();

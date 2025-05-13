@@ -221,7 +221,7 @@ public class WorkspaceService {
                 reset = a.getBooleanValue().get();
             } else if (cmdLine.peek().get().isNonOption()) {
                 String folder = cmdLine.nextNonOption(NArgName.of("Folder"))
-                        .flatMap(NLiteral::asString).get();
+                        .flatMap(NArg::asString).get();
                 run = true;
                 toScan.add(new File(folder));
             } else {
@@ -252,7 +252,7 @@ public class WorkspaceService {
                 where = a.getStringValue().get();
             } else if (cmdLine.peek().get().isNonOption()) {
                 String folder = cmdLine.nextNonOption(NArgName.of("Folder"))
-                        .flatMap(NLiteral::asString).get();
+                        .flatMap(NArg::asString).get();
                 toScan.add(new File(folder));
             } else {
                 session.configureLast(cmdLine);
