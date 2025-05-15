@@ -142,7 +142,6 @@ public class DataService {
                     .setInlineDependencies(true)
                     .addId(id)
                     .setFailFast(false)
-                    .setContent(false)
                     .getResultIds().toList();
             Map<String, String> oldRow = new HashMap<>(row);
             row.put("allDependencies", NElements.of().json()
