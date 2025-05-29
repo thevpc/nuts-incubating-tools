@@ -20,7 +20,7 @@ NOptional is more of an Object Wrapper than addes several useful null related op
 defaultValue="NAF"
 values={[
 { label: 'NAF', value: 'NAF', },
-{ label: 'Java', value: 'java', },
+{ label: 'Java', value: 'Java', },
 { label: 'Typescript', value: 'typescript', }
 ]
 }>
@@ -65,7 +65,7 @@ values={[
 defaultValue="NAF"
 values={[
 { label: 'NAF', value: 'NAF', },
-{ label: 'Java', value: 'java', },
+{ label: 'Java', value: 'Java', },
 { label: 'Typescript', value: 'typescript', }
 ]
 }>
@@ -102,7 +102,7 @@ values={[
 defaultValue="NAF"
 values={[
 { label: 'NAF', value: 'NAF', },
-{ label: 'Java', value: 'java', },
+{ label: 'Java', value: 'Java', },
 { label: 'Typescript', value: 'typescript', }
 ]
 }>
@@ -139,7 +139,7 @@ values={[
 defaultValue="NAF"
 values={[
 { label: 'NAF', value: 'NAF', },
-{ label: 'Java', value: 'java', },
+{ label: 'Java', value: 'Java', },
 { label: 'Typescript', value: 'typescript', }
 ]
 }>
