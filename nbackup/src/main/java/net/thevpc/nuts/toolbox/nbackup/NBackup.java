@@ -7,6 +7,7 @@ package net.thevpc.nuts.toolbox.nbackup;
 
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.*;
+import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.util.NBlankable;
@@ -27,7 +28,7 @@ public class NBackup implements NApplication {
     public void run() {
         NSession session = NSession.get().get();
         NOut.println(NMsg.ofC("%s Backup Tool.", NMsg.ofStyledKeyword("Nuts")));
-        NApp.of().processCmdLine(new NCmdLineRunner() {
+        NApp.of().runCmdLine(new NCmdLineRunner() {
 
             @Override
             public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine, NCmdLineContext context) {
@@ -59,7 +60,7 @@ public class NBackup implements NApplication {
                 Config config = null;
                 if (configFile.isRegularFile()) {
                     try {
-                        config = NElements.of().parse(
+                        config = NElementParser.ofJson().parse(
                                 configFile, Config.class
                         );
                     } catch (Exception ex) {

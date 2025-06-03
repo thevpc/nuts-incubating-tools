@@ -1,9 +1,6 @@
 package net.thevpc.nuts.toolbox.docusaurus;
 
-import net.thevpc.nuts.elem.NElement;
-import net.thevpc.nuts.elem.NElements;
-import net.thevpc.nuts.elem.NObjectElement;
-import net.thevpc.nuts.elem.NPairElement;
+import net.thevpc.nuts.elem.*;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.lib.md.MdElement;
 
@@ -129,7 +126,7 @@ public class DocusaurusProject {
     public NObjectElement getConfigAsciiDoctor() {
         NPath newPath = NPath.of(Paths.get(resolvePath(".dir-template/ndocusaurus.config.json")));
         if (newPath.exists()) {
-            return NElements.of().json().parse(newPath, NObjectElement.class)
+            return NElementParser.ofJson().parse(newPath, NObjectElement.class)
                     .getObjectByPath("asciidoctor").get();
         }
         return getConfigBaseConfig().getObjectByPath("customFields", "asciidoctor").get();
@@ -142,7 +139,7 @@ public class DocusaurusProject {
     public NObjectElement getConfigDocusaurusExtra() {
         NPath newPath = NPath.of(Paths.get(resolvePath(".dir-template/ndocusaurus.config.json")));
         if (newPath.exists()) {
-            return NElements.of().json().parse(newPath, NObjectElement.class)
+            return NElementParser.ofJson().parse(newPath, NObjectElement.class)
                     .getObjectByPath("docusaurus").get();
         }
         return getConfigBaseConfig().getObjectByPath("customFields", "docusaurus").get();
@@ -151,7 +148,7 @@ public class DocusaurusProject {
     public NObjectElement getConfigCustom() {
         NPath newPath = NPath.of(Paths.get(resolvePath(".dir-template/ndocusaurus.config.json")));
         if (newPath.exists()) {
-            return NElements.of().json().parse(newPath, NObjectElement.class)
+            return NElementParser.ofJson().parse(newPath, NObjectElement.class)
                     ;
         }
         return getConfigBaseConfig().getObjectByPath("customFields").get();
@@ -160,7 +157,7 @@ public class DocusaurusProject {
     public NObjectElement getConfig() {
         NPath newPath = NPath.of(Paths.get(resolvePath(".dir-template/ndocusaurus.config.json")));
         if (newPath.exists()) {
-            return NElements.of().json().parse(newPath, NObjectElement.class);
+            return NElementParser.ofJson().parse(newPath, NObjectElement.class);
         }
         return getConfigBaseConfig();
     }
@@ -178,7 +175,7 @@ public class DocusaurusProject {
         try {
             a = new String(Files.readAllBytes(Paths.get(resolvePath(path))));
         } catch (IOException ex) {
-            return NElements.of().ofNull();
+            return NElements.ofNull();
         }
         //(?s) stands for single line mode in which the dot includes line breaks
         Pattern p = Pattern.compile("(?s)module.exports[ ]*=[ ]*(?<json>.*[^;])[;]?");
@@ -187,7 +184,7 @@ public class DocusaurusProject {
         if (matcher.find()) {
             json = matcher.group("json");
             if (json != null) {
-                return NElements.of().json()
+                return NElementParser.ofJson()
                         .parse(json, NElement.class);
             }
         }
@@ -197,14 +194,14 @@ public class DocusaurusProject {
         if (matcher.find()) {
             json = matcher.group("json");
             if (json != null) {
-                return NElements.of().json()
+                return NElementParser.ofJson()
                         .parse(json, NElement.class);
             }
         }
         if (json == null) {
-            return NElements.of().ofEmptyObject();
+            return NElements.ofObject();
         }
-        return NElements.of().json()
+        return NElementParser.ofJson()
                 .parse(json, NElement.class);
     }
 
@@ -233,7 +230,7 @@ public class DocusaurusProject {
 //            NutsObjectElement config = NElements.of().forObject().build();
 //            if (Files.isRegularFile(dfi)) {
 //                try {
-//                    config = NElements.of().parse(new String(Files.readAllBytes(dfi))).asSafeObject();
+//                    config = NElementParser.of().parse(new String(Files.readAllBytes(dfi))).asSafeObject();
 //                } catch (IOException e) {
 //                    //ignore...
 //                }
@@ -303,7 +300,7 @@ public class DocusaurusProject {
                         member.key().asStringValue().get(),//no id  here!
                         member.key().asStringValue().get(),
                         ++order,
-                        NElements.of().ofEmptyObject(),
+                        NElements.ofObject(),
                         cc,
                         resolveFolderContent(parentPath), parentPath == null ? null : parentPath.toString()
                 ));
@@ -342,7 +339,7 @@ public class DocusaurusProject {
         DocusaurusFileOrFolder[] someSidebars = LJSON_to_DocusaurusFileOrFolder_list(getSidebars()
                 .get("someSidebar").orNull(), getPhysicalDocsFolder());
         return new DocusaurusFolder("/", "/", 0,
-                NElements.of().ofEmptyObject(), someSidebars, resolveFolderContent(getPhysicalDocsFolderBasePath()),
+                NElements.ofObject(), someSidebars, resolveFolderContent(getPhysicalDocsFolderBasePath()),
                 getPhysicalDocsFolder().getPath()
         );
     }

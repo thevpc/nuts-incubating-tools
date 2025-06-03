@@ -18,7 +18,7 @@ public class NCodeMain implements NApplication {
     @Override
     public void run() {
         NSession session = NSession.get().get();
-        NApp.of().processCmdLine(new NCodeMainCmdProcessor(session));
+        NApp.of().runCmdLine(new NCodeMainCmdProcessor(session));
     }
 
 }

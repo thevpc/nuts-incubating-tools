@@ -1,6 +1,7 @@
 package net.thevpc.nuts.toolbox.ntomcat.remote;
 
 import net.thevpc.nuts.*;
+import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.NStoreType;
 import net.thevpc.nuts.io.NPath;
@@ -167,7 +168,7 @@ public class RemoteTomcatConfigService extends RemoteTomcatServiceBase {
         }
         NPath f = getConfigPath();
         if (f.exists()) {
-            config = NElements.of().json().parse(f, RemoteTomcatConfig.class);
+            config = NElementParser.ofJson().parse(f, RemoteTomcatConfig.class);
             return this;
         }
         throw new NamedItemNotFoundException("instance not found : " + getName(), getName());

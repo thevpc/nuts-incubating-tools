@@ -1,6 +1,7 @@
 package net.thevpc.nuts.toolbox.nwork;
 
 import net.thevpc.nuts.*;
+import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElements;
 
 import net.thevpc.nuts.NStoreType;
@@ -23,7 +24,7 @@ public class ProjectService {
 
     public ProjectService(RepositoryAddress defaultRepositoryAddress, NPath file) throws IOException {
         this.defaultRepositoryAddress = defaultRepositoryAddress == null ? new RepositoryAddress() : defaultRepositoryAddress;
-        config = NElements.of().json().parse(file, ProjectConfig.class);
+        config = NElementParser.ofJson().parse(file, ProjectConfig.class);
         sharedConfigFolder = NApp.of().getVersionFolder(NStoreType.CONF, NWorkConfigVersions.CURRENT);
     }
 
@@ -60,7 +61,7 @@ public class ProjectService {
     public boolean load() {
         NPath configFile = getConfigFile();
         if (configFile.isRegularFile()) {
-            ProjectConfig u = NElements.of().json().parse(configFile, ProjectConfig.class);
+            ProjectConfig u = NElementParser.ofJson().parse(configFile, ProjectConfig.class);
             if (u != null) {
                 config = u;
                 return true;

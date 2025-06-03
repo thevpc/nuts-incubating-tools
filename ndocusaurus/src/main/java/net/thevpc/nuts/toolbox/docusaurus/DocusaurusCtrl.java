@@ -14,14 +14,11 @@ import net.thevpc.nuts.*;
 import net.thevpc.nuts.elem.NElement;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.elem.NObjectElement;
-import net.thevpc.nuts.io.NIOException;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.util.NComparator;
 import net.thevpc.nuts.util.NLiteral;
 import net.thevpc.nuts.util.NMsg;
 
-import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -112,7 +109,7 @@ public class DocusaurusCtrl {
         if (genSidebarMenu) {
             DocusaurusFolder root = project.getPhysicalDocsFolder();
             root = new DocusaurusFolder(
-                    "someSidebar", "someSidebar", 0, NElements.of().ofEmptyObject(), root.getChildren(),
+                    "someSidebar", "someSidebar", 0, NElements.ofObject(), root.getChildren(),
                     root.getContent(),
                     project.getPhysicalDocsFolderBasePath().toString()
             );

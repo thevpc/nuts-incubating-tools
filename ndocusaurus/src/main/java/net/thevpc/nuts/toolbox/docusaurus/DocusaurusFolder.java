@@ -9,10 +9,6 @@ import net.thevpc.nuts.lib.md.docusaurus.DocusaurusUtils;
 import net.thevpc.nuts.lib.md.util.MdUtils;
 import net.thevpc.nuts.util.NStringUtils;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -115,7 +111,7 @@ public class DocusaurusFolder implements DocusaurusFileOrFolder {
                 }
             }
             if (config == null) {
-                config = NElements.of().ofEmptyObject();
+                config = NElements.ofObject();
             }
             if (title == null || title.trim().isEmpty()) {
                 title = path.getName();
@@ -153,7 +149,7 @@ public class DocusaurusFolder implements DocusaurusFileOrFolder {
     }
 
     public static DocusaurusFolder ofRoot(DocusaurusFileOrFolder[] children, MdElement tree, String path) {
-        return new DocusaurusFolder("/", "/", 0, NElements.of().ofEmptyObject(), children, tree, path);
+        return new DocusaurusFolder("/", "/", 0, NElements.ofObject(), children, tree, path);
     }
 
     public static DocusaurusFolder of(String longId, String title, int order, NObjectElement config, DocusaurusFileOrFolder[] children, String path) {

@@ -471,7 +471,7 @@ public class LocalTomcat {
                 ));
             } else {
                 session.eout().add(
-                        NElements.of().ofObjectBuilder()
+                        NElements.ofObjectBuilder()
                                 .set("config-name", name)
                                 .set("status", "not-found")
                                 .build()

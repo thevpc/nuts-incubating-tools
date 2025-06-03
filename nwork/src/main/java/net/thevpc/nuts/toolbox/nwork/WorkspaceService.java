@@ -4,6 +4,7 @@ import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NArgName;
 import net.thevpc.nuts.cmdline.NCmdLine;
+import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.NStoreType;
 import net.thevpc.nuts.format.NContentType;
@@ -46,7 +47,7 @@ public class WorkspaceService {
         NPath c = getConfigFile();
         if (c.isRegularFile()) {
             try {
-                config = NElements.of().json().parse(c, WorkspaceConfig.class);
+                config = NElementParser.ofJson().parse(c, WorkspaceConfig.class);
             } catch (Exception ex) {
                 //
             }
@@ -766,7 +767,7 @@ public class WorkspaceService {
         boolean scan = true;
         if (Files.isRegularFile(ni)) {
             try {
-                p = NElements.of().json().parse(ni, Map.class);
+                p = NElementParser.ofJson().parse(ni, Map.class);
                 String v = p.get(SCAN) == null ? null : String.valueOf(p.get(SCAN));
                 if (v == null || "false".equals(v.trim())) {
                     scan = false;
@@ -791,7 +792,7 @@ public class WorkspaceService {
         Map p = null;
         if (ni.isFile()) {
             try {
-                p = NElements.of().json().parse(ni, Map.class);
+                p = NElementParser.ofJson().parse(ni, Map.class);
                 String v = p.get(SCAN) == null ? null : String.valueOf(p.get(SCAN));
                 if (v == null || "false".equals(v.trim())) {
                     scan = false;

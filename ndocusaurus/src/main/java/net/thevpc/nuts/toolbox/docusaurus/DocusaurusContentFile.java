@@ -1,6 +1,7 @@
 package net.thevpc.nuts.toolbox.docusaurus;
 
 import net.thevpc.nuts.elem.NElement;
+import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.lib.md.MdElement;
 import net.thevpc.nuts.lib.md.docusaurus.DocusaurusMdParser;
@@ -55,7 +56,7 @@ public class DocusaurusContentFile extends DocusaurusFile{
                         props.put(key, value);
                         if("type".equals(key) && value.length()>0){
                             try {
-                                config = NElements.of().json().parse(value);
+                                config = NElementParser.ofJson().parse(value);
                             }catch (Exception ex){
                                 throw new IllegalArgumentException("invalid json for type in "+location);
                             }

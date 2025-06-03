@@ -1,5 +1,6 @@
 package net.thevpc.nuts.indexer.services;
 
+import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.NEnvConditionBuilder;
 import net.thevpc.nuts.indexer.*;
@@ -274,7 +275,7 @@ public class NComponentController {
         for (Map<String, String> row : rows) {
             Map<String, Object> d = new HashMap<>(row);
             if (d.containsKey("dependencies")) {
-                String[] array = NElements.of().json().parse(new StringReader(row.get("dependencies")), String[].class);
+                String[] array = NElementParser.ofJson().parse(new StringReader(row.get("dependencies")), String[].class);
                 List<Map<String, String>> dependencies = new ArrayList<>();
                 for (String s : array) {
                     dependencies.add(NIndexerUtils.nutsIdToMap(NId.get(s).get()));
@@ -282,7 +283,7 @@ public class NComponentController {
                 d.put("dependencies", dependencies);
             }
             if (d.containsKey("allDependencies")) {
-                String[] array = NElements.of().json().parse(new StringReader(row.get("allDependencies")), String[].class);
+                String[] array = NElementParser.ofJson().parse(new StringReader(row.get("allDependencies")), String[].class);
                 List<Map<String, String>> allDependencies = new ArrayList<>();
                 for (String s : array) {
                     allDependencies.add(NIndexerUtils.nutsIdToMap(NId.get(s).get()));

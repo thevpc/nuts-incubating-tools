@@ -2,6 +2,7 @@ package net.thevpc.nuts.toolbox.ntomcat.local;
 
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.elem.NEDesc;
+import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.NEnvConditionBuilder;
 
@@ -417,7 +418,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 int x = b.getResultCode();
                 String txt = b.getGrabbedOutString();
                 session.eout().add(
-                        elem.ofObjectBuilder()
+                        NElements.ofObjectBuilder()
                                 .set("command", "catalina-start")
                                 .set("result-code", x)
                                 .set("catalina-out", txt)
@@ -433,7 +434,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 int x = b.getResultCode();
                 String txt = b.getGrabbedOutString();
                 session.eout().add(
-                        elem.ofObjectBuilder()
+                        NElements.ofObjectBuilder()
                                 .set("command", "catalina-stop")
                                 .set("result-code", x)
                                 .set("catalina-out", txt)
@@ -462,7 +463,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 session.out().print(NMsg.ofC("%s Tomcat already started on port " + getHttpConnectorPort() + ".\n", getFormattedPrefix(getName())));
             } else {
                 session.eout().add(
-                        NElements.of().ofObjectBuilder()
+                        NElements.ofObjectBuilder()
                                 .set("config-name", getName())
                                 .set("command", "start")
                                 .set("result", "already-started")
@@ -631,7 +632,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             if (session.isPlainOut()) {
                 session.out().print(NMsg.ofC("%s Tomcat started on port " + getHttpConnectorPort() + ".\n", getFormattedPrefix(getName())));
             } else {
-                session.eout().add(elem
+                session.eout().add(NElements
                         .ofObjectBuilder()
                         .set("command", "wait-for-running")
                         .set("time", 0)
@@ -648,7 +649,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                     session.out().print(NMsg.ofC("%s Tomcat started on port" + getHttpConnectorPort() + " .\n", getFormattedPrefix(getName())));
                     return AppStatus.RUNNING;
                 } else {
-                    session.eout().add(elem
+                    session.eout().add(NElements
                             .ofObjectBuilder()
                             .set("command", "wait-for-running")
                             .set("time", 0)
@@ -658,7 +659,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 }
             } else {
                 if (!session.isPlainOut()) {
-                    session.eout().add(elem
+                    session.eout().add(NElements
                             .ofObjectBuilder()
                             .set("command", "wait-for-running")
                             .set("time", 0)
@@ -680,7 +681,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 if (session.isPlainOut()) {
                     session.out().print(NMsg.ofC("%s Tomcat started on port " + getHttpConnectorPort() + ".\n", getFormattedPrefix(getName())));
                 } else {
-                    session.eout().add(elem
+                    session.eout().add(NElements
                             .ofObjectBuilder()
                             .set("command", "wait-for-running")
                             .set("config-name", getName())
@@ -697,7 +698,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             if (session.isPlainOut()) {
                 session.out().print(NMsg.ofC("%s Tomcat out of memory.\n", getFormattedPrefix(getName())));
             } else {
-                session.eout().add(elem
+                session.eout().add(NElements
                         .ofObjectBuilder()
                         .set("command", "wait-for-running")
                         .set("config-name", getName())
@@ -720,7 +721,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             if (session.isPlainOut()) {
                 session.out().print(NMsg.ofC("%s Tomcat stopped.\n", getFormattedPrefix(getName())));
             } else {
-                session.eout().add(NElements.of()
+                session.eout().add(NElements
                         .ofObjectBuilder()
                         .set("command", "wait-for-stopped")
                         .set("config-name", getName())
@@ -744,7 +745,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 if (session.isPlainOut()) {
                     session.out().print(NMsg.ofC("%s Tomcat stopped.\n", getFormattedPrefix(getName())));
                 } else {
-                    session.eout().add(NElements.of()
+                    session.eout().add(NElements
                             .ofObjectBuilder()
                             .set("command", "wait-for-stopped")
                             .set("config-name", getName())
@@ -766,7 +767,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                     if (session.isPlainOut()) {
                         session.out().print(NMsg.ofC("%s Tomcat process killed (%s).\n", getFormattedPrefix(getName()), ps.getPid()));
                     } else {
-                        session.eout().add(NElements.of()
+                        session.eout().add(NElements
                                 .ofObjectBuilder()
                                 .set("command", "wait-for-stopped")
                                 .set("config-name", getName())
@@ -782,7 +783,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                     if (session.isPlainOut()) {
                         session.out().print(NMsg.ofC("%s Tomcat process could not be killed ( %s).\n", getFormattedPrefix(getName()), ps.getPid()));
                     } else {
-                        session.eout().add(NElements.of()
+                        session.eout().add(NElements
                                 .ofObjectBuilder()
                                 .set("command", "wait-for-stopped")
                                 .set("config-name", getName())
@@ -803,7 +804,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             if (session.isPlainOut()) {
                 session.out().print(NMsg.ofC("%s Tomcat process could not be terminated (%s).\n", getFormattedPrefix(getName()), ps.getPid()));
             } else {
-                session.eout().add(NElements.of()
+                session.eout().add(NElements
                         .ofObjectBuilder()
                         .set("command", "wait-for-stopped")
                         .set("config-name", getName())
@@ -819,7 +820,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         if (session.isPlainOut()) {
             session.out().print(NMsg.ofC("%s\n", getFormattedError("Tomcat stopped")));
         } else {
-            session.eout().add(NElements.of()
+            session.eout().add(NElements
                     .ofObjectBuilder()
                     .set("command", "wait-for-stopped")
                     .set("config-name", getName())
@@ -907,7 +908,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         NPath f = sharedConfigFolder.resolve(name + LOCAL_CONFIG_EXT);
         if (f.exists()) {
             NSession session = getSession();
-            config = NElements.of().json().parse(f, LocalTomcatConfig.class);
+            config = NElementParser.ofJson().parse(f, LocalTomcatConfig.class);
             return this;
 //        } else if ("default".equals(name)) {
 //            //auto create default config
