@@ -2,6 +2,7 @@ package net.thevpc.nuts.toolbox.nwork;
 
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 
 import net.thevpc.nuts.NStoreType;
@@ -55,7 +56,7 @@ public class ProjectService {
     public void save() throws IOException {
         NPath configFile = getConfigFile();
         configFile.mkParentDirs();
-        NElements.of().json().setValue(config).print(configFile);
+        NElementWriter.ofJson().write(config, configFile);
     }
 
     public boolean load() {
@@ -255,7 +256,7 @@ public class ProjectService {
                         } else {
                             ws = NWorkspace.of();
                         }
-                        List<NId> found = ws.callWith(()->NSearchCmd.of()
+                        List<NId> found = ws.callWith(() -> NSearchCmd.of()
                                 .addId(g.getId().getGroupId() + ":" + g.getId().getArtifactId())
                                 .addRepositoryFilter(NRepositoryFilters.of().byName(nutsRepository))
                                 .setLatest(true).getResultIds().toList());

@@ -2,6 +2,7 @@ package net.thevpc.nuts.indexer;
 
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 
 import net.thevpc.nuts.NStoreType;
@@ -99,8 +100,8 @@ public class NIndexSubscriberListManager {
                 ? null
                 : new ArrayList<>(this.subscribers.values()));
         NPath file = getConfigFile();
-        NElements.of().json().setValue(this.config)
-                .setNtf(false).print(file);
+        NElementWriter.ofJson()
+                .write(this.config, file);
     }
 
     public boolean unsubscribe(String repositoryUuid, NWorkspaceLocation workspaceLocation) {

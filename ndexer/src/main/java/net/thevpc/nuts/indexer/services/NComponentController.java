@@ -1,6 +1,7 @@
 package net.thevpc.nuts.indexer.services;
 
 import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.NEnvConditionBuilder;
 import net.thevpc.nuts.indexer.*;
@@ -249,12 +250,9 @@ public class NComponentController {
                         if (it.hasNext()) {
                             NDefinition definition = it.next();
                             List<NDependency> directDependencies = definition.getEffectiveDescriptor().get().getDependencies();
-                            data.put("dependencies", NElements.of().json()
-                                    .setValue(directDependencies.stream().map(Object::toString)
+                            data.put("dependencies", NElementWriter.ofJson()
+                                    .toString(directDependencies.stream().map(Object::toString)
                                             .collect(Collectors.toList()))
-                                    .setNtf(false)
-                                    .format()
-                                    .toString()
                             );
 
                             this.dataService.indexData(NIndexerUtils.getCacheDir(subscriber.cacheFolderName()), data);

@@ -2,6 +2,7 @@ package net.thevpc.nuts.indexer.services;
 
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.indexer.NIndexerUtils;
 import net.thevpc.nuts.util.NStringUtils;
@@ -145,12 +146,9 @@ public class DataService {
                     .setFailFast(false)
                     .getResultIds().toList();
             Map<String, String> oldRow = new HashMap<>(row);
-            row.put("allDependencies", NElements.of().json()
-                    .setValue(allDependencies.stream().map(Object::toString)
+            row.put("allDependencies", NElementWriter.ofJson()
+                    .toString(allDependencies.stream().map(Object::toString)
                             .collect(Collectors.toList()))
-                            .setNtf(false)
-                    .format()
-                    .toString()
             );
             updateData(dirPath, oldRow, row);
         }

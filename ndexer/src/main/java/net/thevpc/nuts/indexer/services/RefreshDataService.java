@@ -1,5 +1,6 @@
 package net.thevpc.nuts.indexer.services;
 
+import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.indexer.*;
 import net.thevpc.nuts.*;
@@ -77,8 +78,8 @@ public class RefreshDataService {
 
                 List<NDependency> directDependencies = definition.getEffectiveDescriptor().get().getDependencies();
                 id.put("dependencies",
-                        NElements.of().json().setValue(directDependencies.stream().map(Object::toString).collect(Collectors.toList()))
-                                .setNtf(false).format().filteredText()
+                        NElementWriter.ofJson()
+                                .toString(directDependencies.stream().map(Object::toString).collect(Collectors.toList()))
                 );
                 dataToIndex.add(id);
             }
@@ -89,7 +90,6 @@ public class RefreshDataService {
                             .collect(Collectors.toList()));
         }
     }
-
 
 
 }

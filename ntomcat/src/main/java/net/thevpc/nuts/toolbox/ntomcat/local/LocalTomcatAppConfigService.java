@@ -1,6 +1,7 @@
 package net.thevpc.nuts.toolbox.ntomcat.local;
 
 import net.thevpc.nuts.*;
+import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.NStoreType;
 import net.thevpc.nuts.io.NCp;
@@ -222,8 +223,7 @@ public class LocalTomcatAppConfigService extends LocalTomcatServiceBase {
         result.put("deployfolder", getDeployFolder());
         result.put("runningfolder", getRunningFile());
         result.put("versionFolder", getVersionFile());
-        NSession session = getSession();
-        NElements.of().json().setValue(result).print(out);
+        NElementWriter.ofJson().write(result,out);
         return this;
     }
 

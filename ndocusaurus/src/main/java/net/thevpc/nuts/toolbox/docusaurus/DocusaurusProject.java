@@ -175,7 +175,7 @@ public class DocusaurusProject {
         try {
             a = new String(Files.readAllBytes(Paths.get(resolvePath(path))));
         } catch (IOException ex) {
-            return NElements.ofNull();
+            return NElement.ofNull();
         }
         //(?s) stands for single line mode in which the dot includes line breaks
         Pattern p = Pattern.compile("(?s)module.exports[ ]*=[ ]*(?<json>.*[^;])[;]?");
@@ -199,7 +199,7 @@ public class DocusaurusProject {
             }
         }
         if (json == null) {
-            return NElements.ofObject();
+            return NElement.ofObject();
         }
         return NElementParser.ofJson()
                 .parse(json, NElement.class);
@@ -300,7 +300,7 @@ public class DocusaurusProject {
                         member.key().asStringValue().get(),//no id  here!
                         member.key().asStringValue().get(),
                         ++order,
-                        NElements.ofObject(),
+                        NElement.ofObject(),
                         cc,
                         resolveFolderContent(parentPath), parentPath == null ? null : parentPath.toString()
                 ));
@@ -339,7 +339,7 @@ public class DocusaurusProject {
         DocusaurusFileOrFolder[] someSidebars = LJSON_to_DocusaurusFileOrFolder_list(getSidebars()
                 .get("someSidebar").orNull(), getPhysicalDocsFolder());
         return new DocusaurusFolder("/", "/", 0,
-                NElements.ofObject(), someSidebars, resolveFolderContent(getPhysicalDocsFolderBasePath()),
+                NElement.ofObject(), someSidebars, resolveFolderContent(getPhysicalDocsFolderBasePath()),
                 getPhysicalDocsFolder().getPath()
         );
     }

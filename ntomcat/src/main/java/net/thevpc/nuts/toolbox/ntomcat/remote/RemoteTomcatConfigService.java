@@ -2,6 +2,7 @@ package net.thevpc.nuts.toolbox.ntomcat.remote;
 
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.NStoreType;
 import net.thevpc.nuts.io.NPath;
@@ -62,7 +63,7 @@ public class RemoteTomcatConfigService extends RemoteTomcatServiceBase {
 
     @Override
     public RemoteTomcatConfigService print(NPrintStream out) {
-        NElements.of().json().setValue(getConfig()).print(out);
+        NElementWriter.ofJson().writeln(getConfig(), out);
         out.flush();
         return this;
     }
@@ -85,7 +86,7 @@ public class RemoteTomcatConfigService extends RemoteTomcatServiceBase {
 
     public RemoteTomcatConfigService save() {
         NPath f = getConfigPath();
-        NElements.of().json().setValue(config).print(f);
+        NElementWriter.ofJson().write(config, f);
         return this;
     }
 

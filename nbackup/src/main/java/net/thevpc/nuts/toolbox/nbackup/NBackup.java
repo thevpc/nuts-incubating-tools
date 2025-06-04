@@ -8,6 +8,7 @@ package net.thevpc.nuts.toolbox.nbackup;
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.*;
 import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.util.NBlankable;
@@ -118,11 +119,11 @@ public class NBackup implements NApplication {
 
                 switch (options.cmd) {
                     case SAVE: {
-                        NElements.of().setValue(config).print(getConfigFile());
+                        NElementWriter.ofJson().write(config,getConfigFile());
                         break;
                     }
                     case SHOW: {
-                        NElements.of().setValue(config).println();
+                        NElementWriter.ofJson().writeln(config);
                         break;
                     }
                     case RUN: {

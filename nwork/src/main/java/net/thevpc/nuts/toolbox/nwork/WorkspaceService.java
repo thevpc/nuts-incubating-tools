@@ -5,6 +5,7 @@ import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NArgName;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.NStoreType;
 import net.thevpc.nuts.format.NContentType;
@@ -111,7 +112,7 @@ public class WorkspaceService {
         config = c;
         NPath configFile = getConfigFile();
         configFile.mkParentDirs();
-        NElements.of().json().setValue(c).print(configFile);
+        NElementWriter.ofJson().write(c, configFile);
     }
 
     private void updateBools(Boolean[] all, boolean ok) {
@@ -161,7 +162,7 @@ public class WorkspaceService {
     }
 
     public void list(NCmdLine cmd, NSession session) {
-       NArg a;
+        NArg a;
         List<String> filters = new ArrayList<>();
         cmd.setCommandName("nwork list");
         while (cmd.hasNext()) {
@@ -782,7 +783,7 @@ public class WorkspaceService {
                 p = new Properties();
             }
             p.put(SCAN, enable);
-            NElements.of().json().setValue(p).print(ni);
+            NElementWriter.ofNtfJson().write(p, ni);
         }
     }
 

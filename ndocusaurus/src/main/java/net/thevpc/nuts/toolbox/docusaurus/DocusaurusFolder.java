@@ -1,7 +1,6 @@
 package net.thevpc.nuts.toolbox.docusaurus;
 
 import net.thevpc.nuts.elem.NElement;
-import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.elem.NObjectElement;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.lib.md.MdElement;
@@ -111,7 +110,7 @@ public class DocusaurusFolder implements DocusaurusFileOrFolder {
                 }
             }
             if (config == null) {
-                config = NElements.ofObject();
+                config = NElement.ofObject();
             }
             if (title == null || title.trim().isEmpty()) {
                 title = path.getName();
@@ -149,7 +148,7 @@ public class DocusaurusFolder implements DocusaurusFileOrFolder {
     }
 
     public static DocusaurusFolder ofRoot(DocusaurusFileOrFolder[] children, MdElement tree, String path) {
-        return new DocusaurusFolder("/", "/", 0, NElements.ofObject(), children, tree, path);
+        return new DocusaurusFolder("/", "/", 0, NElement.ofObject(), children, tree, path);
     }
 
     public static DocusaurusFolder of(String longId, String title, int order, NObjectElement config, DocusaurusFileOrFolder[] children, String path) {

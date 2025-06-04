@@ -1,6 +1,7 @@
 package net.thevpc.nuts.toolbox.ntomcat.local;
 
 import net.thevpc.nuts.*;
+import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.io.NPrintStream;
@@ -71,8 +72,7 @@ public class LocalTomcatDomainConfigService extends LocalTomcatServiceBase {
     }
 
     public LocalTomcatDomainConfigService print(NPrintStream out) {
-        NSession session = getSession();
-        NElements.of().json().setValue(getConfig()).print(out);
+        NElementWriter.ofJson().write(getConfig(),out);
         return this;
     }
 

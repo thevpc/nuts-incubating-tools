@@ -12,7 +12,6 @@ import net.thevpc.nsite.mimetype.MimeTypeConstants;
 import net.thevpc.nsite.util.FileProcessorUtils;
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.elem.NElement;
-import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.elem.NObjectElement;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.util.NComparator;
@@ -109,7 +108,7 @@ public class DocusaurusCtrl {
         if (genSidebarMenu) {
             DocusaurusFolder root = project.getPhysicalDocsFolder();
             root = new DocusaurusFolder(
-                    "someSidebar", "someSidebar", 0, NElements.ofObject(), root.getChildren(),
+                    "someSidebar", "someSidebar", 0, NElement.ofObject(), root.getChildren(),
                     root.getContent(),
                     project.getPhysicalDocsFolderBasePath().toString()
             );

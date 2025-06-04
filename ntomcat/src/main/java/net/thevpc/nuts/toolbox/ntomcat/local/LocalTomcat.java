@@ -4,7 +4,7 @@ import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.elem.NEDesc;
-import net.thevpc.nuts.elem.NElements;
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.nuts.NStoreType;
 import net.thevpc.nuts.format.NObjectFormat;
 import net.thevpc.nuts.io.NPath;
@@ -471,7 +471,7 @@ public class LocalTomcat {
                 ));
             } else {
                 session.eout().add(
-                        NElements.ofObjectBuilder()
+                        NElement.ofObjectBuilder()
                                 .set("config-name", name)
                                 .set("status", "not-found")
                                 .build()

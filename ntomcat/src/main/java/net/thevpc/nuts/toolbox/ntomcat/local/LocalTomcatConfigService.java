@@ -1,9 +1,7 @@
 package net.thevpc.nuts.toolbox.ntomcat.local;
 
 import net.thevpc.nuts.*;
-import net.thevpc.nuts.elem.NEDesc;
-import net.thevpc.nuts.elem.NElementParser;
-import net.thevpc.nuts.elem.NElements;
+import net.thevpc.nuts.elem.*;
 import net.thevpc.nuts.NEnvConditionBuilder;
 
 import net.thevpc.nuts.NStoreType;
@@ -149,8 +147,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             }
         }
         NPath f = getConfigPath();
-        NSession session = getSession();
-        NElements.of().json().setValue(config).print(f);
+        NElementWriter.ofJson().write(config, f);
         return this;
     }
 
@@ -418,7 +415,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 int x = b.getResultCode();
                 String txt = b.getGrabbedOutString();
                 session.eout().add(
-                        NElements.ofObjectBuilder()
+                        NElement.ofObjectBuilder()
                                 .set("command", "catalina-start")
                                 .set("result-code", x)
                                 .set("catalina-out", txt)
@@ -434,7 +431,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 int x = b.getResultCode();
                 String txt = b.getGrabbedOutString();
                 session.eout().add(
-                        NElements.ofObjectBuilder()
+                        NElement.ofObjectBuilder()
                                 .set("command", "catalina-stop")
                                 .set("result-code", x)
                                 .set("catalina-out", txt)
@@ -463,7 +460,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 session.out().print(NMsg.ofC("%s Tomcat already started on port " + getHttpConnectorPort() + ".\n", getFormattedPrefix(getName())));
             } else {
                 session.eout().add(
-                        NElements.ofObjectBuilder()
+                        NElement.ofObjectBuilder()
                                 .set("config-name", getName())
                                 .set("command", "start")
                                 .set("result", "already-started")
@@ -522,8 +519,8 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             if (!cv.startsWith("[") && !cv.startsWith("]")) {
                 cv = "[" + catalinaVersion + "," + catalinaVersion + ".99999]";
             }
-            String cid="org.apache.catalina:apache-tomcat";//+"#"+cv;
-            cid= NIdBuilder.of().copyFrom(NId.get(cid).get()).setCondition(
+            String cid = "org.apache.catalina:apache-tomcat";//+"#"+cv;
+            cid = NIdBuilder.of().copyFrom(NId.get(cid).get()).setCondition(
                     NEnvConditionBuilder.of()
                             .addPlatform(NWorkspace.of().getPlatform().toString())
             ).toString();
@@ -534,11 +531,11 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                     .setDefinitionFilter(NDefinitionFilters.of().byDeployed(true))
                     .getResultDefinitions().findFirst().orNull();
             if (r == null) {
-                r = getSession().copy().setFetchStrategy(NFetchStrategy.OFFLINE).callWith(()->searchLatestCommand.setDefinitionFilter(NDefinitionFilters.of().byInstalled(false))
+                r = getSession().copy().setFetchStrategy(NFetchStrategy.OFFLINE).callWith(() -> searchLatestCommand.setDefinitionFilter(NDefinitionFilters.of().byInstalled(false))
                         .getResultDefinitions().findFirst().orNull());
             }
             if (r == null) {
-                r = getSession().copy().setFetchStrategy(NFetchStrategy.ONLINE).callWith(()->searchLatestCommand.setDefinitionFilter(NDefinitionFilters.of().byInstalled(false)).getResultDefinitions().findFirst().get());
+                r = getSession().copy().setFetchStrategy(NFetchStrategy.ONLINE).callWith(() -> searchLatestCommand.setDefinitionFilter(NDefinitionFilters.of().byInstalled(false)).getResultDefinitions().findFirst().get());
             }
             if (r.getInstallInformation().get().isInstalledOrRequired()) {
                 return r;
@@ -555,9 +552,9 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                                     ));
                                 }
                             }
-                        })).callWith(()-> NInstallCmd.of()
-                        .addId(finalR.getId())
-                        .getResult().findFirst().get());
+                        })).callWith(() -> NInstallCmd.of()
+                                .addId(finalR.getId())
+                                .getResult().findFirst().get());
                 //this is a workaround. Def returned by install does not include all information!
                 catalinaNDefinition = searchLatestCommand.setDefinitionFilter(NDefinitionFilters.of().byInstalled(true))
                         .getResultDefinitions().findFirst().orNull();
@@ -632,7 +629,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             if (session.isPlainOut()) {
                 session.out().print(NMsg.ofC("%s Tomcat started on port " + getHttpConnectorPort() + ".\n", getFormattedPrefix(getName())));
             } else {
-                session.eout().add(NElements
+                session.eout().add(NElement
                         .ofObjectBuilder()
                         .set("command", "wait-for-running")
                         .set("time", 0)
@@ -649,7 +646,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                     session.out().print(NMsg.ofC("%s Tomcat started on port" + getHttpConnectorPort() + " .\n", getFormattedPrefix(getName())));
                     return AppStatus.RUNNING;
                 } else {
-                    session.eout().add(NElements
+                    session.eout().add(NElement
                             .ofObjectBuilder()
                             .set("command", "wait-for-running")
                             .set("time", 0)
@@ -659,7 +656,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 }
             } else {
                 if (!session.isPlainOut()) {
-                    session.eout().add(NElements
+                    session.eout().add(NElement
                             .ofObjectBuilder()
                             .set("command", "wait-for-running")
                             .set("time", 0)
@@ -681,7 +678,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 if (session.isPlainOut()) {
                     session.out().print(NMsg.ofC("%s Tomcat started on port " + getHttpConnectorPort() + ".\n", getFormattedPrefix(getName())));
                 } else {
-                    session.eout().add(NElements
+                    session.eout().add(NElement
                             .ofObjectBuilder()
                             .set("command", "wait-for-running")
                             .set("config-name", getName())
@@ -698,7 +695,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             if (session.isPlainOut()) {
                 session.out().print(NMsg.ofC("%s Tomcat out of memory.\n", getFormattedPrefix(getName())));
             } else {
-                session.eout().add(NElements
+                session.eout().add(NElement
                         .ofObjectBuilder()
                         .set("command", "wait-for-running")
                         .set("config-name", getName())
@@ -721,7 +718,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             if (session.isPlainOut()) {
                 session.out().print(NMsg.ofC("%s Tomcat stopped.\n", getFormattedPrefix(getName())));
             } else {
-                session.eout().add(NElements
+                session.eout().add(NElement
                         .ofObjectBuilder()
                         .set("command", "wait-for-stopped")
                         .set("config-name", getName())
@@ -745,7 +742,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 if (session.isPlainOut()) {
                     session.out().print(NMsg.ofC("%s Tomcat stopped.\n", getFormattedPrefix(getName())));
                 } else {
-                    session.eout().add(NElements
+                    session.eout().add(NElement
                             .ofObjectBuilder()
                             .set("command", "wait-for-stopped")
                             .set("config-name", getName())
@@ -767,7 +764,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                     if (session.isPlainOut()) {
                         session.out().print(NMsg.ofC("%s Tomcat process killed (%s).\n", getFormattedPrefix(getName()), ps.getPid()));
                     } else {
-                        session.eout().add(NElements
+                        session.eout().add(NElement
                                 .ofObjectBuilder()
                                 .set("command", "wait-for-stopped")
                                 .set("config-name", getName())
@@ -783,7 +780,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                     if (session.isPlainOut()) {
                         session.out().print(NMsg.ofC("%s Tomcat process could not be killed ( %s).\n", getFormattedPrefix(getName()), ps.getPid()));
                     } else {
-                        session.eout().add(NElements
+                        session.eout().add(NElement
                                 .ofObjectBuilder()
                                 .set("command", "wait-for-stopped")
                                 .set("config-name", getName())
@@ -804,7 +801,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             if (session.isPlainOut()) {
                 session.out().print(NMsg.ofC("%s Tomcat process could not be terminated (%s).\n", getFormattedPrefix(getName()), ps.getPid()));
             } else {
-                session.eout().add(NElements
+                session.eout().add(NElement
                         .ofObjectBuilder()
                         .set("command", "wait-for-stopped")
                         .set("config-name", getName())
@@ -820,7 +817,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         if (session.isPlainOut()) {
             session.out().print(NMsg.ofC("%s\n", getFormattedError("Tomcat stopped")));
         } else {
-            session.eout().add(NElements
+            session.eout().add(NElement
                     .ofObjectBuilder()
                     .set("command", "wait-for-stopped")
                     .set("config-name", getName())

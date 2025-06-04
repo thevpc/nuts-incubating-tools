@@ -1,6 +1,7 @@
 package net.thevpc.nuts.indexer;
 
 import net.thevpc.nuts.*;
+import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.NEnvConditionBuilder;
 import net.thevpc.nuts.NStoreType;
@@ -55,10 +56,7 @@ public class NIndexerUtils {
     }
 
     public static String mapToJson(Map<String, String> map) {
-        StringWriter s = new StringWriter();
-        NElements.of().json().setValue(map)
-                .setNtf(false).print(s);
-        return s.toString();
+        return NElementWriter.ofJson().toString(map);
     }
 
     public static Map<String, String> nutsRepositoryToMap(NRepository repository) {
