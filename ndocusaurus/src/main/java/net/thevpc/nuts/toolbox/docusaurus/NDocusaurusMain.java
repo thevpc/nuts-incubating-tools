@@ -1,7 +1,6 @@
 package net.thevpc.nuts.toolbox.docusaurus;
 
 import net.thevpc.nuts.*;
-import net.thevpc.nuts.cmdline.NCmdLineContext;
 import net.thevpc.nuts.cmdline.NCmdLineRunner;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
@@ -26,7 +25,7 @@ public class NDocusaurusMain implements NApplication {
         NSession session = NSession.get().get();
         NApp.of().runCmdLine(new NCmdLineRunner() {
             @Override
-            public boolean nextOption(NArg option, NCmdLine cmdLine, NCmdLineContext context) {
+            public boolean nextOption(NArg option, NCmdLine cmdLine) {
                 switch (option.key()) {
                     case "-d":
                     case "--dir": {
@@ -40,7 +39,7 @@ public class NDocusaurusMain implements NApplication {
             }
 
             @Override
-            public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine, NCmdLineContext context) {
+            public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine) {
                 switch (nonOption.asString().get()) {
                     case "start": {
                         cmdLine.withNextFlag((v, a) -> start = v);
@@ -59,7 +58,7 @@ public class NDocusaurusMain implements NApplication {
             }
 
             @Override
-            public void validate(NCmdLine cmdLine, NCmdLineContext context) {
+            public void validate(NCmdLine cmdLine) {
                 if (!start && !build && !buildPdf) {
                     cmdLine.throwMissingArgument(
                             NMsg.ofC("missing command. try %s", NMsg.ofCode("sh", "ndocusaurus pdf | start | build"))
@@ -68,7 +67,7 @@ public class NDocusaurusMain implements NApplication {
             }
 
             @Override
-            public void run(NCmdLine cmdLine, NCmdLineContext context) {
+            public void run(NCmdLine cmdLine) {
                 if (workdir == null) {
                     workdir = ".";
                 }

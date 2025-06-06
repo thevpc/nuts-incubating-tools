@@ -9,7 +9,6 @@ import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.*;
 import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElementWriter;
-import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.nuts.util.NMsg;
@@ -32,7 +31,7 @@ public class NBackup implements NApplication {
         NApp.of().runCmdLine(new NCmdLineRunner() {
 
             @Override
-            public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine, NCmdLineContext context) {
+            public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine) {
                 NArg a = cmdLine.next().get();
                 switch (a.toString()) {
                     case "pull": {
@@ -44,7 +43,7 @@ public class NBackup implements NApplication {
             }
 
             @Override
-            public void run(NCmdLine cmdLine, NCmdLineContext context) {
+            public void run(NCmdLine cmdLine) {
                 //
             }
         });
@@ -52,11 +51,11 @@ public class NBackup implements NApplication {
 
     public void runPull(NCmdLine cmdLine) {
         NSession session = NSession.get().get();
-        cmdLine.forEachPeek(new NCmdLineRunner() {
+        cmdLine.run(new NCmdLineRunner() {
             private Options options = new Options();
 
             @Override
-            public void init(NCmdLine cmdLine, NCmdLineContext context) {
+            public void init(NCmdLine cmdLine) {
                 NPath configFile = getConfigFile();
                 Config config = null;
                 if (configFile.isRegularFile()) {
@@ -78,21 +77,21 @@ public class NBackup implements NApplication {
             }
 
             @Override
-            public boolean nextOption(NArg option, NCmdLine cmdLine, NCmdLineContext context) {
+            public boolean nextOption(NArg option, NCmdLine cmdLine) {
                 return cmdLine.withFirst(
-                        c->c.with("--server").consumeEntry((v,a)->options.config.setRemoteServer(v))
-                        , c->c.with("--user").consumeEntry((v,a)->options.config.setRemoteUser(v))
-                        , c->c.with("--local").consumeEntry((v,a)->options.config.setRemoteUser(v))
-                        , c->c.with("--add-path").consumeEntry((v,a)->addPath(v))
-                        , c->c.with("--remove-path").consumeEntry((v,a)->options.config.getPaths().removeIf(x -> Objects.equals(String.valueOf(x).trim(), v.trim())))
-                        , c->c.with("--clear-paths").consumeFlag((v,a)->options.config.getPaths().clear())
-                        , c->c.with("--save").consumeFlag((v,a)->options.cmd = Cmd.SAVE)
-                        , c->c.with("--show").consumeFlag((v,a)->options.cmd = Cmd.SHOW)
+                        c->c.with("--server").nextEntry((v, a)->options.config.setRemoteServer(v))
+                        , c->c.with("--user").nextEntry((v, a)->options.config.setRemoteUser(v))
+                        , c->c.with("--local").nextEntry((v, a)->options.config.setRemoteUser(v))
+                        , c->c.with("--add-path").nextEntry((v, a)->addPath(v))
+                        , c->c.with("--remove-path").nextEntry((v, a)->options.config.getPaths().removeIf(x -> Objects.equals(String.valueOf(x).trim(), v.trim())))
+                        , c->c.with("--clear-paths").nextFlag((v, a)->options.config.getPaths().clear())
+                        , c->c.with("--save").nextFlag((v, a)->options.cmd = Cmd.SAVE)
+                        , c->c.with("--show").nextFlag((v, a)->options.cmd = Cmd.SHOW)
                 );
             }
 
             @Override
-            public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine, NCmdLineContext context) {
+            public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine) {
                 NArg a = cmdLine.next().get();
                 addPath(a.toString());
                 return true;
@@ -109,7 +108,7 @@ public class NBackup implements NApplication {
             }
 
             @Override
-            public void run(NCmdLine cmdLine, NCmdLineContext context) {
+            public void run(NCmdLine cmdLine) {
                 Config config = options.config;
                 if (config == null) {
                     config = new Config();

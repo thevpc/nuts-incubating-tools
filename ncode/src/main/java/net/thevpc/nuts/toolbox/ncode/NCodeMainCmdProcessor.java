@@ -2,7 +2,6 @@ package net.thevpc.nuts.toolbox.ncode;
 
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.NCmdLine;
-import net.thevpc.nuts.cmdline.NCmdLineContext;
 import net.thevpc.nuts.cmdline.NCmdLineRunner;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.toolbox.ncode.bundles.strings.StringComparator;
@@ -12,7 +11,6 @@ import net.thevpc.nuts.toolbox.ncode.filters.PathSourceFilter;
 import net.thevpc.nuts.toolbox.ncode.processors.JavaSourceFormatter;
 import net.thevpc.nuts.toolbox.ncode.processors.PathSourceFormatter;
 import net.thevpc.nuts.toolbox.ncode.sources.SourceFactory;
-import net.thevpc.nuts.util.NLiteral;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,12 +30,12 @@ class NCodeMainCmdProcessor implements NCmdLineRunner {
     }
 
     @Override
-    public void init(NCmdLine cmdLine, NCmdLineContext context) {
+    public void init(NCmdLine cmdLine) {
         cmdLine.setExpandSimpleOptions(true);
     }
 
     @Override
-    public boolean nextOption(NArg option, NCmdLine cmdLine, NCmdLineContext context) {
+    public boolean nextOption(NArg option, NCmdLine cmdLine) {
         switch (option.getStringKey().get()) {
             case "-i": {
                 option = cmdLine.nextFlag().get();
@@ -76,13 +74,13 @@ class NCodeMainCmdProcessor implements NCmdLineRunner {
     }
 
     @Override
-    public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine, NCmdLineContext context) {
+    public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine) {
         paths.add(cmdLine.next().get().getImage());
         return true;
     }
 
     @Override
-    public void run(NCmdLine cmdLine, NCmdLineContext context) {
+    public void run(NCmdLine cmdLine) {
         if (paths.isEmpty()) {
             paths.add(".");
         }
