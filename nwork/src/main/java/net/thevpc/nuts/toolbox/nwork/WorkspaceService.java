@@ -6,7 +6,6 @@ import net.thevpc.nuts.cmdline.NArgName;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElementWriter;
-import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.NStoreType;
 import net.thevpc.nuts.format.NContentType;
 import net.thevpc.nuts.format.NObjectFormat;
@@ -23,7 +22,6 @@ import net.thevpc.nuts.toolbox.nwork.config.RepositoryAddress;
 import net.thevpc.nuts.toolbox.nwork.config.WorkspaceConfig;
 import net.thevpc.nuts.toolbox.nwork.filescanner.FileScanner;
 import net.thevpc.nuts.util.NBlankable;
-import net.thevpc.nuts.util.NLiteral;
 import net.thevpc.nuts.util.NMsg;
 import net.thevpc.nuts.util.NRef;
 
@@ -277,8 +275,8 @@ public class WorkspaceService {
         while (cmdLine.hasNext()) {
             if (session.configureFirst(cmdLine)) {
 
-            } else if (cmdLine.withNextEntry((v, a) -> remoteServer.set(v), "--remote-server", "--to-server", "--to", "-t")) {
-            } else if (cmdLine.withNextEntry((v, a) -> remoteUser.set(v), "--remote-user")) {
+            } else if (cmdLine.withNextEntry((v) -> remoteServer.set(v.stringValue()), "--remote-server", "--to-server", "--to", "-t")) {
+            } else if (cmdLine.withNextEntry((v) -> remoteUser.set(v.stringValue()), "--remote-user")) {
             } else if (cmdLine.isNextNonOption()) {
                 NArg a = cmdLine.next().get();
                 idsToPush.add(NId.get(a.toString()).get());

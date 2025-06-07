@@ -189,7 +189,7 @@ public class LocalTomcat {
         NRef<String> format = NRef.of("default");
         args.setCommandName("tomcat --local show");
         while (args.hasNext()) {
-            if (args.withNextTrueFlag((b, a) -> format.set("long"), "-l", "--long")) {
+            if (args.withNextTrueFlag((b) -> format.set("long"), "-l", "--long")) {
             } else {
                 session.configureLast(cmdLine);
             }

@@ -44,7 +44,7 @@ public class NMvnMain implements NApplication {
         String command = null;
         List<String> args2 = new ArrayList<>();
         Options o = new Options();
-        NSession session = NSession.get().get();
+        NSession session = NSession.of();
         NCmdLine cmd = NApp.of().getCmdLine();
         NArg a;
         while (cmd.hasNext()) {

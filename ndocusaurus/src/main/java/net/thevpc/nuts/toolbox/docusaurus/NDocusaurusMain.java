@@ -22,39 +22,37 @@ public class NDocusaurusMain implements NApplication {
 
     @Override
     public void run() {
-        NSession session = NSession.get().get();
         NApp.of().runCmdLine(new NCmdLineRunner() {
             @Override
-            public boolean nextOption(NArg option, NCmdLine cmdLine) {
-                switch (option.key()) {
-                    case "-d":
-                    case "--dir": {
-                        if (workdir == null) {
-                            cmdLine.withNextEntry((v, a) -> workdir = v);
+            public boolean next(NArg arg, NCmdLine cmdLine) {
+                if (arg.isOption()) {
+                    switch (arg.key()) {
+                        case "-d":
+                        case "--dir": {
+                            if (workdir == null) {
+                                cmdLine.withNextEntry((v) -> workdir = v.stringValue());
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                } else {
+                    switch (arg.asString().get()) {
+                        case "start": {
+                            cmdLine.withNextFlag((v) -> start = v.booleanValue());
+                            return true;
+                        }
+                        case "build": {
+                            cmdLine.withNextFlag((v) -> build = v.booleanValue());
+                            return true;
+                        }
+                        case "pdf": {
+                            cmdLine.withNextFlag((v) -> buildPdf = v.booleanValue());
                             return true;
                         }
                     }
+                    return false;
                 }
-                return false;
-            }
-
-            @Override
-            public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine) {
-                switch (nonOption.asString().get()) {
-                    case "start": {
-                        cmdLine.withNextFlag((v, a) -> start = v);
-                        return true;
-                    }
-                    case "build": {
-                        cmdLine.withNextFlag((v, a) -> build = v);
-                        return true;
-                    }
-                    case "pdf": {
-                        cmdLine.withNextFlag((v, a) -> buildPdf = v);
-                        return true;
-                    }
-                }
-                return false;
             }
 
             @Override

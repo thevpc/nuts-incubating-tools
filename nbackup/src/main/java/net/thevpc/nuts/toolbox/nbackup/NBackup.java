@@ -26,32 +26,34 @@ public class NBackup implements NApplication {
 
     @Override
     public void run() {
-        NSession session = NSession.get().get();
+        NSession session = NSession.of();
         NOut.println(NMsg.ofC("%s Backup Tool.", NMsg.ofStyledKeyword("Nuts")));
         NApp.of().runCmdLine(new NCmdLineRunner() {
-
             @Override
-            public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine) {
-                NArg a = cmdLine.next().get();
-                switch (a.toString()) {
-                    case "pull": {
-                        runPull(cmdLine);
-                        return true;
+            public boolean next(NArg arg, NCmdLine cmdLine) {
+                if(arg.isOption()){
+                    return false;
+                }else{
+                    if(arg.isOption()){
+                        return false;
+                    }else{
+                        NArg a = cmdLine.next().get();
+                        switch (a.toString()) {
+                            case "pull": {
+                                runPull(cmdLine);
+                                return true;
+                            }
+                        }
+                        return false;
                     }
                 }
-                return false;
-            }
-
-            @Override
-            public void run(NCmdLine cmdLine) {
-                //
             }
         });
     }
 
     public void runPull(NCmdLine cmdLine) {
-        NSession session = NSession.get().get();
-        cmdLine.run(new NCmdLineRunner() {
+        cmdLine.setConfigurable(NSession.of())
+                .run(new NCmdLineRunner() {
             private Options options = new Options();
 
             @Override
@@ -77,26 +79,24 @@ public class NBackup implements NApplication {
             }
 
             @Override
-            public boolean nextOption(NArg option, NCmdLine cmdLine) {
-                return cmdLine.withFirst(
-                        c->c.with("--server").nextEntry((v, a)->options.config.setRemoteServer(v))
-                        , c->c.with("--user").nextEntry((v, a)->options.config.setRemoteUser(v))
-                        , c->c.with("--local").nextEntry((v, a)->options.config.setRemoteUser(v))
-                        , c->c.with("--add-path").nextEntry((v, a)->addPath(v))
-                        , c->c.with("--remove-path").nextEntry((v, a)->options.config.getPaths().removeIf(x -> Objects.equals(String.valueOf(x).trim(), v.trim())))
-                        , c->c.with("--clear-paths").nextFlag((v, a)->options.config.getPaths().clear())
-                        , c->c.with("--save").nextFlag((v, a)->options.cmd = Cmd.SAVE)
-                        , c->c.with("--show").nextFlag((v, a)->options.cmd = Cmd.SHOW)
-                );
+            public boolean next(NArg arg, NCmdLine cmdLine) {
+                if(arg.isOption()){
+                    return cmdLine.withFirst(
+                            (aa, c)->c.with("--server").nextEntry((v)->options.config.setRemoteServer(v.stringValue()))
+                            , (aa, c)->c.with("--user").nextEntry((v)->options.config.setRemoteUser(v.stringValue()))
+                            , (aa, c)->c.with("--local").nextEntry((v)->options.config.setRemoteUser(v.stringValue()))
+                            , (aa, c)->c.with("--add-path").nextEntry((v)->addPath(v.stringValue()))
+                            , (aa, c)->c.with("--remove-path").nextEntry((v)->options.config.getPaths().removeIf(x -> Objects.equals(String.valueOf(x).trim(), v.stringValue().trim())))
+                            , (aa, c)->c.with("--clear-paths").nextTrueFlag((v)->options.config.getPaths().clear())
+                            , (aa, c)->c.with("--save").nextTrueFlag((v)->options.cmd = Cmd.SAVE)
+                            , (aa, c)->c.with("--show").nextTrueFlag((v)->options.cmd = Cmd.SHOW)
+                    );
+                }else{
+                    NArg a = cmdLine.next().get();
+                    addPath(a.toString());
+                    return true;
+                }
             }
-
-            @Override
-            public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine) {
-                NArg a = cmdLine.next().get();
-                addPath(a.toString());
-                return true;
-            }
-
 
             private void addPath(String a) {
                 int i = a.indexOf('=');
@@ -113,7 +113,7 @@ public class NBackup implements NApplication {
                 if (config == null) {
                     config = new Config();
                 }
-                NSession session = NSession.get().get();
+                NSession session = NSession.of();
                 NOut.println(NMsg.ofC("Config File %s", getConfigFile()));
 
                 switch (options.cmd) {
@@ -174,6 +174,6 @@ public class NBackup implements NApplication {
                 NOut.println(NCmdLine.of(cmd));
                 NExecCmd.of().addCommand(cmd).failFast().run();
             }
-        }, new DefaultNCmdLineContext(session));
+        });
     }
 }

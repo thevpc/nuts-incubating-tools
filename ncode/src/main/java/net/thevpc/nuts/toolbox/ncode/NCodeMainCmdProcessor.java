@@ -35,24 +35,30 @@ class NCodeMainCmdProcessor implements NCmdLineRunner {
     }
 
     @Override
-    public boolean nextOption(NArg option, NCmdLine cmdLine) {
-        switch (option.getStringKey().get()) {
-            case "-i": {
-                option = cmdLine.nextFlag().get();
-                caseInsensitive = option.getBooleanValue().get();
-                return true;
+    public boolean next(NArg arg, NCmdLine cmdLine) {
+        if(arg.isOption()){
+            switch (arg.getStringKey().get()) {
+                case "-i": {
+                    arg = cmdLine.nextFlag().get();
+                    caseInsensitive = arg.getBooleanValue().get();
+                    return true;
+                }
+                case "-t": {
+                    typeComparators.add(comp(cmdLine.nextEntry().get().getStringValue().get()));
+                    return true;
+                }
+                case "-f": {
+                    fileComparators.add(comp(cmdLine.nextEntry().get().getStringValue().get()));
+                    return true;
+                }
             }
-            case "-t": {
-                typeComparators.add(comp(cmdLine.nextEntry().get().getStringValue().get()));
-                return true;
-            }
-            case "-f": {
-                fileComparators.add(comp(cmdLine.nextEntry().get().getStringValue().get()));
-                return true;
-            }
+            return false;
+        }else{
+            paths.add(cmdLine.next().get().getImage());
+            return true;
         }
-        return false;
     }
+
 
     private StringComparator comp(String x) {
         boolean negated = false;
@@ -73,11 +79,7 @@ class NCodeMainCmdProcessor implements NCmdLineRunner {
         return c;
     }
 
-    @Override
-    public boolean nextNonOption(NArg nonOption, NCmdLine cmdLine) {
-        paths.add(cmdLine.next().get().getImage());
-        return true;
-    }
+
 
     @Override
     public void run(NCmdLine cmdLine) {
