@@ -3,7 +3,7 @@
 
     <groupId>net.thevpc.nuts.installer</groupId>
     <artifactId>nuts-installer</artifactId>
-    <version>0.8.5</version>
+    <version>0.8.6</version>
     <name>Nuts Installer</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,7 +23,7 @@
 
     <!-- must have a dependency on our separate package that contains the custom panels -->
     <dependencies>
-        <dependency><groupId>net.thevpc.nuts.installer</groupId><artifactId>nuts-installer-panels</artifactId><version>0.8.5</version></dependency>
+        <dependency><groupId>net.thevpc.nuts.installer</groupId><artifactId>nuts-installer-panels</artifactId><version>0.8.6</version></dependency>
     </dependencies>
 
     <build>
@@ -148,7 +148,7 @@
                     <dependency>
                         <groupId>net.thevpc.nuts.installer</groupId>
                         <artifactId>nuts-installer-panels</artifactId>
-                        <version>0.8.5</version>
+                        <version>0.8.6</version>
                     </dependency>
                 </dependencies>
             </plugin>

@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.thevpc.nuts</groupId>
     <artifactId>nuts-javax-servlet</artifactId>
-    <version>0.8.5.0</version>
+    <version>0.8.6.0</version>
     <packaging>jar</packaging>
     <name>Nuts Community Library for Servlet support</name>
     <url>https://github.com/thevpc/nuts/wiki</url>
@@ -53,8 +53,8 @@
 
     <dependencies>
         <dependency><groupId>javax.servlet</groupId><artifactId>javax.servlet-api</artifactId><version>3.1.0</version></dependency>
-        <dependency><groupId>net.thevpc.nuts</groupId><artifactId>nuts</artifactId><version>0.8.5</version></dependency>
-        <dependency><groupId>net.thevpc.nserver</groupId><artifactId>nserver</artifactId><version>0.8.5.0</version></dependency>
+        <dependency><groupId>net.thevpc.nuts</groupId><artifactId>nuts</artifactId><version>0.8.6</version></dependency>
+        <dependency><groupId>net.thevpc.nserver</groupId><artifactId>nserver</artifactId><version>0.8.6.0</version></dependency>
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter-api</artifactId><version>5.8.2</version><scope>test</scope></dependency>
     </dependencies>
     <distributionManagement>
