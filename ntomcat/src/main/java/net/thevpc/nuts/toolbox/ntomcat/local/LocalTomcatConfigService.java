@@ -213,7 +213,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         NPath u = f.getInstallInformation().get().getInstallFolder();
         NPath[] paths;
         try {
-            paths = u.stream().filter(NPredicate.of(NPath::isDirectory).withDesc(NEDesc.of("isDirectory"))).toArray(NPath[]::new);
+            paths = u.stream().filter(NPredicate.of(NPath::isDirectory).redescribe(NDescribableElementSupplier.of("isDirectory"))).toArray(NPath[]::new);
             if (paths.length == 1 && paths[0].getName().toLowerCase().startsWith("apache-tomcat")) {
                 return paths[0];
             }

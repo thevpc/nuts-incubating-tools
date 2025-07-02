@@ -3,7 +3,7 @@ package net.thevpc.nuts.toolbox.ntomcat.local;
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
-import net.thevpc.nuts.elem.NEDesc;
+import net.thevpc.nuts.elem.NDescribableElementSupplier;
 import net.thevpc.nuts.elem.NElement;
 import net.thevpc.nuts.NStoreType;
 import net.thevpc.nuts.format.NObjectFormat;
@@ -885,10 +885,10 @@ public class LocalTomcat {
         return
                 sharedConfigFolder.stream().filter(
                                 NPredicate.of((NPath pathname) -> pathname.isRegularFile() && pathname.getName().toString().endsWith(LocalTomcatConfigService.LOCAL_CONFIG_EXT))
-                                        .withDesc(NEDesc.of("isRegularFile() && matches(*" + LocalTomcatConfigService.LOCAL_CONFIG_EXT + ")"))
+                                        .redescribe(NDescribableElementSupplier.of("isRegularFile() && matches(*" + LocalTomcatConfigService.LOCAL_CONFIG_EXT + ")"))
                         )
                         .mapUnsafe(
-                                NUnsafeFunction.of((NPath x) -> openTomcatConfig(x, NOpenMode.OPEN_OR_ERROR)).withDesc(NEDesc.of("openTomcatConfig"))
+                                NUnsafeFunction.of((NPath x) -> openTomcatConfig(x, NOpenMode.OPEN_OR_ERROR)).redescribe(NDescribableElementSupplier.of("openTomcatConfig"))
                                 , null)
                         .filterNonNull()
                         .toArray(LocalTomcatConfigService[]::new);

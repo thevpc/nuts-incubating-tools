@@ -1,7 +1,7 @@
 package net.thevpc.nuts.toolbox.ntomcat.util;
 
 import net.thevpc.nuts.*;
-import net.thevpc.nuts.elem.NEDesc;
+import net.thevpc.nuts.elem.NDescribableElementSupplier;
 import net.thevpc.nuts.NEnvConditionBuilder;
 
 import net.thevpc.nuts.io.NCp;
@@ -140,10 +140,10 @@ public class ApacheTomcatRepositoryModel implements NRepositoryModel {
         NIdBuilder idBuilder = NIdBuilder.of("org.apache.catalina", "apache-tomcat");
         return NPath.of("htmlfs:https://archive.apache.org/dist/tomcat/")
                 .stream()
-                .filter(NPredicate.of((NPath x) -> x.isDirectory() && x.getName().matches("tomcat-[0-9.]+")).withDesc(NEDesc.of("directory && tomcat")))
+                .filter(NPredicate.of((NPath x) -> x.isDirectory() && x.getName().matches("tomcat-[0-9.]+")).redescribe(NDescribableElementSupplier.of("directory && tomcat")))
                 .flatMapStream(NFunction.of(
                         (NPath s) -> s.stream()
-                                .filter(NPredicate.of((NPath x2) -> x2.isDirectory() && x2.getName().startsWith("v")).withDesc(NEDesc.of("isDirectory")))
+                                .filter(NPredicate.of((NPath x2) -> x2.isDirectory() && x2.getName().startsWith("v")).redescribe(NDescribableElementSupplier.of("isDirectory")))
                                 .flatMapStream(
                                         NFunction.of(
                                                 new Function<NPath, NStream<NId>>() {
@@ -172,7 +172,7 @@ public class ApacheTomcatRepositoryModel implements NRepositoryModel {
                                                             .stream()
                                                             .filter(
                                                                     NPredicate.<NPath>of((NPath x4) -> x4.getName().matches(finalPrefix + "[0-9]+\\.[0-9]+\\.[0-9]+\\.zip"))
-                                                                            .withDesc(NEDesc.of("name.isZip"))
+                                                                            .redescribe(NDescribableElementSupplier.of("name.isZip"))
                                                             )
                                                             .map(NFunction.<NPath, NId>of(
                                                                     (NPath x5) -> {
@@ -184,7 +184,7 @@ public class ApacheTomcatRepositoryModel implements NRepositoryModel {
                                                                             return id2;
                                                                         }
                                                                         return null;
-                                                                    }).<NId>withDesc(NEDesc.of("toZip")))
+                                                                    }).<NId>redescribe(NDescribableElementSupplier.of("toZip")))
                                                             .<NId>nonNull();
                                                 } else {
                                                     NId id2 = idBuilder.setVersion(version).build();
@@ -195,8 +195,8 @@ public class ApacheTomcatRepositoryModel implements NRepositoryModel {
                                                 }
 
                                             }
-                                        }).withDesc(NEDesc.of("flatMap")))
-                ).withDesc(NEDesc.of("flatMap"))).iterator();
+                                        }).redescribe(NDescribableElementSupplier.of("flatMap")))
+                ).redescribe(NDescribableElementSupplier.of("flatMap"))).iterator();
     }
 
     private String getUrl(NVersion version, String extension) {
