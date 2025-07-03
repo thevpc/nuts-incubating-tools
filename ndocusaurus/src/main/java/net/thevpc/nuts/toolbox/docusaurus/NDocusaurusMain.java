@@ -17,7 +17,7 @@ public class NDocusaurusMain implements NApplication {
     boolean buildPdf = false;
 
     public static void main(String[] args) {
-        NApplication.main(NDocusaurusMain.class, args);
+        NApp.builder(args).run();
     }
 
     @Override

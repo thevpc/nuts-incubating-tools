@@ -21,7 +21,7 @@ import java.util.Objects;
 public class NBackup implements NApplication {
 
     public static void main(String[] args) {
-        new NBackup().main(NMainArgs.ofExit(args));
+        NApp.builder(args).run();
     }
 
     @Override

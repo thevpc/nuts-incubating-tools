@@ -9,7 +9,7 @@ public class NWorkMain implements NApplication {
     private WorkspaceService service;
 
     public static void main(String[] args) {
-        new NWorkMain().main(NMainArgs.ofExit(args));
+        NApp.builder(args).run();
     }
 
     @Override
