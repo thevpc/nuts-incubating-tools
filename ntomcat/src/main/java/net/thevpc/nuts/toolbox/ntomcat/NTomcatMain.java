@@ -7,13 +7,13 @@ import net.thevpc.nuts.toolbox.ntomcat.remote.RemoteTomcat;
 import net.thevpc.nuts.toolbox.ntomcat.local.LocalTomcat;
 import net.thevpc.nuts.toolbox.ntomcat.util.ApacheTomcatRepositoryModel;
 
-public class NTomcatMain implements NApplication {
+public class NTomcatMain  {
 
     public static void main(String[] args) {
         NApp.builder(args).run();
     }
 
-    @Override
+    @NApp.Main
     public void run() {
         NRepository apacheRepo = NWorkspace.of().findRepository("apache-tomcat").orNull();
         NSession session = NSession.of();

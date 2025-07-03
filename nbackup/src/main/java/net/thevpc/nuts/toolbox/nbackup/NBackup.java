@@ -18,13 +18,13 @@ import java.util.Objects;
 /**
  * @author vpc
  */
-public class NBackup implements NApplication {
+public class NBackup  {
 
     public static void main(String[] args) {
         NApp.builder(args).run();
     }
 
-    @Override
+    @NApp.Main
     public void run() {
         NSession session = NSession.of();
         NOut.println(NMsg.ofC("%s Backup Tool.", NMsg.ofStyledKeyword("Nuts")));

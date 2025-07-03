@@ -10,12 +10,12 @@ import net.thevpc.nuts.*;
 /**
  * @author thevpc
  */
-public class NCodeMain implements NApplication {
+public class NCodeMain  {
     public static void main(String[] args) {
         NApp.builder(args).run();
     }
 
-    @Override
+    @NApp.Main
     public void run() {
         NSession session = NSession.of();
         NApp.of().runCmdLine(new NCodeMainCmdProcessor(session));

@@ -4,7 +4,7 @@ import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
 
-public class NWorkMain implements NApplication {
+public class NWorkMain {
 
     private WorkspaceService service;
 
@@ -12,7 +12,7 @@ public class NWorkMain implements NApplication {
         NApp.builder(args).run();
     }
 
-    @Override
+    @NApp.Main
     public void run() {
         NSession session = NSession.of();
         this.service = new WorkspaceService(session);

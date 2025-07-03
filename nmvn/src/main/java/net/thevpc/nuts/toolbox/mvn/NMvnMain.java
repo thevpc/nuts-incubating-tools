@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class NMvnMain implements NApplication {
+public class NMvnMain  {
     private static final Logger LOG= Logger.getLogger(NMvnMain.class.getName());
 //    public static void main(String[] args) {
 //        main0(new String[]{
@@ -39,7 +39,7 @@ public class NMvnMain implements NApplication {
         NApp.builder(args).run();
     }
 
-    @Override
+    @NApp.Main
     public void run() {
         String command = null;
         List<String> args2 = new ArrayList<>();
