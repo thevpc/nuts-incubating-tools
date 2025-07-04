@@ -144,7 +144,7 @@ public class WorkspaceService {
         int count = 0;
         while (cmdLine.hasNext()) {
             if (cmdLine.peek().get().isNonOption()) {
-                String expression = cmdLine.next().get().getImage();
+                String expression = cmdLine.next().get().image();
                 if (cmdLine.isExecMode()) {
                     setScanEnabled(Paths.get(expression), enable);
                     count++;
@@ -340,7 +340,7 @@ public class WorkspaceService {
             } else if (cmd.isNextOption()) {
                 cmd.setCommandName("nwork check").throwUnexpectedArgument();
             } else {
-                filters.add(cmd.next().get().getImage());
+                filters.add(cmd.next().get().image());
             }
         }
 

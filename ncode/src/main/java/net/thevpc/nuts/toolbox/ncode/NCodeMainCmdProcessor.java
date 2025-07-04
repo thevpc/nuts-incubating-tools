@@ -54,7 +54,7 @@ class NCodeMainCmdProcessor implements NCmdLineRunner {
             }
             return false;
         }else{
-            paths.add(cmdLine.next().get().getImage());
+            paths.add(cmdLine.next().get().image());
             return true;
         }
     }

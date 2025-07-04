@@ -4,7 +4,6 @@ import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.io.NPath;
-import net.thevpc.nuts.util.NLiteral;
 import net.thevpc.nuts.util.NMsg;
 
 import java.io.IOException;
@@ -59,10 +58,10 @@ public class NMvnMain  {
                     command = "get";
                 } else {
                     command = "default";
-                    args2.add(cmd.next().get().getImage());
+                    args2.add(cmd.next().get().image());
                 }
             } else {
-                args2.add(cmd.next().get().getImage());
+                args2.add(cmd.next().get().image());
             }
         }
         if (command == null) {

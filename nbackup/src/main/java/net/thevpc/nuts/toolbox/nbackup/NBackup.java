@@ -90,7 +90,7 @@ public class NBackup {
                                 .with("--save").matchTrueFlag((v) -> options.cmd = Cmd.SAVE)
                                 .with("--save").matchTrueFlag((v) -> options.cmd = Cmd.SAVE)
                                 .with("--show").matchTrueFlag((v) -> options.cmd = Cmd.SHOW)
-                                .withNonOption().matchAny(v -> addPath(v.getImage()))
+                                .withNonOption().matchAny(v -> addPath(v.image()))
                                 .anyMatch();
                     }
 
