@@ -273,10 +273,10 @@ public class WorkspaceService {
         NRef<String> remoteServer = NRef.ofNull(String.class);
         NRef<String> remoteUser = NRef.ofNull(String.class);
         while (cmdLine.hasNext()) {
-            cmdLine.selector()
-                    .with("--remote-server", "--to-server", "--to", "-t").nextEntry((v) -> remoteServer.set(v.stringValue()))
-                    .with("--remote-user").nextEntry((v) -> remoteUser.set(v.stringValue()))
-                    .withNonOption().next(a -> idsToPush.add(NId.get(a.toString()).get()))
+            cmdLine.matcher()
+                    .with("--remote-server", "--to-server", "--to", "-t").matchEntry((v) -> remoteServer.set(v.stringValue()))
+                    .with("--remote-user").matchEntry((v) -> remoteUser.set(v.stringValue()))
+                    .withNonOption().matchAny(a -> idsToPush.add(NId.get(a.toString()).get()))
                     .requireWithDefault();
         }
         if (idsToPush.isEmpty()) {

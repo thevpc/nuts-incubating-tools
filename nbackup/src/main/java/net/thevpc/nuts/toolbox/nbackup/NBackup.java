@@ -80,17 +80,17 @@ public class NBackup {
 
                     @Override
                     public boolean next(NArg arg, NCmdLine cmdLine) {
-                        return cmdLine.selector()
-                                .with("--server").nextEntry((v) -> options.config.setRemoteServer(v.stringValue()))
-                                .with("--user").nextEntry((v) -> options.config.setRemoteUser(v.stringValue()))
-                                .with("--local").nextEntry((v) -> options.config.setRemoteUser(v.stringValue()))
-                                .with("--add-path").nextEntry((v) -> addPath(v.stringValue()))
-                                .with("--remove-path").nextEntry((v) -> options.config.getPaths().removeIf(x -> Objects.equals(String.valueOf(x).trim(), v.stringValue().trim())))
-                                .with("--clear-paths").nextTrueFlag((v) -> options.config.getPaths().clear())
-                                .with("--save").nextTrueFlag((v) -> options.cmd = Cmd.SAVE)
-                                .with("--save").nextTrueFlag((v) -> options.cmd = Cmd.SAVE)
-                                .with("--show").nextTrueFlag((v) -> options.cmd = Cmd.SHOW)
-                                .withNonOption().next(v -> addPath(v.getImage()))
+                        return cmdLine.matcher()
+                                .with("--server").matchEntry((v) -> options.config.setRemoteServer(v.stringValue()))
+                                .with("--user").matchEntry((v) -> options.config.setRemoteUser(v.stringValue()))
+                                .with("--local").matchEntry((v) -> options.config.setRemoteUser(v.stringValue()))
+                                .with("--add-path").matchEntry((v) -> addPath(v.stringValue()))
+                                .with("--remove-path").matchEntry((v) -> options.config.getPaths().removeIf(x -> Objects.equals(String.valueOf(x).trim(), v.stringValue().trim())))
+                                .with("--clear-paths").matchTrueFlag((v) -> options.config.getPaths().clear())
+                                .with("--save").matchTrueFlag((v) -> options.cmd = Cmd.SAVE)
+                                .with("--save").matchTrueFlag((v) -> options.cmd = Cmd.SAVE)
+                                .with("--show").matchTrueFlag((v) -> options.cmd = Cmd.SHOW)
+                                .withNonOption().matchAny(v -> addPath(v.getImage()))
                                 .anyMatch();
                     }
 

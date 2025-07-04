@@ -187,8 +187,8 @@ public class LocalTomcat {
         NRef<String> format = NRef.of("default");
         args.setCommandName("tomcat --local show");
         while (args.hasNext()) {
-            args.selector()
-                    .with("-l", "--long").nextTrueFlag((b) -> format.set("long"))
+            args.matcher()
+                    .with("-l", "--long").matchTrueFlag((b) -> format.set("long"))
                     .requireWithDefault();
         }
         if (args.isExecMode()) {
