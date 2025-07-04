@@ -1,7 +1,6 @@
 package net.thevpc.nuts.toolbox.ntomcat.local;
 
 import net.thevpc.nuts.io.NPath;
-import net.thevpc.nuts.NSession;
 
 class LocalTomcatLogLineVisitor {
 
@@ -10,13 +9,11 @@ class LocalTomcatLogLineVisitor {
     String shutdownMessage;
     Boolean started;
     String path;
-    NSession session;
 
-    public LocalTomcatLogLineVisitor(String path, String startMessage, String shutdownMessage, NSession session) {
+    public LocalTomcatLogLineVisitor(String path, String startMessage, String shutdownMessage) {
         this.path = path;
         this.startMessage = startMessage;
         this.shutdownMessage = shutdownMessage;
-        this.session = session;
     }
 
     public void visit() {

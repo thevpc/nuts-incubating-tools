@@ -31,25 +31,22 @@ public class NDocusaurusMain {
                         case "-d":
                         case "--dir": {
                             if (workdir == null) {
-                                cmdLine.withNextEntry((v) -> workdir = v.stringValue());
-                                return true;
+                                return cmdLine.selector().withNextEntry((v) -> workdir = v.stringValue()).anyMatch();
                             }
+                            return false;
                         }
                     }
                     return false;
                 } else {
                     switch (arg.asString().get()) {
                         case "start": {
-                            cmdLine.withNextFlag((v) -> start = v.booleanValue());
-                            return true;
+                            return cmdLine.selector().withNextFlag((v) -> start = v.booleanValue()).anyMatch();
                         }
                         case "build": {
-                            cmdLine.withNextFlag((v) -> build = v.booleanValue());
-                            return true;
+                            return cmdLine.selector().withNextFlag((v) -> build = v.booleanValue()).anyMatch();
                         }
                         case "pdf": {
-                            cmdLine.withNextFlag((v) -> buildPdf = v.booleanValue());
-                            return true;
+                            return cmdLine.selector().withNextFlag((v) -> buildPdf = v.booleanValue()).anyMatch();
                         }
                     }
                     return false;

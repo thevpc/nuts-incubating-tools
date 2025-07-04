@@ -30,14 +30,12 @@ public class LocalTomcatAppConfigService extends LocalTomcatServiceBase {
     private String name;
     private LocalTomcatAppConfig config;
     private LocalTomcatConfigService tomcat;
-    private NSession session;
     private NPath sharedConfigFolder;
 
     public LocalTomcatAppConfigService(String name, LocalTomcatAppConfig config, LocalTomcatConfigService tomcat) {
         this.name = name;
         this.config = config;
         this.tomcat = tomcat;
-        this.session = tomcat.getTomcatServer().getSession();
         sharedConfigFolder = NApp.of().getVersionFolder(NStoreType.CONF, NTomcatConfigVersions.CURRENT);
     }
 
@@ -73,9 +71,6 @@ public class LocalTomcatAppConfigService extends LocalTomcatServiceBase {
         return runningFolder.resolve(name + "." + packaging);
     }
 
-    private NSession getSession() {
-        return session;
-    }
 
     public NPath getVersionFile() {
         return sharedConfigFolder.resolve(name + ".version");
@@ -103,16 +98,16 @@ public class LocalTomcatAppConfigService extends LocalTomcatServiceBase {
 
     public LocalTomcatAppConfigService setCurrentVersion(String version) {
         if (version == null || version.trim().isEmpty()) {
-            getSession().out().println(NMsg.ofC("%s unset version.", getFormattedPrefix(getFullName())));
+            NOut.println(NMsg.ofC("%s unset version.", getFormattedPrefix(getFullName())));
             getVersionFile().delete();
-            getSession().out().println(NMsg.ofC("%s [LOG] delete version file %s.", getFormattedPrefix(getFullName()), getFormattedPath(getVersionFile().toString())));
+            NOut.println(NMsg.ofC("%s [LOG] delete version file %s.", getFormattedPrefix(getFullName()), getFormattedPath(getVersionFile().toString())));
             getRunningFile().delete();
-            getSession().out().println(NMsg.ofC("%s [LOG] delete running file %s.", getFormattedPrefix(getFullName()), getFormattedPath(getRunningFile().toString())));
+            NOut.println(NMsg.ofC("%s [LOG] delete running file %s.", getFormattedPrefix(getFullName()), getFormattedPath(getRunningFile().toString())));
         } else {
-            getSession().out().println(NMsg.ofC("%s set version %s.", getFullName(), getFormattedVersion(version)));
-            getSession().out().println(NMsg.ofC("%s [LOG] updating version file %s to %s.", getFormattedPrefix(getFullName()), getFormattedVersion(_StringUtils.coalesce(version, "<DEFAULT>")), getFormattedPath(getVersionFile().toString())));
+            NOut.println(NMsg.ofC("%s set version %s.", getFullName(), getFormattedVersion(version)));
+            NOut.println(NMsg.ofC("%s [LOG] updating version file %s to %s.", getFormattedPrefix(getFullName()), getFormattedVersion(_StringUtils.coalesce(version, "<DEFAULT>")), getFormattedPath(getVersionFile().toString())));
             getVersionFile().writeString(version);
-            getSession().out().println(NMsg.ofC("%s [LOG] updating archive file %s -> %s.", getFormattedPrefix(getFullName()), getFormattedPath(getArchiveFile(version).toString()), getFormattedPath(getRunningFile().toString())));
+            NOut.println(NMsg.ofC("%s [LOG] updating archive file %s -> %s.", getFormattedPrefix(getFullName()), getFormattedPath(getArchiveFile(version).toString()), getFormattedPath(getRunningFile().toString())));
             NCp.of().from(getArchiveFile(version))
                     .to(getRunningFile())
                     .run();
@@ -141,7 +136,7 @@ public class LocalTomcatAppConfigService extends LocalTomcatServiceBase {
     public LocalTomcatAppConfigService resetDeployment() {
         NPath deployFile = getDeployFile();
         NPath deployFolder = getDeployFolder();
-        getSession().out().println(NMsg.ofC("%s reset deployment (delete %s ).", getFormattedPrefix(getFullName()), getFormattedPath(deployFile.toString())));
+        NOut.println(NMsg.ofC("%s reset deployment (delete %s ).", getFormattedPrefix(getFullName()), getFormattedPath(deployFile.toString())));
         deployFile.delete();
         deployFolder.delete();
         return this;
@@ -153,7 +148,7 @@ public class LocalTomcatAppConfigService extends LocalTomcatServiceBase {
         }
         NPath runningFile = getRunningFile();
         NPath deployFile = getDeployFile();
-        getSession().out().println(NMsg.ofC("%s deploy %s as file %s to %s.",
+        NOut.println(NMsg.ofC("%s deploy %s as file %s to %s.",
                 getFormattedPrefix(getFullName()), getFormattedVersion(_StringUtils.coalesce(version, "<DEFAULT>")),
                 getFormattedPath(runningFile.toString()), getFormattedPath(deployFile.toString())));
         NCp.of()
@@ -175,7 +170,7 @@ public class LocalTomcatAppConfigService extends LocalTomcatServiceBase {
             }
             Path domainDeployPath = getArchiveFile(version);
             Files.createDirectories(domainDeployPath.getParent());
-            getSession().out().println(NMsg.ofC("%s install version %s : %s->%s.",
+            NOut.println(NMsg.ofC("%s install version %s : %s->%s.",
                     getFormattedPrefix(getFullName()), getFormattedVersion(version), getFormattedPath(f.toString()), getFormattedPath(domainDeployPath.toString())));
             Files.copy(f, domainDeployPath);
             if (setVersion) {
@@ -200,7 +195,7 @@ public class LocalTomcatAppConfigService extends LocalTomcatServiceBase {
     @Override
     public LocalTomcatAppConfigService remove() {
         tomcat.getConfig().getApps().remove(name);
-        getSession().out().println(NMsg.ofC("%s app removed.", getFormattedPrefix(getFullName())));
+        NOut.println(NMsg.ofC("%s app removed.", getFormattedPrefix(getFullName())));
         return this;
     }
 

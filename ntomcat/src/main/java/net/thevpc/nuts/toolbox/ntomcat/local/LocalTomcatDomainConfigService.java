@@ -17,13 +17,11 @@ public class LocalTomcatDomainConfigService extends LocalTomcatServiceBase {
     private String name;
     private LocalTomcatDomainConfig config;
     private LocalTomcatConfigService tomcat;
-    private NSession session;
 
     public LocalTomcatDomainConfigService(String name, LocalTomcatDomainConfig config, LocalTomcatConfigService tomcat) {
         this.config = config;
         this.tomcat = tomcat;
         this.name = name;
-        this.session = tomcat.getTomcatServer().getSession();
     }
 
     public LocalTomcatDomainConfig getConfig() {

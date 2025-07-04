@@ -25,7 +25,6 @@ import java.util.List;
 
 public class LocalTomcat {
 
-    private NSession session;
     private NCmdLine cmdLine;
     private NPath sharedConfigFolder;
 
@@ -177,7 +176,7 @@ public class LocalTomcat {
         }
         if (x.instances) {
             for (LocalTomcatConfigService tomcatConfig : listConfig()) {
-                getSession().out().println(tomcatConfig.getName());
+                NOut.println(tomcatConfig.getName());
             }
         } else {
             LocalTomcatConfigService s = nextLocalTomcatConfigService(args, NOpenMode.OPEN_OR_ERROR);
@@ -189,16 +188,15 @@ public class LocalTomcat {
         NRef<String> format = NRef.of("default");
         args.setCommandName("tomcat --local show");
         while (args.hasNext()) {
-            if (args.withNextTrueFlag((b) -> format.set("long"), "-l", "--long")) {
-            } else {
-                session.configureLast(cmdLine);
-            }
+            args.selector()
+                    .with("-l", "--long").nextTrueFlag((b) -> format.set("long"))
+                    .requireWithDefault();
         }
         if (args.isExecMode()) {
             NTexts factory = NTexts.of();
-            if (session.isPlainOut()) {
-                NPrintStream out = session.out();
-                for (RunningTomcat jpsResult : TomcatUtils.getRunningInstances(session)) {
+            if (NOut.isPlain()) {
+                NPrintStream out = NOut.out();
+                for (RunningTomcat jpsResult : TomcatUtils.getRunningInstances()) {
                     switch (format.get()) {
                         case "long": {
                             NCmdLine jcmd = NCmdLine.parse(jpsResult.getArgsLine()).orNull();
@@ -224,7 +222,7 @@ public class LocalTomcat {
                 }
             } else {
                 NObjectFormat.of()
-                        .setValue(TomcatUtils.getRunningInstances(session))
+                        .setValue(TomcatUtils.getRunningInstances())
                         .println();
             }
         }
@@ -247,14 +245,13 @@ public class LocalTomcat {
                 toShow.add(loadServiceBase("", NOpenMode.OPEN_OR_ERROR));
             }
             for (LocalTomcatServiceBase s2 : toShow) {
-                s2.println(getSession().out());
+                s2.println(NOut.out());
             }
         }
     }
 
     public void add(NCmdLine args, NOpenMode autoCreate) {
         args.setCommandName("tomcat --local add");
-        NSession session = getSession();
         NArg a = args.nextNonOption().get();
         if (a != null) {
             switch (a.asString().get()) {
@@ -286,7 +283,6 @@ public class LocalTomcat {
 
     public void addInstance(LocalTomcatConfigService c, NCmdLine args, NOpenMode autoCreate) {
         NArg a;
-        NSession session = getSession();
         args.setCommandName("tomcat --local add");
         while (args.hasNext()) {
             if ((a = args.nextEntry("--catalina-version", "--tomcat-version", "--version").orNull()) != null) {
@@ -348,8 +344,6 @@ public class LocalTomcat {
 
     public void addDomain(LocalTomcatDomainConfigService c, NCmdLine args, NOpenMode autoCreate) {
         NArg a;
-        NSession session = getSession();
-//        c = nextLocalTomcatConfigService(args, NutsOpenMode.OPEN_EXISTING);
         boolean changed = false;
         args.setCommandName("tomcat --local add");
         while (args.hasNext()) {
@@ -367,7 +361,6 @@ public class LocalTomcat {
 
     public void addApp(LocalTomcatAppConfigService c, NCmdLine args, NOpenMode autoCreate) {
         NArg a;
-        NSession session = getSession();
         boolean changed = false;
         args.setCommandName("tomcat --local add");
         while (args.hasNext()) {
@@ -395,7 +388,7 @@ public class LocalTomcat {
     }
 
     public void remove(NCmdLine args) {
-        NSession session = getSession();
+
         NArg a = args.nextNonOption().get();
         if (a != null) {
             switch (a.asString().get()) {
@@ -431,7 +424,6 @@ public class LocalTomcat {
     }
 
     public void stop(NCmdLine args) {
-        NSession session = getSession();
         NArg a;
         LocalTomcatConfigService c = nextLocalTomcatConfigService(args, NOpenMode.OPEN_OR_ERROR);
         args.setCommandName("tomcat --local stop");
@@ -452,7 +444,6 @@ public class LocalTomcat {
 
 
     public void status(NCmdLine args) {
-        NSession session = getSession();
         LocalTomcatConfigService c = null;
         String name = null;
         NArg a;
@@ -481,7 +472,6 @@ public class LocalTomcat {
     }
 
     public void installApp(NCmdLine args) {
-        NSession session = getSession();
         LocalTomcatAppConfigService app = null;
         String version = null;
         String file = null;
@@ -517,7 +507,7 @@ public class LocalTomcat {
     }
 
     public void delete(NCmdLine args) {
-        NSession session = getSession();
+
         NArg a;
         if (args.hasNext()) {
             if ((a = (args.next("log")).orNull()) != null) {
@@ -535,7 +525,7 @@ public class LocalTomcat {
     }
 
     private void deleteLog(NCmdLine args) {
-        NSession session = getSession();
+
         LocalTomcatServiceBase s = null;
         boolean all = false;
         NArg a;
@@ -567,7 +557,7 @@ public class LocalTomcat {
     }
 
     private void deleteTemp(NCmdLine args) {
-        NSession session = getSession();
+
         LocalTomcatServiceBase s = null;
         NArg a;
         boolean processed = false;
@@ -588,7 +578,7 @@ public class LocalTomcat {
     }
 
     private void deleteWork(NCmdLine args) {
-        NSession session = getSession();
+
         LocalTomcatServiceBase s = null;
         NArg a;
         boolean processed = false;
@@ -609,7 +599,7 @@ public class LocalTomcat {
     }
 
     public void showCatalinaBase(NCmdLine args) {
-        NSession session = getSession();
+
         args.setCommandName("tomcat --local show-catalina-base");
         LocalTomcatConfigService s = nextLocalTomcatConfigService(args, NOpenMode.OPEN_OR_ERROR);
         NArg a;
@@ -623,7 +613,7 @@ public class LocalTomcat {
     }
 
     public void showCatalinaVersion(NCmdLine args) {
-        NSession session = getSession();
+
         args.setCommandName("tomcat --local show-catalina-version");
         LocalTomcatConfigService s = nextLocalTomcatConfigService(args, NOpenMode.OPEN_OR_ERROR);
         NArg a;
@@ -637,7 +627,7 @@ public class LocalTomcat {
     }
 
     public void showCatalinaHome(NCmdLine args) {
-        NSession session = getSession();
+
         args.setCommandName("tomcat --local show-catalina-home");
         LocalTomcatConfigService s = nextLocalTomcatConfigService(args, NOpenMode.OPEN_OR_ERROR);
         NArg a;
@@ -651,7 +641,7 @@ public class LocalTomcat {
     }
 
     public void showPort(NCmdLine args) {
-        NSession session = getSession();
+
         args.setCommandName("tomcat --local port");
         LocalTomcatConfigService c = nextLocalTomcatConfigService(args, NOpenMode.OPEN_OR_ERROR);
         NArg a;
@@ -733,7 +723,7 @@ public class LocalTomcat {
     }
 
     public void showLog(NCmdLine cmdLine) {
-        NSession session = getSession();
+
         LocalTomcatServiceBase s = nextLocalTomcatServiceBase(cmdLine, NOpenMode.OPEN_OR_ERROR);
         boolean path = false;
         int count = -1;
@@ -752,14 +742,14 @@ public class LocalTomcat {
         }
         LocalTomcatConfigService c = toLocalTomcatConfigService(s);
         if (path) {
-            getSession().out().println(c.getOutLogFile());
+            NOut.println(c.getOutLogFile());
         } else {
             c.showOutLog(count);
         }
     }
 
     public void deployFile(NCmdLine args) {
-        NSession session = getSession();
+
         String instance = null;
         String version = null;
         String file = null;
@@ -795,7 +785,7 @@ public class LocalTomcat {
     }
 
     public void deployApp(NCmdLine args) {
-        NSession session = getSession();
+
         String version = null;
         String app = null;
         NArg a;
@@ -819,7 +809,7 @@ public class LocalTomcat {
     }
 
     public void restart(NCmdLine args, boolean shutdown) {
-        NSession session = getSession();
+
         boolean deleteLog = false;
         String instance = null;
         LocalTomcatConfigService[] srvRef = new LocalTomcatConfigService[1];
@@ -954,14 +944,6 @@ public class LocalTomcat {
         return openTomcatConfig(strings[0], autoCreate).getDomain(strings[1], NOpenMode.OPEN_OR_ERROR);
     }
 
-    public NSession getSession() {
-        return session;
-    }
-
-    public void setSession(NSession session) {
-        this.session = session;
-    }
-
     public LocalTomcatConfigService toLocalTomcatConfigService(LocalTomcatServiceBase s) {
         if (s instanceof LocalTomcatAppConfigService) {
             s = ((LocalTomcatAppConfigService) s).getTomcat();
@@ -982,7 +964,7 @@ public class LocalTomcat {
     }
 
     public LocalTomcatConfigService nextLocalTomcatConfigService(NCmdLine args, NOpenMode autoCreate) {
-        NSession session = getSession();
+
         if (args.hasNext()) {
             NArg o = args.nextNonOption().orNull();
             if (o != null) {

@@ -15,7 +15,7 @@ public class RunningTomcat {
     private String argsLine;
     private NVersion version;
 
-    public RunningTomcat(NPsInfo r, NSession session) {
+    public RunningTomcat(NPsInfo r) {
         pid =r.getPid();
         argsLine=r.getCmdLine();
         NCmdLine cmdline = NCmdLine.parse(r.getCmdLine())

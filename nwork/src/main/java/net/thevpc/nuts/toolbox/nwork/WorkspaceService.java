@@ -273,16 +273,11 @@ public class WorkspaceService {
         NRef<String> remoteServer = NRef.ofNull(String.class);
         NRef<String> remoteUser = NRef.ofNull(String.class);
         while (cmdLine.hasNext()) {
-            if (session.configureFirst(cmdLine)) {
-
-            } else if (cmdLine.withNextEntry((v) -> remoteServer.set(v.stringValue()), "--remote-server", "--to-server", "--to", "-t")) {
-            } else if (cmdLine.withNextEntry((v) -> remoteUser.set(v.stringValue()), "--remote-user")) {
-            } else if (cmdLine.isNextNonOption()) {
-                NArg a = cmdLine.next().get();
-                idsToPush.add(NId.get(a.toString()).get());
-            } else {
-                session.configureLast(cmdLine);
-            }
+            cmdLine.selector()
+                    .with("--remote-server", "--to-server", "--to", "-t").nextEntry((v) -> remoteServer.set(v.stringValue()))
+                    .with("--remote-user").nextEntry((v) -> remoteUser.set(v.stringValue()))
+                    .withNonOption().next(a -> idsToPush.add(NId.get(a.toString()).get()))
+                    .requireWithDefault();
         }
         if (idsToPush.isEmpty()) {
             cmdLine.throwMissingArgument();
