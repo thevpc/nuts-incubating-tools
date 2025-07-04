@@ -185,13 +185,12 @@ import jxl.write.WritableWorkbook;
 public class App implements NApplication {
 
     public static void main(String[] args) {
-        // just create an instance and call runAndExit in the main method
-        new App().main(NMainArgs.ofExit(args));
+        NApp.builder(args).run();
     }
 
-    @Override
-    public void run(NSession session) {
-        NCmdLine cmd = session.getAppCmdLine();
+    @NApp.Main
+    public void run() {
+        NCmdLine cmd = App.of().getCmdLine();
         File file = new File("file.xls");
         while (cmd.hasNext()) {
             switch (cmd.getKey().getString()) {
@@ -217,19 +216,19 @@ public class App implements NApplication {
         }
     }
 
-    @Override
-    public void onInstallApplication(NSession s) {
-        s.out().printf("we are installing My Application : %s%n", s.getAppId());
+    @NApp.Installer // this method is not required, implement when needed
+    public void onInstallApplication() {
+        NOut.printf("we are installing My Application : %s%n", s.getAppId());
     }
 
-    @Override
-    public void onUninstallApplication(NSession s) {
-        s.out().printf("we are uninstalling My Application : %s%n", s.getAppId());
+    @NApp.Uninstaller // this method is not required, implement when needed
+    public void onUninstallApplication() {
+        NOut.printf("we are uninstalling My Application : %s%n", s.getAppId());
     }
 
-    @Override
-    public void onUpdateApplication(NSession s) {
-        s.out().printf("we are updating My Application : %s%n", s.getAppId());
+    @NApp.Updater // this method is not required, implement when needed
+    public void onUpdateApplication() {
+        NOut.printf("we are updating My Application : %s%n", s.getAppId());
     }
 }
 

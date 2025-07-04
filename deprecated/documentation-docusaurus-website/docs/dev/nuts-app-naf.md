@@ -55,18 +55,19 @@ import java.io.File;
 import jxl.Workbook;
 import jxl.write.WritableWorkbook;
 
-public class App implements NApplication {
+@NApp.Info
+public class App {
 
     public static void main(String[] args) {
         // just create an instance and call runAndExit in the main method
         // this method ensures that exist code is well propagted
         // from exceptions to caller processes
-        new App().main(NMainArgs.ofExit(args));
+        NApp.builder(args).run();
     }
 
-    @Override
-    public void run(NSession session) {
-        NCmdLine cmd = session.getAppCmdLine();
+    @NApp.Main
+    public void run() {
+        NCmdLine cmd = NApp.of().getCmdLine();
         File file = new File("file.xls");
         while (cmd.hasNext()) {
             switch (cmd.getKey().getString()) {

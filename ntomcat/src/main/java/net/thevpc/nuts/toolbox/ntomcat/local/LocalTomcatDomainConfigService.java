@@ -48,10 +48,6 @@ public class LocalTomcatDomainConfigService extends LocalTomcatServiceBase {
         return b.resolve(b);
     }
 
-    private NSession getSession() {
-        return session;
-    }
-
     public LocalTomcatDomainConfigService remove() {
         tomcat.getConfig().getDomains().remove(name);
         for (LocalTomcatAppConfigService aa : tomcat.getApps()) {
@@ -59,7 +55,7 @@ public class LocalTomcatDomainConfigService extends LocalTomcatServiceBase {
                 aa.remove();
             }
         }
-        getSession().out().println(NMsg.ofC("%s domain removed.", getBracketsPrefix(name)));
+        NOut.println(NMsg.ofC("%s domain removed.", getBracketsPrefix(name)));
         return this;
     }
     public NText getBracketsPrefix(String str) {

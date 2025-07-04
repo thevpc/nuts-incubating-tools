@@ -43,7 +43,7 @@ public class NTomcatMain  {
             local = true;
         }
         if (local) {
-            LocalTomcat m = new LocalTomcat(session, cmdLine);
+            LocalTomcat m = new LocalTomcat(cmdLine);
             m.runArgs();
             session.flush();
         } else {

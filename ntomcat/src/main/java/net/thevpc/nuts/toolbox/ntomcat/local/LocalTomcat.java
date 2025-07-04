@@ -28,8 +28,7 @@ public class LocalTomcat {
     private NCmdLine cmdLine;
     private NPath sharedConfigFolder;
 
-    public LocalTomcat(NSession sessino, NCmdLine cmdLine) {
-        this.setSession(sessino);
+    public LocalTomcat(NCmdLine cmdLine) {
         this.cmdLine = cmdLine;
         sharedConfigFolder = NApp.of().getVersionFolder(NStoreType.CONF, NTomcatConfigVersions.CURRENT);
     }
@@ -39,7 +38,7 @@ public class LocalTomcat {
         cmdLine.setCommandName("tomcat --local");
         while (cmdLine.hasNext()) {
             if (cmdLine.isNextOption()) {
-                session.configureLast(cmdLine);
+                NSession.of().configureLast(cmdLine);
             } else {
                 a = cmdLine.nextNonOption().get();
                 switch (a.asString().get()) {
@@ -142,10 +141,10 @@ public class LocalTomcat {
                     List<LocalTomcatAppConfigService> apps = c.getApps();
                     if (!apps.isEmpty()) {
                         if (isHeader()) {
-                            session.out().println(NMsg.ofC("[%s]:", "Apps"));
+                            NOut.println(NMsg.ofC("[%s]:", "Apps"));
                         }
                         for (LocalTomcatAppConfigService app : apps) {
-                            session.out().print(NMsg.ofPlain(app.getName()));
+                            NOut.print(NMsg.ofPlain(app.getName()));
                         }
                     }
                 }
@@ -153,10 +152,10 @@ public class LocalTomcat {
                     List<LocalTomcatDomainConfigService> domains = c.getDomains();
                     if (!domains.isEmpty()) {
                         if (isHeader()) {
-                            session.out().println(NMsg.ofC("[%s]:", "Domains"));
+                            NOut.println(NMsg.ofC("[%s]:", "Domains"));
                         }
                         for (LocalTomcatDomainConfigService app : domains) {
-                            session.out().println(NMsg.ofPlain(app.getName()));
+                            NOut.println(NMsg.ofPlain(app.getName()));
                         }
                     }
                 }
@@ -171,7 +170,7 @@ public class LocalTomcat {
             } else if ((a = args.nextFlag("-i", "--instances").orNull()) != null) {
                 x.instances = a.getBooleanValue().get();
             } else {
-                session.configureLast(cmdLine);
+                NSession.of().configureLast(cmdLine);
             }
         }
         if (x.instances) {
@@ -237,7 +236,7 @@ public class LocalTomcat {
             if ((s = readBaseServiceArg(args, NOpenMode.OPEN_OR_ERROR)) != null) {
                 toShow.add(s);
             } else {
-                session.configureLast(cmdLine);
+                NSession.of().configureLast(cmdLine);
             }
         }
         if (args.isExecMode()) {
@@ -335,7 +334,7 @@ public class LocalTomcat {
                 }
                 c.getConfig().setDev(a.getBooleanValue().get());
             } else {
-                session.configureLast(args);
+                NSession.of().configureLast(args);
             }
         }
         c.save();
@@ -351,7 +350,7 @@ public class LocalTomcat {
                 c.getConfig().setLogFile(a.getStringValue().get());
                 changed = true;
             } else {
-                session.configureLast(args);
+                NSession.of().configureLast(args);
             }
         }
         if (changed) {
@@ -379,7 +378,7 @@ public class LocalTomcat {
                 c.getConfig().setDomain(value);
                 changed = true;
             } else {
-                session.configureLast(args);
+                NSession.of().configureLast(args);
             }
         }
         if (changed) {
@@ -428,7 +427,7 @@ public class LocalTomcat {
         LocalTomcatConfigService c = nextLocalTomcatConfigService(args, NOpenMode.OPEN_OR_ERROR);
         args.setCommandName("tomcat --local stop");
         while (args.hasNext()) {
-            session.configureLast(args);
+            NSession.of().configureLast(args);
         }
         if (!c.stop()) {
             throw new NExecutionException(NMsg.ofPlain("unable to stop"), NExecutionException.ERROR_1);
@@ -456,12 +455,12 @@ public class LocalTomcat {
         if (c != null) {
             c.printStatus();
         } else {
-            if (session.isPlainOut()) {
-                session.out().println(NMsg.ofC("%s Tomcat %s.", getBracketsPrefix(name),
+            if (NOut.isPlain()) {
+                NOut.println(NMsg.ofC("%s Tomcat %s.", getBracketsPrefix(name),
                         NText.ofStyled("not found", NTextStyle.error())
                 ));
             } else {
-                session.eout().add(
+                NSession.of().eout().add(
                         NElement.ofObjectBuilder()
                                 .set("config-name", name)
                                 .set("status", "not-found")
@@ -494,7 +493,7 @@ public class LocalTomcat {
                     args.setCommandName("tomcat --local install").throwUnexpectedArgument();
                 }
             } else {
-                session.configureLast(args);
+                NSession.of().configureLast(args);
             }
         }
         if (app == null) {
@@ -543,7 +542,7 @@ public class LocalTomcat {
                 }
                 processed = true;
             } else {
-                session.configureLast(args);
+                NSession.of().configureLast(args);
             }
         }
         if (!processed) {
@@ -568,7 +567,7 @@ public class LocalTomcat {
                 c.deleteTemp();
                 processed = true;
             } else {
-                session.configureLast(args);
+                NSession.of().configureLast(args);
             }
         }
         if (!processed) {
@@ -589,7 +588,7 @@ public class LocalTomcat {
                 c.deleteWork();
                 processed = true;
             } else {
-                session.configureLast(args);
+                NSession.of().configureLast(args);
             }
         }
         if (!processed) {
@@ -604,7 +603,7 @@ public class LocalTomcat {
         LocalTomcatConfigService s = nextLocalTomcatConfigService(args, NOpenMode.OPEN_OR_ERROR);
         NArg a;
         while (args.hasNext()) {
-            session.configureLast(args);
+            NSession.of().configureLast(args);
         }
         LocalTomcatConfigService c = toLocalTomcatConfigService(s);
         NObjectFormat.of()
@@ -618,7 +617,7 @@ public class LocalTomcat {
         LocalTomcatConfigService s = nextLocalTomcatConfigService(args, NOpenMode.OPEN_OR_ERROR);
         NArg a;
         while (args.hasNext()) {
-            session.configureLast(args);
+            NSession.of().configureLast(args);
         }
         LocalTomcatConfigService c = toLocalTomcatConfigService(s);
         NObjectFormat.of()
@@ -632,7 +631,7 @@ public class LocalTomcat {
         LocalTomcatConfigService s = nextLocalTomcatConfigService(args, NOpenMode.OPEN_OR_ERROR);
         NArg a;
         while (args.hasNext()) {
-            session.configureLast(args);
+            NSession.of().configureLast(args);
         }
         LocalTomcatConfigService c = toLocalTomcatConfigService(s);
         NObjectFormat.of()
@@ -678,7 +677,7 @@ public class LocalTomcat {
                 int port = a.getValue().asInt().get();
                 runnables.add(() -> c.setAjpConnectorPort(true, port));
             } else {
-                session.configureLast(args);
+                NSession.of().configureLast(args);
             }
         }
         if (setValue) {
@@ -737,7 +736,7 @@ public class LocalTomcat {
                     .asString().get().substring(1))) {
                 count = Integer.parseInt(cmdLine.next().get().getImage().substring(1));
             } else {
-                session.configureLast(cmdLine);
+                NSession.of().configureLast(cmdLine);
             }
         }
         LocalTomcatConfigService c = toLocalTomcatConfigService(s);
@@ -774,7 +773,7 @@ public class LocalTomcat {
                     args.setCommandName("tomcat --local deploy-file").throwUnexpectedArgument();
                 }
             } else {
-                session.configureLast(args);
+                NSession.of().configureLast(args);
             }
         }
         if (file == null) {
@@ -802,7 +801,7 @@ public class LocalTomcat {
                     args.setCommandName("tomcat --local deploy").throwUnexpectedArgument();
                 }
             } else {
-                session.configureLast(args);
+                NSession.of().configureLast(args);
             }
         }
         loadApp(app, NOpenMode.OPEN_OR_ERROR).deploy(version);
@@ -848,7 +847,7 @@ public class LocalTomcat {
                     args.setCommandName("tomcat --local restart").throwUnexpectedArgument();
                 }
             } else {
-                session.configureLast(args);
+                NSession.of().configureLast(args);
             }
         }
         if (instance == null) {
