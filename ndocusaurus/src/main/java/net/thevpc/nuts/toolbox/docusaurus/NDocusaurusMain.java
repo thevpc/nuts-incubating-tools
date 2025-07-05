@@ -9,7 +9,7 @@ import net.thevpc.nuts.util.NMsg;
 
 import java.nio.file.Paths;
 
-@NApp.Definition
+@NAppDefinition
 public class NDocusaurusMain {
 
     boolean start;
@@ -21,7 +21,7 @@ public class NDocusaurusMain {
         NApp.builder(args).run();
     }
 
-    @NApp.Runner
+    @NAppRunner
     public void run() {
         NApp.of().runCmdLine(new NCmdLineRunner() {
             @Override

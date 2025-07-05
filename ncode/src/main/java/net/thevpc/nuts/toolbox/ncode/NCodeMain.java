@@ -15,7 +15,7 @@ public class NCodeMain  {
         NApp.builder(args).run();
     }
 
-    @NApp.Runner
+    @NAppRunner
     public void run() {
         NSession session = NSession.of();
         NApp.of().runCmdLine(new NCodeMainCmdProcessor(session));

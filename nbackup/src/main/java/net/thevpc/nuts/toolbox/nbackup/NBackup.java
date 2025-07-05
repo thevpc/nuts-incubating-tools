@@ -24,7 +24,7 @@ public class NBackup {
         NApp.builder(args).run();
     }
 
-    @NApp.Runner
+    @NAppRunner
     public void run() {
         NSession session = NSession.of();
         NOut.println(NMsg.ofC("%s Backup Tool.", NMsg.ofStyledKeyword("Nuts")));

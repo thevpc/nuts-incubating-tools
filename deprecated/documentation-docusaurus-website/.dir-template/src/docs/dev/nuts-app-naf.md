@@ -90,17 +90,17 @@ public class App implements NApplication {
         }
     }
 
-    @NApp.Installer // this method is not required, implement when needed
+    @NAppInstaller // this method is not required, implement when needed
     public void onInstallApplication() {
         NOut.printf("we are installing My Application : %s%n", s.getAppId());
     }
 
-    @NApp.Uninstaller // this method is not required, implement when needed
+    @NAppUninstaller // this method is not required, implement when needed
     public void onUninstallApplication() {
         NOut.printf("we are uninstalling My Application : %s%n", s.getAppId());
     }
 
-    @NApp.Updater // this method is not required, implement when needed
+    @NAppUpdater // this method is not required, implement when needed
     public void onUpdateApplication() {
         NOut.printf("we are updating My Application : %s%n", s.getAppId());
     }

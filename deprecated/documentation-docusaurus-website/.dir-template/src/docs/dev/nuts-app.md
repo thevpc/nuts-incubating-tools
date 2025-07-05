@@ -182,7 +182,7 @@ import java.io.File;
 
 import jxl.Workbook;
 import jxl.write.WritableWorkbook;
-@NApp.Definition
+@NAppDefinition
 public class App  {
 
     public static void main(String[] args) {
@@ -217,17 +217,17 @@ public class App  {
         }
     }
 
-    @NApp.Installer
+    @NAppInstaller
     public void onInstallApplication() {
         NOut.printf("we are installing My Application : %s%n", s.getAppId());
     }
 
-    @NApp.Uninstaller
+    @NAppUninstaller
     public void onUninstallApplication() {
         NOut.printf("we are uninstalling My Application : %s%n", s.getAppId());
     }
 
-    @NApp.Updater
+    @NAppUpdater
     public void onUpdateApplication() {
         NOut.printf("we are updating My Application : %s%n", s.getAppId());
     }

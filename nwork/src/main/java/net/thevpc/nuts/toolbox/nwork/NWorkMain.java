@@ -12,7 +12,7 @@ public class NWorkMain {
         NApp.builder(args).run();
     }
 
-    @NApp.Runner
+    @NAppRunner
     public void run() {
         NSession session = NSession.of();
         this.service = new WorkspaceService(session);

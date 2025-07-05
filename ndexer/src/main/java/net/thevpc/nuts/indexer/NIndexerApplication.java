@@ -2,10 +2,12 @@ package net.thevpc.nuts.indexer;
 
 
 import net.thevpc.nuts.NApp;
+import net.thevpc.nuts.NAppDefinition;
+import net.thevpc.nuts.NAppRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@NApp.Definition
+@NAppDefinition
 @EnableScheduling
 @SpringBootApplication
 public class NIndexerApplication {
@@ -14,7 +16,7 @@ public class NIndexerApplication {
         NApp.builder(args).run();
     }
 
-    @NApp.Runner
+    @NAppRunner
     public void run() {
 
     }

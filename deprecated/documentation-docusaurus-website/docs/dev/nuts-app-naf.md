@@ -55,7 +55,7 @@ import java.io.File;
 import jxl.Workbook;
 import jxl.write.WritableWorkbook;
 
-@NApp.Definition
+@NAppDefinition
 public class App {
 
     public static void main(String[] args) {

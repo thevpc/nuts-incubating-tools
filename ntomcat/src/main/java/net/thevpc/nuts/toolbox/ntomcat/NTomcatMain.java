@@ -13,7 +13,7 @@ public class NTomcatMain  {
         NApp.builder(args).run();
     }
 
-    @NApp.Runner
+    @NAppRunner
     public void run() {
         NRepository apacheRepo = NWorkspace.of().findRepository("apache-tomcat").orNull();
         NSession session = NSession.of();
