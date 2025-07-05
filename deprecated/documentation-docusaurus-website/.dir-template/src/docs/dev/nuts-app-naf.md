@@ -62,7 +62,7 @@ public class App implements NApplication {
         NApp.builder(args).run();
     }
 
-    @NApp.Runner
+    @NAppRunner
     public void run() {
         NCmdLine cmd = App.of().getCmdLine();
         File file = new File("file.xls");
