@@ -9,7 +9,7 @@ import net.thevpc.nuts.util.NMsg;
 
 import java.nio.file.Paths;
 
-@NApp.Info
+@NApp.Definition
 public class NDocusaurusMain {
 
     boolean start;
