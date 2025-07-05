@@ -182,7 +182,7 @@ import java.io.File;
 
 import jxl.Workbook;
 import jxl.write.WritableWorkbook;
-@NApp.Info
+@NApp.Definition
 public class App  {
 
     public static void main(String[] args) {
