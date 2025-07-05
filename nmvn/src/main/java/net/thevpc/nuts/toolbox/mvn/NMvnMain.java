@@ -38,7 +38,7 @@ public class NMvnMain  {
         NApp.builder(args).run();
     }
 
-    @NApp.Main
+    @NApp.Runner
     public void run() {
         String command = null;
         List<String> args2 = new ArrayList<>();
