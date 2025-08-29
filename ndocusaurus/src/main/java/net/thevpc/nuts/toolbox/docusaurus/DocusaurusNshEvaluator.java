@@ -1,8 +1,7 @@
 package net.thevpc.nuts.toolbox.docusaurus;
 
-import net.thevpc.nsite.context.NDocContext;
-import net.thevpc.nsite.executor.NDocExprEvaluator;
-import net.thevpc.nsite.executor.expr.DefaultNDocExprEvaluator;
+import net.thevpc.nsite.context.NSiteContext;
+import net.thevpc.nsite.executor.NSiteExprEvaluator;
 import net.thevpc.nsite.executor.nsh.ProcessCmd;
 import net.thevpc.nsite.util.StringUtils;
 import net.thevpc.nuts.NOut;
@@ -15,11 +14,11 @@ import net.thevpc.nsh.parser.nodes.NshVariables;
 import net.thevpc.nsh.Nsh;
 import net.thevpc.nsh.NshConfig;
 
-public class DocusaurusNshEvaluator implements NDocExprEvaluator {
+public class DocusaurusNshEvaluator implements NSiteExprEvaluator {
     private Nsh shell;
-    private NDocContext fileTemplater;
+    private NSiteContext fileTemplater;
 
-    public DocusaurusNshEvaluator(NDocContext fileTemplater) {
+    public DocusaurusNshEvaluator(NSiteContext fileTemplater) {
         this.fileTemplater = fileTemplater;
         shell = new Nsh(new NshConfig().setIncludeDefaultBuiltins(true).setIncludeExternalExecutor(true));
         shell.getRootContext().setSession(shell.getRootContext().getSession().copy());
@@ -52,7 +51,7 @@ public class DocusaurusNshEvaluator implements NDocExprEvaluator {
     }
 
     @Override
-    public Object eval(String content, NDocContext context) {
+    public Object eval(String content, NSiteContext context) {
         return NSession.of().copy()
                 .setTerminal(NTerminal.ofMem())
                 .callWith(

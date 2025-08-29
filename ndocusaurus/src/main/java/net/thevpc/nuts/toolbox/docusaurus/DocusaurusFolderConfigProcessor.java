@@ -1,8 +1,8 @@
 package net.thevpc.nuts.toolbox.docusaurus;
 
-import net.thevpc.nsite.context.NDocContext;
+import net.thevpc.nsite.context.NSiteContext;
 import net.thevpc.nsite.mimetype.MimeTypeConstants;
-import net.thevpc.nsite.processor.NDocProcessor;
+import net.thevpc.nsite.processor.NSiteProcessor;
 import net.thevpc.nsite.util.FileProcessorUtils;
 import net.thevpc.nuts.elem.NArrayElement;
 import net.thevpc.nuts.elem.NObjectElement;
@@ -13,7 +13,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Objects;
 
-class DocusaurusFolderConfigProcessor implements NDocProcessor {
+class DocusaurusFolderConfigProcessor implements NSiteProcessor {
     private final DocusaurusCtrl docusaurusCtrl;
 
     public DocusaurusFolderConfigProcessor(DocusaurusCtrl docusaurusCtrl) {
@@ -21,12 +21,12 @@ class DocusaurusFolderConfigProcessor implements NDocProcessor {
     }
 
     @Override
-    public void processStream(InputStream source, OutputStream target, NDocContext context) {
+    public void processStream(InputStream source, OutputStream target, NSiteContext context) {
         throw new IllegalArgumentException("Unsupported");
     }
 
     @Override
-    public void processPath(NPath source, String mimeType, NDocContext context) {
+    public void processPath(NPath source, String mimeType, NSiteContext context) {
         NObjectElement config = DocusaurusFolder.ofFolder(source.getParent(),
                         NPath.of(context.getRootDirRequired()).resolve("docs"),
                         docusaurusCtrl.getPreProcessorBaseDir().resolve("src"),

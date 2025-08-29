@@ -5,9 +5,9 @@
  */
 package net.thevpc.nuts.toolbox.docusaurus;
 
-import net.thevpc.nsite.NDocProjectConfig;
-import net.thevpc.nsite.context.NDocContext;
-import net.thevpc.nsite.mimetype.DefaultNDocMimeTypeResolver;
+import net.thevpc.nsite.NSiteProjectConfig;
+import net.thevpc.nsite.context.NSiteContext;
+import net.thevpc.nsite.mimetype.DefaultNSiteMimeTypeResolver;
 import net.thevpc.nsite.mimetype.MimeTypeConstants;
 import net.thevpc.nsite.util.FileProcessorUtils;
 import net.thevpc.nuts.*;
@@ -88,15 +88,15 @@ public class DocusaurusCtrl {
             }
 
             NOut.print(NMsg.ofC("process template %s -> %s%n", preProcessor, getTargetBaseDir()));
-            NDocProjectConfig config = new NDocProjectConfig()
+            NSiteProjectConfig config = new NSiteProjectConfig()
                     .setProjectPath(preProcessor.toString())
                     .setTargetFolder(getTargetBaseDir().toString())
                     .setContextName("ndocusaurus")
                     .setVars(vars);
-            NDocContext nexpr = new DaucusaurusNDocContext()
+            NSiteContext nexpr = new DaucusaurusNSiteContext()
                     //.setWorkingDir(base.toString())
                     .setMimeTypeResolver(
-                            new DefaultNDocMimeTypeResolver()
+                            new DefaultNSiteMimeTypeResolver()
                                     .setExtensionMimeType("nexpr", MimeTypeConstants.NEXPR)
                                     .setNameMimeType(DocusaurusProject.DOCUSAURUS_FOLDER_CONFIG, DocusaurusProject.DOCUSAURUS_FOLDER_CONFIG_MIMETYPE)
                     )
@@ -139,16 +139,16 @@ public class DocusaurusCtrl {
                 String fromPath = base.resolve("build").normalize().toString();
                 NPath toPath = FileProcessorUtils.toAbsolute(NPath.of(copyBuildPath), base);
                 deleteFolderIfFound(toPath, "index.html", "404.html", "sitemap.xml");
-                NDocContext nDocContext = new NDocContext()
+                NSiteContext nSiteContext = new NSiteContext()
                         .setWorkingDir(fromPath)
                         .setTargetPath(toPath)
                         .setMimeTypeResolver((String path) -> MimeTypeConstants.ANY_TYPE);
-                nDocContext.run(
-                        new NDocProjectConfig()
+                nSiteContext.run(
+                        new NSiteProjectConfig()
                                 .setTargetFolder(toPath.toString())
                                 .addSource(NPath.of(fromPath).toAbsolute().toString())
                 );
-                nDocContext
+                nSiteContext
                         .processSourceTree(NPath.of(fromPath), null);
             }
         }
