@@ -277,7 +277,7 @@ public class WorkspaceService {
                     .with("--remote-server", "--to-server", "--to", "-t").matchEntry((v) -> remoteServer.set(v.stringValue()))
                     .with("--remote-user").matchEntry((v) -> remoteUser.set(v.stringValue()))
                     .withNonOption().matchAny(a -> idsToPush.add(NId.get(a.toString()).get()))
-                    .requireWithDefault();
+                    .requireDefaults();
         }
         if (idsToPush.isEmpty()) {
             cmdLine.throwMissingArgument();

@@ -189,7 +189,7 @@ public class LocalTomcat {
         while (args.hasNext()) {
             args.matcher()
                     .with("-l", "--long").matchTrueFlag((b) -> format.set("long"))
-                    .requireWithDefault();
+                    .requireDefaults();
         }
         if (args.isExecMode()) {
             NTexts factory = NTexts.of();
