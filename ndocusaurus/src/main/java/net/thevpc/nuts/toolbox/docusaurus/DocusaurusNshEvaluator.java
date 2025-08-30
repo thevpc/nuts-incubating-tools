@@ -13,13 +13,15 @@ import net.thevpc.nsh.parser.nodes.NshVarListener;
 import net.thevpc.nsh.parser.nodes.NshVariables;
 import net.thevpc.nsh.Nsh;
 import net.thevpc.nsh.NshConfig;
+import net.thevpc.nuts.log.NLog;
+import net.thevpc.nuts.util.NMsg;
 
 public class DocusaurusNshEvaluator implements NSiteExprEvaluator {
     private Nsh shell;
     private NSiteContext fileTemplater;
 
-    public DocusaurusNshEvaluator(NSiteContext fileTemplater) {
-        this.fileTemplater = fileTemplater;
+    public DocusaurusNshEvaluator(NSiteContext siteContext) {
+        this.fileTemplater = siteContext;
         shell = new Nsh(new NshConfig().setIncludeDefaultBuiltins(true).setIncludeExternalExecutor(true));
         shell.getRootContext().setSession(shell.getRootContext().getSession().copy());
         shell.getRootContext().vars().addVarListener(
@@ -42,11 +44,11 @@ public class DocusaurusNshEvaluator implements NSiteExprEvaluator {
         );
         shell.getRootContext()
                 .builtins()
-                .set(new ProcessCmd(fileTemplater));
+                .set(new ProcessCmd(siteContext));
     }
 
     public void setVar(String varName, String newValue) {
-        fileTemplater.getLog().debug("eval", varName + "=" + StringUtils.toLiteralString(newValue));
+        NLog.ofScoped(getClass()).debug(NMsg.ofC("[%s] %s=%s", "eval", varName, StringUtils.toLiteralString(newValue)));
         fileTemplater.setVar(varName, newValue);
     }
 
