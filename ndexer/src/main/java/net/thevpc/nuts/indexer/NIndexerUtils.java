@@ -5,6 +5,7 @@ import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.NEnvConditionBuilder;
 import net.thevpc.nuts.NStoreType;
+import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.util.NLiteral;
 import net.thevpc.nuts.util.NStringUtils;
 import org.apache.lucene.index.Term;
@@ -26,8 +27,7 @@ public class NIndexerUtils {
         String k = "NutsIndexerUtils.CACHE." + entity;
         String m = NWorkspace.of().getProperty(k).flatMap(NLiteral::asString).orNull();
         if (m == null) {
-            m = NWorkspace.of()
-                    .getStoreLocation(NId.getForClass(NIndexerUtils.class).get(),
+            m = NPath.ofIdStore(NId.getForClass(NIndexerUtils.class).get(),
                             NStoreType.CACHE) + File.separator + entity;
             NWorkspace.of().setProperty(k, m);
         }

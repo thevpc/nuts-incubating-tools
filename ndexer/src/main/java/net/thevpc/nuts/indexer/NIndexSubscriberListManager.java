@@ -38,8 +38,7 @@ public class NIndexSubscriberListManager {
     }
 
     private NPath getConfigFile() {
-        return NWorkspace.of()
-                .getStoreLocation(NId.getForClass(NIndexSubscriberListManager.class).get(),
+        return NPath.ofIdStore(NId.getForClass(NIndexSubscriberListManager.class).get(),
                         NStoreType.CONF).resolve(
                         name + "-nuts-subscriber-list.json");
     }
