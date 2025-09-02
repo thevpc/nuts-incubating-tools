@@ -499,7 +499,7 @@ public class WorkspaceService {
                 for (DataRow p2 : ddd) {
                     String status = p2.status;
                     NTexts tf = NTexts.of();
-                    int len = tf.of(status).textLength();
+                    int len = tf.of(status).length();
                     while (len < 10) {
                         status += " ";
                         len++;
