@@ -3,7 +3,7 @@ package net.thevpc.nuts.toolbox.ntomcat.remote;
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
-import net.thevpc.nuts.elem.NDescribables;
+import net.thevpc.nuts.elem.NElementDescribables;
 import net.thevpc.nuts.NStoreType;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.text.NText;
@@ -350,12 +350,12 @@ public class RemoteTomcat {
                 sharedConfigFolder.stream().filter(
                                 NPredicate.of((NPath pathname) -> pathname.isRegularFile() && pathname.getName().endsWith(RemoteTomcatConfigService.REMOTE_CONFIG_EXT))
                                         .redescribe(
-                                                NDescribables.ofDesc("isRegularFile() && matches(*" + RemoteTomcatConfigService.REMOTE_CONFIG_EXT + ")")
+                                                NElementDescribables.ofDesc("isRegularFile() && matches(*" + RemoteTomcatConfigService.REMOTE_CONFIG_EXT + ")")
                                         )
 
                         )
                         .mapUnsafe(
-                                NUnsafeFunction.of((NPath x) -> loadTomcatConfig(x)).redescribe(NDescribables.ofDesc("loadTomcatConfig"))
+                                NUnsafeFunction.of((NPath x) -> loadTomcatConfig(x)).redescribe(NElementDescribables.ofDesc("loadTomcatConfig"))
                         )
                         .filterNonNull()
                         .toArray(RemoteTomcatConfigService[]::new);
