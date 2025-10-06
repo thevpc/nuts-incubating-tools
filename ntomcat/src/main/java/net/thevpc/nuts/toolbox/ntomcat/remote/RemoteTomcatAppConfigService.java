@@ -1,14 +1,15 @@
 package net.thevpc.nuts.toolbox.ntomcat.remote;
 
-import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.NCmdLine;
+import net.thevpc.nuts.command.NExecCmd;
+import net.thevpc.nuts.command.NExecutionException;
+import net.thevpc.nuts.core.NSession;
 import net.thevpc.nuts.elem.NElements;
-import net.thevpc.nuts.format.NObjectFormat;
+import net.thevpc.nuts.text.NObjectFormat;
 import net.thevpc.nuts.io.NPrintStream;
 import net.thevpc.nuts.text.NText;
 import net.thevpc.nuts.text.NTextBuilder;
 import net.thevpc.nuts.text.NTextStyle;
-import net.thevpc.nuts.text.NTexts;
 import net.thevpc.nuts.toolbox.ntomcat.remote.config.RemoteTomcatAppConfig;
 import net.thevpc.nuts.toolbox.ntomcat.remote.config.RemoteTomcatConfig;
 import net.thevpc.nuts.toolbox.ntomcat.util._FileUtils;
