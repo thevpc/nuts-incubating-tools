@@ -5,7 +5,7 @@
  */
 package net.thevpc.nuts.toolbox.ncode;
 
-import net.thevpc.nuts.NSession;
+import net.thevpc.nuts.core.NSession;
 
 import java.util.List;
 
