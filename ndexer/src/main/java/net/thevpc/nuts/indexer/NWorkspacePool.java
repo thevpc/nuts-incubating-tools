@@ -1,8 +1,8 @@
 package net.thevpc.nuts.indexer;
 
 
-import net.thevpc.nuts.NWorkspace;
-import net.thevpc.nuts.NWorkspaceOptionsBuilder;
+import net.thevpc.nuts.core.NWorkspace;
+import net.thevpc.nuts.core.NWorkspaceOptionsBuilder;
 import net.thevpc.nuts.Nuts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
