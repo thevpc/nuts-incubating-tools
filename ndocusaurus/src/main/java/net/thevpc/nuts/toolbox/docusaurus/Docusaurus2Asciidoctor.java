@@ -8,7 +8,7 @@ package net.thevpc.nuts.toolbox.docusaurus;
 
 import net.thevpc.nuts.elem.NElement;
 import net.thevpc.nuts.elem.NObjectElement;
-import net.thevpc.nuts.NSession;
+import net.thevpc.nuts.core.NSession;
 import net.thevpc.nuts.lib.md.convert.Adoc2Pdf;
 import net.thevpc.nuts.lib.md.convert.Adoc2PdfConfig;
 import net.thevpc.nuts.util.NLiteral;
