@@ -1,8 +1,13 @@
 package net.thevpc.nuts.toolbox.ntomcat;
 
-import net.thevpc.nuts.*;
+import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.app.NAppRunner;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
+import net.thevpc.nuts.core.NSession;
+import net.thevpc.nuts.core.NWorkspace;
+import net.thevpc.nuts.core.NAddRepositoryOptions;
+import net.thevpc.nuts.core.NRepository;
 import net.thevpc.nuts.toolbox.ntomcat.remote.RemoteTomcat;
 import net.thevpc.nuts.toolbox.ntomcat.local.LocalTomcat;
 import net.thevpc.nuts.toolbox.ntomcat.util.ApacheTomcatRepositoryModel;
