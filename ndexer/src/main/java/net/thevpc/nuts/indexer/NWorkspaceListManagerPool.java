@@ -1,11 +1,10 @@
 package net.thevpc.nuts.indexer;
 
-import net.thevpc.nuts.NSession;
-import net.thevpc.nuts.NWorkspaceList;
+import net.thevpc.nuts.core.NWorkspaceList;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Component;
 
 @Component
