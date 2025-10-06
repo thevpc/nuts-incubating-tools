@@ -1,6 +1,6 @@
 package net.thevpc.nuts.indexer;
 
-import net.thevpc.nuts.NWorkspaceLocation;
+import net.thevpc.nuts.core.NWorkspaceLocation;
 
 import java.io.Serializable;
 import java.util.HashMap;
