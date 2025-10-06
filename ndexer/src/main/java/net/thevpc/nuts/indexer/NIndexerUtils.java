@@ -1,11 +1,15 @@
 package net.thevpc.nuts.indexer;
 
-import net.thevpc.nuts.*;
+import net.thevpc.nuts.artifact.NDependency;
+import net.thevpc.nuts.artifact.NId;
+import net.thevpc.nuts.artifact.NIdBuilder;
+import net.thevpc.nuts.core.NConstants;
+import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.elem.NElementWriter;
-import net.thevpc.nuts.elem.NElements;
-import net.thevpc.nuts.NEnvConditionBuilder;
-import net.thevpc.nuts.NStoreType;
+import net.thevpc.nuts.artifact.NEnvConditionBuilder;
+import net.thevpc.nuts.platform.NStoreType;
 import net.thevpc.nuts.io.NPath;
+import net.thevpc.nuts.core.NRepository;
 import net.thevpc.nuts.util.NLiteral;
 import net.thevpc.nuts.util.NStringUtils;
 import org.apache.lucene.index.Term;
@@ -13,7 +17,6 @@ import org.apache.lucene.search.*;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
-import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
