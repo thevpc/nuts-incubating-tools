@@ -1,11 +1,16 @@
 package net.thevpc.nuts.indexer.services;
 
+import net.thevpc.nuts.artifact.*;
+import net.thevpc.nuts.command.NSearchCmd;
+import net.thevpc.nuts.core.NConstants;
+import net.thevpc.nuts.core.NWorkspace;
+import net.thevpc.nuts.core.NWorkspaceList;
+import net.thevpc.nuts.core.NWorkspaceLocation;
 import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElementWriter;
-import net.thevpc.nuts.elem.NElements;
-import net.thevpc.nuts.NEnvConditionBuilder;
 import net.thevpc.nuts.indexer.*;
 import net.thevpc.nuts.*;
+import net.thevpc.nuts.core.NRepositoryFilters;
 import net.thevpc.nuts.util.NRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
