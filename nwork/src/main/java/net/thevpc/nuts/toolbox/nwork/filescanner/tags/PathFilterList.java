@@ -1,7 +1,7 @@
 package net.thevpc.nuts.toolbox.nwork.filescanner.tags;
 
 import net.thevpc.nuts.expr.NGlob;
-import net.thevpc.nuts.NSession;
+import net.thevpc.nuts.core.NSession;
 
 import java.io.IOException;
 import java.nio.file.Files;
