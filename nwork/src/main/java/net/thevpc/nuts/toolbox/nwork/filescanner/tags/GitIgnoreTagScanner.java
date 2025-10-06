@@ -1,6 +1,6 @@
 package net.thevpc.nuts.toolbox.nwork.filescanner.tags;
 
-import net.thevpc.nuts.NSession;
+import net.thevpc.nuts.core.NSession;
 import net.thevpc.nuts.toolbox.nwork.filescanner.DefaultTagInfo;
 import net.thevpc.nuts.toolbox.nwork.filescanner.TagInfo;
 import net.thevpc.nuts.toolbox.nwork.filescanner.TagScanner;
