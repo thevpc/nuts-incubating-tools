@@ -1,15 +1,15 @@
 package net.thevpc.nuts.lib.servlet;
 
 import net.thevpc.nhttp.server.api.*;
-import net.thevpc.nuts.format.NContentType;
+import net.thevpc.nuts.text.NContentType;
 import net.thevpc.nuts.io.NIOException;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.util.NMsg;
 import net.thevpc.nuts.util.NMsgCode;
 import net.thevpc.nuts.util.NOptional;
-import net.thevpc.nuts.util.NUnsafeRunnable;
-import net.thevpc.nuts.web.NHttpCode;
-import net.thevpc.nuts.web.NHttpMethod;
+import net.thevpc.nuts.concurrent.NUnsafeRunnable;
+import net.thevpc.nuts.net.NHttpCode;
+import net.thevpc.nuts.net.NHttpMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +19,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.logging.Level;
 
 class ServletNHttpServletFacadeContext implements NWebCallContext {
     private final HttpServletRequest req;
