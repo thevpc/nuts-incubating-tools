@@ -28,6 +28,10 @@ import net.thevpc.nserver.AdminServerConfig;
 import net.thevpc.nserver.DefaultNWorkspaceServerManager;
 import net.thevpc.nserver.NServer;
 import net.thevpc.nserver.http.NHttpServletFacade;
+import net.thevpc.nuts.artifact.NId;
+import net.thevpc.nuts.core.NOpenMode;
+import net.thevpc.nuts.core.NWorkspace;
+import net.thevpc.nuts.core.NWorkspaceOptionsBuilder;
 import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.nuts.util.NStringUtils;
 
