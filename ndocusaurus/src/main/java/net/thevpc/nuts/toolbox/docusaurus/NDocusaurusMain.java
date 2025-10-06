@@ -1,10 +1,14 @@
 package net.thevpc.nuts.toolbox.docusaurus;
 
-import net.thevpc.nuts.*;
+import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.app.NAppDefinition;
+import net.thevpc.nuts.app.NAppRunner;
 import net.thevpc.nuts.cmdline.NCmdLineRunner;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
 
+import net.thevpc.nuts.core.NConfirmationMode;
+import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.util.NMsg;
 
 import java.nio.file.Paths;
