@@ -1,8 +1,8 @@
 package net.thevpc.nuts.toolbox.mvn;
 
-import net.thevpc.nuts.NApp;
-import net.thevpc.nuts.NOut;
-import net.thevpc.nuts.NSession;
+import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.io.NOut;
+import net.thevpc.nuts.core.NSession;
 import org.apache.maven.cli.MavenCli;
 
 import java.io.ByteArrayOutputStream;
