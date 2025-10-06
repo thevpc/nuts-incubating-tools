@@ -1,14 +1,12 @@
 package net.thevpc.nuts.toolbox.ntomcat.local;
 
-import net.thevpc.nuts.*;
 import net.thevpc.nuts.elem.NElementWriter;
-import net.thevpc.nuts.elem.NElements;
+import net.thevpc.nuts.io.NOut;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.io.NPrintStream;
 import net.thevpc.nuts.text.NText;
 import net.thevpc.nuts.text.NTextBuilder;
 import net.thevpc.nuts.text.NTextStyle;
-import net.thevpc.nuts.text.NTexts;
 import net.thevpc.nuts.toolbox.ntomcat.local.config.LocalTomcatDomainConfig;
 import net.thevpc.nuts.util.NMsg;
 
