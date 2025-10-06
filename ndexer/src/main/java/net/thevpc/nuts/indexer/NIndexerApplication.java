@@ -1,9 +1,9 @@
 package net.thevpc.nuts.indexer;
 
 
-import net.thevpc.nuts.NApp;
-import net.thevpc.nuts.NAppDefinition;
-import net.thevpc.nuts.NAppRunner;
+import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.app.NAppDefinition;
+import net.thevpc.nuts.app.NAppRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
