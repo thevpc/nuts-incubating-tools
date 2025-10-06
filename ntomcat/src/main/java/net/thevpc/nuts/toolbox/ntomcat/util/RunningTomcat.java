@@ -1,6 +1,6 @@
 package net.thevpc.nuts.toolbox.ntomcat.util;
 
-import net.thevpc.nuts.*;
+import net.thevpc.nuts.artifact.NVersion;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.io.NPath;
