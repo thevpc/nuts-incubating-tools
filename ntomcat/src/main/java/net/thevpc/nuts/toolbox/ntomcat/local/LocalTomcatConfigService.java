@@ -1,11 +1,15 @@
 package net.thevpc.nuts.toolbox.ntomcat.local;
 
-import net.thevpc.nuts.*;
+import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.artifact.*;
+import net.thevpc.nuts.command.*;
+import net.thevpc.nuts.core.NOpenMode;
+import net.thevpc.nuts.core.NSession;
+import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.elem.*;
-import net.thevpc.nuts.NEnvConditionBuilder;
 
-import net.thevpc.nuts.NStoreType;
-import net.thevpc.nuts.format.NObjectFormat;
+import net.thevpc.nuts.platform.NStoreType;
+import net.thevpc.nuts.text.NObjectFormat;
 import net.thevpc.nuts.io.*;
 import net.thevpc.nuts.text.NText;
 import net.thevpc.nuts.text.NTextBuilder;
@@ -16,8 +20,9 @@ import net.thevpc.nuts.toolbox.ntomcat.local.config.LocalTomcatConfig;
 import net.thevpc.nuts.toolbox.ntomcat.local.config.LocalTomcatDomainConfig;
 import net.thevpc.nuts.toolbox.ntomcat.util.*;
 import net.thevpc.nuts.util.NBlankable;
+import net.thevpc.nuts.util.NIllegalArgumentException;
 import net.thevpc.nuts.util.NMsg;
-import net.thevpc.nuts.NOsFamily;
+import net.thevpc.nuts.platform.NOsFamily;
 import net.thevpc.nuts.util.NPredicate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
