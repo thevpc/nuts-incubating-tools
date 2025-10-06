@@ -1,13 +1,10 @@
 package net.thevpc.nuts.toolbox.ntomcat.local;
 
-import net.thevpc.nuts.*;
+import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.core.NOpenMode;
 import net.thevpc.nuts.elem.NElementWriter;
-import net.thevpc.nuts.elem.NElements;
-import net.thevpc.nuts.NStoreType;
-import net.thevpc.nuts.io.NCp;
-import net.thevpc.nuts.io.NPath;
-import net.thevpc.nuts.io.NPathOption;
-import net.thevpc.nuts.io.NPrintStream;
+import net.thevpc.nuts.io.*;
+import net.thevpc.nuts.platform.NStoreType;
 import net.thevpc.nuts.text.NText;
 import net.thevpc.nuts.text.NTextBuilder;
 import net.thevpc.nuts.text.NTextStyle;
