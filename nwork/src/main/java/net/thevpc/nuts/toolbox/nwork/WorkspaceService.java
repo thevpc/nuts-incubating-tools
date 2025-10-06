@@ -1,14 +1,19 @@
 package net.thevpc.nuts.toolbox.nwork;
 
-import net.thevpc.nuts.*;
+import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.artifact.*;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NArgName;
 import net.thevpc.nuts.cmdline.NCmdLine;
+import net.thevpc.nuts.command.NExecCmd;
+import net.thevpc.nuts.command.NExecutionException;
+import net.thevpc.nuts.core.NSession;
 import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElementWriter;
-import net.thevpc.nuts.NStoreType;
-import net.thevpc.nuts.format.NContentType;
-import net.thevpc.nuts.format.NObjectFormat;
+import net.thevpc.nuts.io.NOut;
+import net.thevpc.nuts.platform.NStoreType;
+import net.thevpc.nuts.text.NContentType;
+import net.thevpc.nuts.text.NObjectFormat;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.io.NPrintStream;
 import net.thevpc.nuts.text.NTextBuilder;
