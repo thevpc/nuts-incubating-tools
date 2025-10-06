@@ -2,11 +2,13 @@ package net.thevpc.nuts.indexer.services;
 
 import javax.annotation.PostConstruct;
 
-import net.thevpc.nuts.*;
+import net.thevpc.nuts.core.NWorkspace;
+import net.thevpc.nuts.core.NWorkspaceList;
 import net.thevpc.nuts.indexer.NIndexSubscriberListManager;
 import net.thevpc.nuts.indexer.NWorkspacePool;
 import net.thevpc.nuts.indexer.NIndexSubscriberListManagerPool;
 import net.thevpc.nuts.indexer.NWorkspaceListManagerPool;
+import net.thevpc.nuts.core.NRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
