@@ -6,7 +6,7 @@
 package net.thevpc.nuts.toolbox.ncode.processors;
 
 import net.thevpc.nuts.io.NPath;
-import net.thevpc.nuts.NSession;
+import net.thevpc.nuts.core.NSession;
 import net.thevpc.nuts.toolbox.ncode.SourceProcessor;
 import net.thevpc.nuts.toolbox.ncode.Source;
 
