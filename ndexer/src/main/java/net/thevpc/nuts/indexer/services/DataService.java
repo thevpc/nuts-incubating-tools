@@ -1,9 +1,9 @@
 package net.thevpc.nuts.indexer.services;
 
-import net.thevpc.nuts.*;
+import net.thevpc.nuts.artifact.NId;
+import net.thevpc.nuts.command.NSearchCmd;
 import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElementWriter;
-import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.indexer.NIndexerUtils;
 import net.thevpc.nuts.util.NStringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
