@@ -21,7 +21,7 @@ import net.thevpc.nuts.toolbox.ntomcat.local.config.LocalTomcatDomainConfig;
 import net.thevpc.nuts.toolbox.ntomcat.util.*;
 import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.nuts.util.NIllegalArgumentException;
-import net.thevpc.nuts.util.NMsg;
+import net.thevpc.nuts.text.NMsg;
 import net.thevpc.nuts.platform.NOsFamily;
 import net.thevpc.nuts.util.NPredicate;
 import org.w3c.dom.Document;
