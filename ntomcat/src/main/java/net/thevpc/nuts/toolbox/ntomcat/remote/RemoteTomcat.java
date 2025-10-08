@@ -9,6 +9,7 @@ import net.thevpc.nuts.elem.NElementDescribables;
 import net.thevpc.nuts.io.NAsk;
 import net.thevpc.nuts.platform.NStoreType;
 import net.thevpc.nuts.io.NPath;
+import net.thevpc.nuts.text.NMsg;
 import net.thevpc.nuts.text.NText;
 import net.thevpc.nuts.text.NTextStyle;
 import net.thevpc.nuts.text.NTexts;
