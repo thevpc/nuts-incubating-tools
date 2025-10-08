@@ -6,7 +6,7 @@
 package net.thevpc.nuts.toolbox.ncode.processors;
 
 import net.thevpc.nuts.text.NText;
-import net.thevpc.nuts.util.NMsg;
+import net.thevpc.nuts.text.NMsg;
 import net.thevpc.nuts.core.NSession;
 import net.thevpc.nuts.text.NTextStyle;
 import net.thevpc.nuts.toolbox.ncode.SourceProcessor;
