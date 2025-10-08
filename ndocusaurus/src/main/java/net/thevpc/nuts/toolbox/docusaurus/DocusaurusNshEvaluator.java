@@ -14,7 +14,7 @@ import net.thevpc.nsh.parser.nodes.NshVariables;
 import net.thevpc.nsh.Nsh;
 import net.thevpc.nsh.NshConfig;
 import net.thevpc.nuts.log.NLog;
-import net.thevpc.nuts.util.NMsg;
+import net.thevpc.nuts.text.NMsg;
 
 public class DocusaurusNshEvaluator implements NSiteExprEvaluator {
     private Nsh shell;
