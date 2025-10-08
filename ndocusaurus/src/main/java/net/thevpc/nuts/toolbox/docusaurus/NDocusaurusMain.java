@@ -9,7 +9,7 @@ import net.thevpc.nuts.cmdline.NCmdLine;
 
 import net.thevpc.nuts.core.NConfirmationMode;
 import net.thevpc.nuts.core.NWorkspace;
-import net.thevpc.nuts.util.NMsg;
+import net.thevpc.nuts.text.NMsg;
 
 import java.nio.file.Paths;
 
