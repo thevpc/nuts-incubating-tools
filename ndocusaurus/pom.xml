@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.thevpc.ndocusaurus</groupId>
     <artifactId>ndocusaurus</artifactId>
-    <version>0.8.7.0</version>
+    <version>0.8.8.0</version>
     <packaging>jar</packaging>
     <name>Nuts Community Toolbox NDocusaurus</name>
     <url>https://github.com/thevpc/nuts</url>
@@ -59,10 +59,10 @@
     </licenses>
 
     <dependencies>
-        <dependency><groupId>net.thevpc.nuts</groupId><artifactId>nuts</artifactId><version>0.8.7</version></dependency>
-        <dependency><groupId>net.thevpc.nmarkdown</groupId><artifactId>nmarkdown</artifactId><version>0.8.7.0</version></dependency>
-        <dependency><groupId>net.thevpc.nsite</groupId><artifactId>nsite-lib</artifactId><version>0.8.7.0</version></dependency>
-        <dependency><groupId>net.thevpc.nsh</groupId><artifactId>nsh</artifactId><version>0.8.7.0</version></dependency>
+        <dependency><groupId>net.thevpc.nuts</groupId><artifactId>nuts</artifactId><version>0.8.8</version></dependency>
+        <dependency><groupId>net.thevpc.nmarkdown</groupId><artifactId>nmarkdown</artifactId><version>0.8.8.0</version></dependency>
+        <dependency><groupId>net.thevpc.nsite</groupId><artifactId>nsite-lib</artifactId><version>0.8.8.0</version></dependency>
+        <dependency><groupId>net.thevpc.nsh</groupId><artifactId>nsh</artifactId><version>0.8.8.0</version></dependency>
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter-api</artifactId><version>5.8.2</version><scope>test</scope></dependency>
     </dependencies>
     <distributionManagement>
