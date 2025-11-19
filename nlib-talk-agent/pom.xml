@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.thevpc.nuts</groupId>
     <artifactId>nuts-talk-agent</artifactId>
-    <version>0.8.8.0</version>
+    <version>0.8.9.0</version>
     <packaging>jar</packaging>
     <name>Nuts Community Library for NTalk Support</name>
     <url>https://github.com/thevpc/nuts</url>
@@ -178,7 +178,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.8</version>
+                        <version>0.8.9</version>
                         <executions>
                             <execution>
                                 <goals>
