@@ -1,7 +1,7 @@
 package net.thevpc.nuts.indexer.services;
 
 import net.thevpc.nuts.artifact.NId;
-import net.thevpc.nuts.command.NSearchCmd;
+import net.thevpc.nuts.command.NSearch;
 import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.indexer.NIndexerUtils;
@@ -139,7 +139,7 @@ public class DataService {
         }
         Map<String, String> row = rows.get(0);
         if (!row.containsKey("allDependencies")) {
-            List<NId> allDependencies = NSearchCmd.of()
+            List<NId> allDependencies = NSearch.of()
                     .setBasePackage(false)
                     .setInlineDependencies(true)
                     .addId(id)
