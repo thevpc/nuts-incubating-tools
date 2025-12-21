@@ -1,7 +1,7 @@
 package net.thevpc.nuts.toolbox.ntomcat.remote;
 
 import net.thevpc.nuts.cmdline.NCmdLine;
-import net.thevpc.nuts.command.NExecCmd;
+import net.thevpc.nuts.command.NExec;
 import net.thevpc.nuts.command.NExecutionException;
 import net.thevpc.nuts.core.NSession;
 import net.thevpc.nuts.elem.NElements;
@@ -54,7 +54,7 @@ public class RemoteTomcatAppConfigService extends RemoteTomcatServiceBase {
         if (!server.startsWith("ssh://")) {
             server = "ssh://" + server;
         }
-        NExecCmd.of()
+        NExec.of()
                 .addCommand(
                         "nsh",
                         "--bot",
@@ -80,7 +80,7 @@ public class RemoteTomcatAppConfigService extends RemoteTomcatServiceBase {
         if (!fileAdded) {
             cmd.add(config.getPath());
         }
-        NExecCmd s = NExecCmd.of()
+        NExec s = NExec.of()
                 .grabAll()
                 .addCommand(cmd).run();
         if (s.getResultCode() == 0) {
