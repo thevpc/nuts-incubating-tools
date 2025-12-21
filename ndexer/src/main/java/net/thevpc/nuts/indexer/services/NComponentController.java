@@ -1,7 +1,7 @@
 package net.thevpc.nuts.indexer.services;
 
 import net.thevpc.nuts.artifact.*;
-import net.thevpc.nuts.command.NSearchCmd;
+import net.thevpc.nuts.command.NSearch;
 import net.thevpc.nuts.core.NConstants;
 import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.core.NWorkspaceList;
@@ -245,7 +245,7 @@ public class NComponentController {
                     Map<String, String> data = NIndexerUtils.nutsIdToMap(id);
                     List<Map<String, String>> list = this.dataService.searchData(NIndexerUtils.getCacheDir(subscriber.cacheFolderName()), data, null);
                     if (list.isEmpty()) {
-                        Iterator<NDefinition> it = NSearchCmd.of()
+                        Iterator<NDefinition> it = NSearch.of()
                                 .setRepositoryFilter(
                                         NRepositoryFilters.of().byUuid(subscriber.getUuid())
                                 )
