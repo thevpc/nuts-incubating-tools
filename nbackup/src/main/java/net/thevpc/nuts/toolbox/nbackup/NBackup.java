@@ -8,7 +8,7 @@ package net.thevpc.nuts.toolbox.nbackup;
 import net.thevpc.nuts.app.NApp;
 import net.thevpc.nuts.app.NAppRunner;
 import net.thevpc.nuts.cmdline.*;
-import net.thevpc.nuts.command.NExecCmd;
+import net.thevpc.nuts.command.NExec;
 import net.thevpc.nuts.core.NSession;
 import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElementWriter;
@@ -172,7 +172,7 @@ public class NBackup {
                                 NMsg.ofStyledPath(remotePath)
                         ));
                         NOut.println(NCmdLine.of(cmd));
-                        NExecCmd.of().addCommand(cmd).failFast().run();
+                        NExec.of().addCommand(cmd).failFast().run();
                     }
                 });
     }
