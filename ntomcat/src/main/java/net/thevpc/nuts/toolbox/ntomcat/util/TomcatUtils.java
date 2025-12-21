@@ -2,7 +2,7 @@ package net.thevpc.nuts.toolbox.ntomcat.util;
 
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.io.NPs;
-import net.thevpc.nuts.platform.NPlatformFamily;
+import net.thevpc.nuts.platform.NExecutionEngineFamily;
 import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.nuts.util.NStringUtils;
 
@@ -144,7 +144,7 @@ public class TomcatUtils {
     }
 
     public static RunningTomcat[] getRunningInstances() {
-        return NPs.of().setPlatformFamily(NPlatformFamily.JAVA).getResultList()
+        return NPs.of().setPlatformFamily(NExecutionEngineFamily.JAVA).getResultList()
                 .stream().filter((p) -> p.getName().equals("org.apache.catalina.startup.Bootstrap"))
                 .map(x -> new RunningTomcat(x)).toArray(RunningTomcat[]::new);
     }
