@@ -4,7 +4,7 @@ import net.thevpc.nuts.*;
 import net.thevpc.nuts.app.NApp;
 import net.thevpc.nuts.artifact.*;
 import net.thevpc.nuts.command.NExecutionException;
-import net.thevpc.nuts.command.NSearchCmd;
+import net.thevpc.nuts.command.NSearch;
 import net.thevpc.nuts.core.NOpenMode;
 import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.core.NWorkspaceOptionsBuilder;
@@ -213,7 +213,7 @@ public class ProjectService {
                     ws = NWorkspace.of();
                 }
 
-                List<NDefinition> found = ws.callWith(() -> NSearchCmd.of()
+                List<NDefinition> found = ws.callWith(() -> NSearch.of()
                         .addId(sid)
                         .addRepositoryFilter(NRepositoryFilters.of().byName(nutsRepository))
                         .setLatest(true).getResultDefinitions().toList()
@@ -264,7 +264,7 @@ public class ProjectService {
                         } else {
                             ws = NWorkspace.of();
                         }
-                        List<NId> found = ws.callWith(() -> NSearchCmd.of()
+                        List<NId> found = ws.callWith(() -> NSearch.of()
                                 .addId(g.getId().getGroupId() + ":" + g.getId().getArtifactId())
                                 .addRepositoryFilter(NRepositoryFilters.of().byName(nutsRepository))
                                 .setLatest(true).getResultIds().toList());
