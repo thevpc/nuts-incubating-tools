@@ -5,7 +5,7 @@ import net.thevpc.nuts.artifact.*;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NArgName;
 import net.thevpc.nuts.cmdline.NCmdLine;
-import net.thevpc.nuts.command.NExecCmd;
+import net.thevpc.nuts.command.NExec;
 import net.thevpc.nuts.command.NExecutionException;
 import net.thevpc.nuts.core.NSession;
 import net.thevpc.nuts.elem.NElementParser;
@@ -299,7 +299,7 @@ public class WorkspaceService {
             if (id.getVersion() != null) {
                 p += "/" + id.getVersion();
             }
-            NExecCmd.of().addCommand(
+            NExec.of().addCommand(
                             "rsync")
                     .addCommand(NPath.ofUserHome().resolve(".m2/repository")
                             .resolve(p).stream().map(NPath::toString).toList())
