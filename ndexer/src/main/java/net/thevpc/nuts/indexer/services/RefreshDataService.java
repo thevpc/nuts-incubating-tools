@@ -3,7 +3,7 @@ package net.thevpc.nuts.indexer.services;
 import net.thevpc.nuts.artifact.NDefinition;
 import net.thevpc.nuts.artifact.NDependency;
 import net.thevpc.nuts.artifact.NId;
-import net.thevpc.nuts.command.NSearchCmd;
+import net.thevpc.nuts.command.NSearch;
 import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.core.NWorkspaceLocation;
 import net.thevpc.nuts.elem.NElementWriter;
@@ -61,7 +61,7 @@ public class RefreshDataService {
                     .getAllData(NIndexerUtils.getCacheDir(subscriber.cacheFolderName()))
                     .stream()
                     .collect(Collectors.toMap(map -> map.get("stringId"), map -> NIndexerUtils.mapToNutsId(map), (v1, v2) -> v1));
-            Iterator<NDefinition> definitions = NSearchCmd.of()
+            Iterator<NDefinition> definitions = NSearch.of()
                     .setRepositoryFilter(NRepositoryFilters.of().byUuid(subscriber.getUuid()))
                     .setFailFast(false)
                     .getResultDefinitions().iterator();
