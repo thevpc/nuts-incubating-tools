@@ -10,7 +10,7 @@ import net.thevpc.nsite.context.NSiteContext;
 import net.thevpc.nsite.mimetype.DefaultNSiteMimeTypeResolver;
 import net.thevpc.nsite.mimetype.MimeTypeConstants;
 import net.thevpc.nsite.util.FileProcessorUtils;
-import net.thevpc.nuts.command.NExecCmd;
+import net.thevpc.nuts.command.NExec;
 import net.thevpc.nuts.command.NExecutionType;
 import net.thevpc.nuts.core.NConfirmationMode;
 import net.thevpc.nuts.core.NSession;
@@ -188,7 +188,7 @@ public class DocusaurusCtrl {
     }
 
     private void runNativeCommand(NPath workFolder, String... cmd) {
-        NExecCmd.of()
+        NExec.of()
                 .setExecutionType(NExecutionType.EMBEDDED)
                 .addCommand(cmd).setDirectory(workFolder)
                 .failFast().getResultCode();
@@ -197,7 +197,7 @@ public class DocusaurusCtrl {
     public void runCommand(NPath workFolder, boolean yes, String... cmd) {
         NSession.of().copy().setConfirm(yes ? NConfirmationMode.YES : NConfirmationMode.ERROR)
                 .runWith(() -> {
-                    NExecCmd.of().addCommand(cmd).setDirectory(workFolder)
+                    NExec.of().addCommand(cmd).setDirectory(workFolder)
                             .setExecutionType(NExecutionType.EMBEDDED)
                             .failFast().getResultCode();
                 });
