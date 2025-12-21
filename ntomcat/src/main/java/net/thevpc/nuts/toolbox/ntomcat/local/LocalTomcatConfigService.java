@@ -5,9 +5,9 @@ import net.thevpc.nuts.artifact.*;
 import net.thevpc.nuts.command.*;
 import net.thevpc.nuts.core.NOpenMode;
 import net.thevpc.nuts.core.NSession;
-import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.elem.*;
 
+import net.thevpc.nuts.platform.NEnv;
 import net.thevpc.nuts.platform.NStoreType;
 import net.thevpc.nuts.text.NObjectFormat;
 import net.thevpc.nuts.io.*;
@@ -318,7 +318,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         NPath catalinaBase = getCatalinaBase();
         boolean catalinaBaseUpdated = false;
         catalinaBaseUpdated |= mkdirs(catalinaBase);
-        String ext = NWorkspace.of().getOsFamily() == NOsFamily.WINDOWS ? "bat" : "sh";
+        String ext = NEnv.of().getOsFamily() == NOsFamily.WINDOWS ? "bat" : "sh";
         catalinaBaseUpdated |= checkExec(catalinaHome.resolve("bin").resolve("catalina." + ext));
         LocalTomcatConfig c = getConfig();
         catalinaBaseUpdated |= mkdirs(catalinaBase.resolve("logs"));
@@ -370,17 +370,17 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         return false;
     }
 
-    public NExecCmd invokeCatalina(String catalinaCommand) {
+    public NExec invokeCatalina(String catalinaCommand) {
         buildCatalinaBase();
         NPath catalinaHome = getCatalinaHome();
         NPath catalinaBase = getCatalinaBase();
         
-        String ext = NWorkspace.of().getOsFamily() == NOsFamily.WINDOWS ? "bat" : "sh";
+        String ext = NEnv.of().getOsFamily() == NOsFamily.WINDOWS ? "bat" : "sh";
 
         //b.
 //        b.setOutput(context.NOut);
 //        b.setErr(context.getSession().err());
-        NExecCmd b = NExecCmd.of()
+        NExec b = NExec.of()
                 .system();
         b.addCommand(catalinaHome + "/bin/catalina." + ext);
         b.addCommand(catalinaCommand);
@@ -479,7 +479,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             deleteOutLog();
         }
 
-        NExecCmd b = invokeCatalina("start");
+        NExec b = invokeCatalina("start");
 //        try {
 //            b.waitFor();
 //        } catch (IOException ex) {
@@ -497,7 +497,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         catalinaVersion = catalinaVersion.trim();
         
         if (catalinaVersion.isEmpty()) {
-            NVersion javaVersion = NWorkspace.of().getPlatform().getVersion();
+            NVersion javaVersion = NEnv.of().getJava().getVersion();
             //  http://tomcat.apache.org/whichversion.html
             if (javaVersion.compareTo("1.8") >= 0) {
                 catalinaVersion = "[9,10.1[";
@@ -525,10 +525,10 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             String cid = "org.apache.catalina:apache-tomcat";//+"#"+cv;
             cid = NIdBuilder.of().copyFrom(NId.get(cid).get()).setCondition(
                     NEnvConditionBuilder.of()
-                            .addPlatform(NWorkspace.of().getPlatform().toString())
+                            .addPlatform(NEnv.of().getJava().toString())
             ).toString();
 
-            NSearchCmd searchLatestCommand = NSearchCmd.of().addId(cid)
+            NSearch searchLatestCommand = NSearch.of().addId(cid)
                     .setLatest(true);
             NDefinition r = searchLatestCommand
                     .setDefinitionFilter(NDefinitionFilters.of().byDeployed(true))
@@ -555,7 +555,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                                     ));
                                 }
                             }
-                        })).callWith(() -> NInstallCmd.of()
+                        })).callWith(() -> NInstall.of()
                                 .addId(finalR.getId())
                                 .getResult().findFirst().get());
                 //this is a workaround. Def returned by install does not include all information!
@@ -590,7 +590,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             return false;
         }
         LocalTomcatConfig c = getConfig();
-        NExecCmd b = invokeCatalina("stop");
+        NExec b = invokeCatalina("stop");
         return waitForStoppedStatus(c.getShutdownWaitTime(), c.isKill());
     }
 
