@@ -1,7 +1,7 @@
 package net.thevpc.nuts.toolbox.ntomcat.remote;
 
 import net.thevpc.nuts.app.NApp;
-import net.thevpc.nuts.command.NExecCmd;
+import net.thevpc.nuts.command.NExec;
 import net.thevpc.nuts.command.NExecutionException;
 import net.thevpc.nuts.core.NSession;
 import net.thevpc.nuts.elem.NElementParser;
@@ -233,7 +233,7 @@ public class RemoteTomcatConfigService extends RemoteTomcatServiceBase {
         cmdList.add("nuts");
         cmdList.add("--bot");
         cmdList.addAll(Arrays.asList(cmd));
-        NExecCmd.of()
+        NExec.of()
                 .addCommand(cmdList)
                 .failFast()
                 .run();
