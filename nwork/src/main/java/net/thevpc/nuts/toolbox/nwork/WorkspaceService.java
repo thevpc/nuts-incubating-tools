@@ -412,7 +412,7 @@ public class WorkspaceService {
             }
             if (progress && session.isPlainOut()) {
                 maxSize = Math.max(maxSize, projectService.getConfig().getId().length());
-                NOut.resetLine().print(NMsg.ofC("(%s / %s) %s", (i + 1), all.size(), _StringUtils.alignLeft(projectService.getConfig().getId(), maxSize)));
+                NOut.print(NMsg.ofC("(%s / %s) %s", (i + 1), all.size(), _StringUtils.alignLeft(projectService.getConfig().getId(), maxSize)));
             }
             d.local = projectService.detectLocalVersion();
             d.remote = d.local == null ? null : projectService.detectRemoteVersion();
