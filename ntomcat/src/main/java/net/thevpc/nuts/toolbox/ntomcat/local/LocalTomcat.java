@@ -8,12 +8,9 @@ import net.thevpc.nuts.core.NOpenMode;
 import net.thevpc.nuts.core.NSession;
 import net.thevpc.nuts.elem.NElementDescribables;
 import net.thevpc.nuts.elem.NElement;
-import net.thevpc.nuts.io.NAsk;
-import net.thevpc.nuts.io.NOut;
+import net.thevpc.nuts.io.*;
 import net.thevpc.nuts.platform.NStoreType;
 import net.thevpc.nuts.text.*;
-import net.thevpc.nuts.io.NPath;
-import net.thevpc.nuts.io.NPrintStream;
 import net.thevpc.nuts.util.NRef;
 import net.thevpc.nuts.toolbox.ntomcat.NTomcatConfigVersions;
 import net.thevpc.nuts.toolbox.ntomcat.util.NamedItemNotFoundException;
@@ -394,7 +391,7 @@ public class LocalTomcat {
             switch (a.asString().get()) {
                 case "instance": {
                     LocalTomcatConfigService s = nextLocalTomcatConfigService(args, NOpenMode.OPEN_OR_ERROR);
-                    if (NAsk.of()
+                    if (NIn.ask()
                             .forBoolean(NMsg.ofC("Confirm Deleting %s?", s.getName())).setDefaultValue(true).getBooleanValue()) {
                         s.remove();
                     }
@@ -402,7 +399,7 @@ public class LocalTomcat {
                 }
                 case "domain": {
                     LocalTomcatDomainConfigService s = nextLocalTomcatDomainConfigService(args, NOpenMode.OPEN_OR_ERROR);
-                    if (NAsk.of()
+                    if (NIn.ask()
                             .forBoolean(NMsg.ofC("Confirm Deleting %s?", s.getName())).setDefaultValue(true).getBooleanValue()) {
                         s.remove();
                         s.getTomcat().save();
@@ -411,7 +408,7 @@ public class LocalTomcat {
                 }
                 case "app": {
                     LocalTomcatAppConfigService s = nextLocalTomcatAppConfigService(args, NOpenMode.OPEN_OR_ERROR);
-                    if (NAsk.of()
+                    if (NIn.ask()
                             .forBoolean(NMsg.ofC("Confirm Deleting %s?", s.getName())).setDefaultValue(true).getBooleanValue()) {
                         s.remove();
                         s.getTomcat().save();
