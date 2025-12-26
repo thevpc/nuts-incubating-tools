@@ -7,6 +7,7 @@ import net.thevpc.nuts.command.NExecutionException;
 import net.thevpc.nuts.core.NSession;
 import net.thevpc.nuts.elem.NElementDescribables;
 import net.thevpc.nuts.io.NAsk;
+import net.thevpc.nuts.io.NIn;
 import net.thevpc.nuts.platform.NStoreType;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.text.NMsg;
@@ -175,7 +176,7 @@ public class RemoteTomcat {
                 ok = true;
                 if (NBlankable.isBlank(c.getConfig().getServer())) {
                     ok = false;
-                    c.getConfig().setServer(NAsk.of()
+                    c.getConfig().setServer(NIn.ask()
                             .forString(
                                     NMsg.ofC("[instance=%s] would you enter %s value ?"
                                             , text.ofStyled(c.getName(), NTextStyle.primary1())
@@ -189,7 +190,7 @@ public class RemoteTomcat {
                 if (NBlankable.isBlank(c.getConfig().getRemoteTempPath())) {
                     ok = false;
                     c.getConfig()
-                            .setRemoteTempPath(NAsk.of()
+                            .setRemoteTempPath(NIn.ask()
                                     .forString(NMsg.ofC("[instance=%s] would you enter %s value ?"
                                             , text.ofStyled(c.getName(), NTextStyle.primary1())
                                             , text.ofStyled("--remote-temp-path", NTextStyle.option())
@@ -200,7 +201,7 @@ public class RemoteTomcat {
                 for (RemoteTomcatAppConfigService aa : c.getApps()) {
                     if (NBlankable.isBlank(aa.getConfig().getPath())) {
                         ok = false;
-                        aa.getConfig().setPath(NAsk.of()
+                        aa.getConfig().setPath(NIn.ask()
                                 .forString(NMsg.ofC("[instance=%s] [app=%s] would you enter %s value ?"
                                         , text.ofStyled(c.getName(), NTextStyle.primary1())
                                         , text.ofStyled(aa.getName(), NTextStyle.option())
