@@ -5,12 +5,8 @@ import net.thevpc.nuts.app.NAppRunner;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.core.NSession;
-import net.thevpc.nuts.core.NWorkspace;
-import net.thevpc.nuts.core.NAddRepositoryOptions;
-import net.thevpc.nuts.core.NRepository;
 import net.thevpc.nuts.toolbox.ntomcat.remote.RemoteTomcat;
 import net.thevpc.nuts.toolbox.ntomcat.local.LocalTomcat;
-import net.thevpc.nuts.toolbox.ntomcat.util.ApacheTomcatRepositoryModel;
 
 public class NTomcatMain  {
 
@@ -20,16 +16,16 @@ public class NTomcatMain  {
 
     @NAppRunner
     public void run() {
-        NRepository apacheRepo = NWorkspace.of().findRepository("apache-tomcat").orNull();
+//        NRepository apacheRepo = NWorkspace.of().findRepository("apache-tomcat").orNull();
         NSession session = NSession.of();
-        if (apacheRepo == null) {
-            NWorkspace.of().addRepository(
-                    new NAddRepositoryOptions()
-                            .setRepositoryModel(new ApacheTomcatRepositoryModel())
-                            .setTemporary(true)
-                            
-            );
-        }
+//        if (apacheRepo == null) {
+//            NWorkspace.of().addRepository(
+//                    new NAddRepositoryOptions()
+//                            .setRepositoryModel(new ApacheTomcatRepositoryModel())
+//                            .setTemporary(true)
+//
+//            );
+//        }
         NCmdLine cmdLine = NApp.of().getCmdLine();
         Boolean local = null;
         boolean skipFirst = false;
