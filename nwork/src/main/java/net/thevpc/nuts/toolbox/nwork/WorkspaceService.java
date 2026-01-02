@@ -193,7 +193,7 @@ public class WorkspaceService {
                 }
             } else {
                 NObjectFormat.of()
-                        .setValue(result).println();
+                        .println(result);
             }
         }
     }
@@ -564,7 +564,7 @@ public class WorkspaceService {
                 }
             } else {
                 NObjectFormat.of()
-                        .setValue(ddd).println();
+                        .println(ddd);
             }
         }
     }
