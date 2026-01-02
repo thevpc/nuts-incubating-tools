@@ -133,7 +133,7 @@ public class RemoteTomcatAppConfigService extends RemoteTomcatServiceBase {
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("config-name", getName());
         m.putAll(NElements.of().convert(getConfig(), Map.class));
-        NObjectFormat.of().setValue(m).print(out);
+        NObjectFormat.of().print(m, out);
         return this;
     }
 
