@@ -6,7 +6,7 @@ import net.thevpc.nuts.core.NConstants;
 import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.core.NWorkspaceList;
 import net.thevpc.nuts.core.NWorkspaceLocation;
-import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.indexer.*;
 import net.thevpc.nuts.*;
@@ -256,7 +256,7 @@ public class NComponentController {
                             NDefinition definition = it.next();
                             List<NDependency> directDependencies = definition.getEffectiveDescriptor().get().getDependencies();
                             data.put("dependencies", NElementWriter.ofJson()
-                                    .toString(directDependencies.stream().map(Object::toString)
+                                    .formatPlain(directDependencies.stream().map(Object::toString)
                                             .collect(Collectors.toList()))
                             );
 
@@ -278,7 +278,7 @@ public class NComponentController {
         for (Map<String, String> row : rows) {
             Map<String, Object> d = new HashMap<>(row);
             if (d.containsKey("dependencies")) {
-                String[] array = NElementParser.ofJson().parse(new StringReader(row.get("dependencies")), String[].class);
+                String[] array = NElementReader.ofJson().read(new StringReader(row.get("dependencies")), String[].class);
                 List<Map<String, String>> dependencies = new ArrayList<>();
                 for (String s : array) {
                     dependencies.add(NIndexerUtils.nutsIdToMap(NId.get(s).get()));
@@ -286,7 +286,7 @@ public class NComponentController {
                 d.put("dependencies", dependencies);
             }
             if (d.containsKey("allDependencies")) {
-                String[] array = NElementParser.ofJson().parse(new StringReader(row.get("allDependencies")), String[].class);
+                String[] array = NElementReader.ofJson().read(new StringReader(row.get("allDependencies")), String[].class);
                 List<Map<String, String>> allDependencies = new ArrayList<>();
                 for (String s : array) {
                     allDependencies.add(NIndexerUtils.nutsIdToMap(NId.get(s).get()));
