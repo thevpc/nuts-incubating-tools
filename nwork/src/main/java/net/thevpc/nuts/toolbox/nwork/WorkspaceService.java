@@ -8,17 +8,14 @@ import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.command.NExec;
 import net.thevpc.nuts.command.NExecutionException;
 import net.thevpc.nuts.core.NSession;
-import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.io.NOut;
 import net.thevpc.nuts.platform.NStoreType;
-import net.thevpc.nuts.text.NContentType;
-import net.thevpc.nuts.text.NObjectFormat;
+import net.thevpc.nuts.text.*;
+import net.thevpc.nuts.text.NObjectObjectWriter;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.io.NPrintStream;
-import net.thevpc.nuts.text.NTextBuilder;
-import net.thevpc.nuts.text.NTextStyle;
-import net.thevpc.nuts.text.NTexts;
 import net.thevpc.nuts.toolbox.ndiff.jar.Diff;
 import net.thevpc.nuts.toolbox.ndiff.jar.DiffItem;
 import net.thevpc.nuts.toolbox.ndiff.jar.DiffResult;
@@ -27,7 +24,6 @@ import net.thevpc.nuts.toolbox.nwork.config.RepositoryAddress;
 import net.thevpc.nuts.toolbox.nwork.config.WorkspaceConfig;
 import net.thevpc.nuts.toolbox.nwork.filescanner.FileScanner;
 import net.thevpc.nuts.util.NBlankable;
-import net.thevpc.nuts.text.NMsg;
 import net.thevpc.nuts.util.NRef;
 
 import java.io.File;
@@ -51,7 +47,7 @@ public class WorkspaceService {
         NPath c = getConfigFile();
         if (c.isRegularFile()) {
             try {
-                config = NElementParser.ofJson().parse(c, WorkspaceConfig.class);
+                config = NElementReader.ofJson().read(c, WorkspaceConfig.class);
             } catch (Exception ex) {
                 //
             }
@@ -192,7 +188,7 @@ public class WorkspaceService {
                     );
                 }
             } else {
-                NObjectFormat.of()
+                NObjectObjectWriter.of()
                         .println(result);
             }
         }
@@ -563,7 +559,7 @@ public class WorkspaceService {
                     session.out().println();
                 }
             } else {
-                NObjectFormat.of()
+                NObjectObjectWriter.of()
                         .println(ddd);
             }
         }
@@ -766,7 +762,7 @@ public class WorkspaceService {
         boolean scan = true;
         if (Files.isRegularFile(ni)) {
             try {
-                p = NElementParser.ofJson().parse(ni, Map.class);
+                p = NElementReader.ofJson().read(ni, Map.class);
                 String v = p.get(SCAN) == null ? null : String.valueOf(p.get(SCAN));
                 if (v == null || "false".equals(v.trim())) {
                     scan = false;
@@ -791,7 +787,7 @@ public class WorkspaceService {
         Map p = null;
         if (ni.isFile()) {
             try {
-                p = NElementParser.ofJson().parse(ni, Map.class);
+                p = NElementReader.ofJson().read(ni, Map.class);
                 String v = p.get(SCAN) == null ? null : String.valueOf(p.get(SCAN));
                 if (v == null || "false".equals(v.trim())) {
                     scan = false;
