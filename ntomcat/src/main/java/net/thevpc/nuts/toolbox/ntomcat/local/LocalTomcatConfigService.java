@@ -9,11 +9,9 @@ import net.thevpc.nuts.elem.*;
 
 import net.thevpc.nuts.platform.NEnv;
 import net.thevpc.nuts.platform.NStoreType;
-import net.thevpc.nuts.text.NObjectFormat;
+import net.thevpc.nuts.text.*;
+import net.thevpc.nuts.text.NObjectObjectWriter;
 import net.thevpc.nuts.io.*;
-import net.thevpc.nuts.text.NText;
-import net.thevpc.nuts.text.NTextBuilder;
-import net.thevpc.nuts.text.NTextStyle;
 import net.thevpc.nuts.toolbox.ntomcat.NTomcatConfigVersions;
 import net.thevpc.nuts.toolbox.ntomcat.local.config.LocalTomcatAppConfig;
 import net.thevpc.nuts.toolbox.ntomcat.local.config.LocalTomcatConfig;
@@ -21,7 +19,6 @@ import net.thevpc.nuts.toolbox.ntomcat.local.config.LocalTomcatDomainConfig;
 import net.thevpc.nuts.toolbox.ntomcat.util.*;
 import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.nuts.util.NIllegalArgumentException;
-import net.thevpc.nuts.text.NMsg;
 import net.thevpc.nuts.platform.NOsFamily;
 import net.thevpc.nuts.util.NPredicate;
 import org.w3c.dom.Document;
@@ -126,7 +123,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         result.put("ajp-redirect-port", getAjpConnectorRedirectPort());
         result.put("shutdown-port", getShutdownPort());
         result.put("config", getConfig());
-        NObjectFormat.of().print(result, out);
+        NObjectObjectWriter.of().print(result, out);
         return this;
     }
 
@@ -289,8 +286,8 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         }
     }
 
-    public NObjectFormat object() {
-        return NObjectFormat.of();
+    public NObjectObjectWriter object() {
+        return NObjectObjectWriter.of();
     }
 
     public String[] parseApps(String[] args) {
@@ -908,7 +905,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         NPath f = sharedConfigFolder.resolve(name + LOCAL_CONFIG_EXT);
         if (f.exists()) {
             
-            config = NElementParser.ofJson().parse(f, LocalTomcatConfig.class);
+            config = NElementReader.ofJson().read(f, LocalTomcatConfig.class);
             return this;
 //        } else if ("default".equals(name)) {
 //            //auto create default config
