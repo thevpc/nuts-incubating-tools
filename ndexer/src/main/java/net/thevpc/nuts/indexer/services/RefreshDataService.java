@@ -84,7 +84,7 @@ public class RefreshDataService {
                 List<NDependency> directDependencies = definition.getEffectiveDescriptor().get().getDependencies();
                 id.put("dependencies",
                         NElementWriter.ofJson()
-                                .toString(directDependencies.stream().map(Object::toString).collect(Collectors.toList()))
+                                .formatPlain(directDependencies.stream().map(Object::toString).collect(Collectors.toList()))
                 );
                 dataToIndex.add(id);
             }
