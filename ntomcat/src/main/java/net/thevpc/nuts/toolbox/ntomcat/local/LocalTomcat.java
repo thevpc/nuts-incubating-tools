@@ -219,8 +219,7 @@ public class LocalTomcat {
                 }
             } else {
                 NObjectFormat.of()
-                        .setValue(TomcatUtils.getRunningInstances())
-                        .println();
+                        .println(TomcatUtils.getRunningInstances());
             }
         }
     }
@@ -605,8 +604,7 @@ public class LocalTomcat {
         }
         LocalTomcatConfigService c = toLocalTomcatConfigService(s);
         NObjectFormat.of()
-                .setValue(c.getCatalinaBase())
-                .println();
+                .println(c.getCatalinaBase());
     }
 
     public void showCatalinaVersion(NCmdLine args) {
@@ -619,8 +617,7 @@ public class LocalTomcat {
         }
         LocalTomcatConfigService c = toLocalTomcatConfigService(s);
         NObjectFormat.of()
-                .setValue(c.getValidCatalinaVersion())
-                .println();
+                .println(c.getValidCatalinaVersion());
     }
 
     public void showCatalinaHome(NCmdLine args) {
@@ -633,8 +630,7 @@ public class LocalTomcat {
         }
         LocalTomcatConfigService c = toLocalTomcatConfigService(s);
         NObjectFormat.of()
-                .setValue(c.getCatalinaHome())
-                .println();
+                .println(c.getCatalinaHome());
     }
 
     public void showPort(NCmdLine args) {
@@ -714,8 +710,7 @@ public class LocalTomcat {
                 }
             }
             NObjectFormat.of()
-                    .setValue(port)
-                    .println();
+                    .println(port);
         }
     }
 
