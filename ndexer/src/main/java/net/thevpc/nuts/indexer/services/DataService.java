@@ -2,7 +2,7 @@ package net.thevpc.nuts.indexer.services;
 
 import net.thevpc.nuts.artifact.NId;
 import net.thevpc.nuts.command.NSearch;
-import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.indexer.NIndexerUtils;
 import net.thevpc.nuts.util.NStringUtils;
@@ -147,12 +147,12 @@ public class DataService {
                     .getResultIds().toList();
             Map<String, String> oldRow = new HashMap<>(row);
             row.put("allDependencies", NElementWriter.ofJson()
-                    .toString(allDependencies.stream().map(Object::toString)
+                    .formatPlain(allDependencies.stream().map(Object::toString)
                             .collect(Collectors.toList()))
             );
             updateData(dirPath, oldRow, row);
         }
-        String[] array = NElementParser.ofJson().parse(new StringReader(row.get("allDependencies")), String[].class);
+        String[] array = NElementReader.ofJson().read(new StringReader(row.get("allDependencies")), String[].class);
         List<Map<String, String>> allDependencies = Arrays.stream(array)
                 .map(s -> NIndexerUtils.nutsIdToMap(NId.get(s).get()))
                 .collect(Collectors.toList());
@@ -165,7 +165,7 @@ public class DataService {
             return null;
         }
         Map<String, String> row = rows.get(0);
-        String[] array = NElementParser.ofJson().parse(new StringReader(row.get("dependencies")), String[].class);
+        String[] array = NElementReader.ofJson().read(new StringReader(row.get("dependencies")), String[].class);
         List<Map<String, String>> dependencies = Arrays.stream(array)
                 .map(s -> NIndexerUtils.nutsIdToMap(NId.get(s).get()))
                 .collect(Collectors.toList());
