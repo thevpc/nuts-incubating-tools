@@ -8,7 +8,7 @@ import net.thevpc.nuts.command.NSearch;
 import net.thevpc.nuts.core.NOpenMode;
 import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.core.NWorkspaceOptionsBuilder;
-import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
 
 import net.thevpc.nuts.platform.NStoreType;
@@ -33,7 +33,7 @@ public class ProjectService {
 
     public ProjectService(RepositoryAddress defaultRepositoryAddress, NPath file) throws IOException {
         this.defaultRepositoryAddress = defaultRepositoryAddress == null ? new RepositoryAddress() : defaultRepositoryAddress;
-        config = NElementParser.ofJson().parse(file, ProjectConfig.class);
+        config = NElementReader.ofJson().read(file, ProjectConfig.class);
         sharedConfigFolder = NApp.of().getVersionFolder(NStoreType.CONF, NWorkConfigVersions.CURRENT);
     }
 
@@ -70,7 +70,7 @@ public class ProjectService {
     public boolean load() {
         NPath configFile = getConfigFile();
         if (configFile.isRegularFile()) {
-            ProjectConfig u = NElementParser.ofJson().parse(configFile, ProjectConfig.class);
+            ProjectConfig u = NElementReader.ofJson().read(configFile, ProjectConfig.class);
             if (u != null) {
                 config = u;
                 return true;
