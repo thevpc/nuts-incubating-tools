@@ -3,7 +3,7 @@ package net.thevpc.nuts.indexer;
 import net.thevpc.nuts.artifact.NId;
 import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.core.NWorkspaceLocation;
-import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
 
 import net.thevpc.nuts.platform.NStoreType;
@@ -25,7 +25,7 @@ public class NIndexSubscriberListManager {
         this.name = name.trim();
         NPath file = getConfigFile();
         if (file.exists()) {
-            this.config = NElementParser.ofJson().parse(file, NIndexSubscriberListConfig.class);
+            this.config = NElementReader.ofJson().read(file, NIndexSubscriberListConfig.class);
             if (this.config.getSubscribers() != null) {
                 for (NIndexSubscriber var : this.config.getSubscribers()) {
                     this.subscribers.put(var.getUuid(), var);
