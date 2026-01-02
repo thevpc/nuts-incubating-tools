@@ -10,7 +10,7 @@ import net.thevpc.nuts.app.NAppRunner;
 import net.thevpc.nuts.cmdline.*;
 import net.thevpc.nuts.command.NExec;
 import net.thevpc.nuts.core.NSession;
-import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.io.NOut;
 import net.thevpc.nuts.io.NPath;
@@ -66,7 +66,7 @@ public class NBackup {
                         Config config = null;
                         if (configFile.isRegularFile()) {
                             try {
-                                config = NElementParser.ofJson().parse(
+                                config = NElementReader.ofJson().read(
                                         configFile, Config.class
                                 );
                             } catch (Exception ex) {
