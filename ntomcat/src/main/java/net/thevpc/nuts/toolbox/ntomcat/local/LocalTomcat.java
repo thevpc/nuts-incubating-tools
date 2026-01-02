@@ -218,7 +218,7 @@ public class LocalTomcat {
                     }
                 }
             } else {
-                NObjectFormat.of()
+                NObjectObjectWriter.of()
                         .println(TomcatUtils.getRunningInstances());
             }
         }
@@ -603,7 +603,7 @@ public class LocalTomcat {
             NSession.of().configureLast(args);
         }
         LocalTomcatConfigService c = toLocalTomcatConfigService(s);
-        NObjectFormat.of()
+        NObjectObjectWriter.of()
                 .println(c.getCatalinaBase());
     }
 
@@ -616,7 +616,7 @@ public class LocalTomcat {
             NSession.of().configureLast(args);
         }
         LocalTomcatConfigService c = toLocalTomcatConfigService(s);
-        NObjectFormat.of()
+        NObjectObjectWriter.of()
                 .println(c.getValidCatalinaVersion());
     }
 
@@ -629,7 +629,7 @@ public class LocalTomcat {
             NSession.of().configureLast(args);
         }
         LocalTomcatConfigService c = toLocalTomcatConfigService(s);
-        NObjectFormat.of()
+        NObjectObjectWriter.of()
                 .println(c.getCatalinaHome());
     }
 
@@ -709,7 +709,7 @@ public class LocalTomcat {
                     break;
                 }
             }
-            NObjectFormat.of()
+            NObjectObjectWriter.of()
                     .println(port);
         }
     }
