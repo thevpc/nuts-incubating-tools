@@ -126,7 +126,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         result.put("ajp-redirect-port", getAjpConnectorRedirectPort());
         result.put("shutdown-port", getShutdownPort());
         result.put("config", getConfig());
-        NObjectFormat.of().setValue(result).print(out);
+        NObjectFormat.of().print(result, out);
         return this;
     }
 
@@ -285,7 +285,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                     break;
                 }
             }
-            object().setValue(r).println();
+            object().println(r);
         }
     }
 
