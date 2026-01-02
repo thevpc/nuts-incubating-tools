@@ -4,7 +4,7 @@ import net.thevpc.nuts.app.NApp;
 import net.thevpc.nuts.command.NExec;
 import net.thevpc.nuts.command.NExecutionException;
 import net.thevpc.nuts.core.NSession;
-import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.platform.NStoreType;
 import net.thevpc.nuts.io.NPath;
@@ -171,7 +171,7 @@ public class RemoteTomcatConfigService extends RemoteTomcatServiceBase {
         }
         NPath f = getConfigPath();
         if (f.exists()) {
-            config = NElementParser.ofJson().parse(f, RemoteTomcatConfig.class);
+            config = NElementReader.ofJson().read(f, RemoteTomcatConfig.class);
             return this;
         }
         throw new NamedItemNotFoundException("instance not found : " + getName(), getName());
