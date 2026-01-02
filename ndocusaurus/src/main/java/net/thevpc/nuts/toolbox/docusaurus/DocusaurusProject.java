@@ -126,7 +126,7 @@ public class DocusaurusProject {
     public NObjectElement getConfigAsciiDoctor() {
         NPath newPath = NPath.of(Paths.get(resolvePath(".dir-template/ndocusaurus.config.json")));
         if (newPath.exists()) {
-            return NElementParser.ofJson().parse(newPath, NObjectElement.class)
+            return NElementReader.ofJson().read(newPath, NObjectElement.class)
                     .getObjectByPath("asciidoctor").get();
         }
         return getConfigBaseConfig().getObjectByPath("customFields", "asciidoctor").get();
@@ -139,7 +139,7 @@ public class DocusaurusProject {
     public NObjectElement getConfigDocusaurusExtra() {
         NPath newPath = NPath.of(Paths.get(resolvePath(".dir-template/ndocusaurus.config.json")));
         if (newPath.exists()) {
-            return NElementParser.ofJson().parse(newPath, NObjectElement.class)
+            return NElementReader.ofJson().read(newPath, NObjectElement.class)
                     .getObjectByPath("docusaurus").get();
         }
         return getConfigBaseConfig().getObjectByPath("customFields", "docusaurus").get();
@@ -148,7 +148,7 @@ public class DocusaurusProject {
     public NObjectElement getConfigCustom() {
         NPath newPath = NPath.of(Paths.get(resolvePath(".dir-template/ndocusaurus.config.json")));
         if (newPath.exists()) {
-            return NElementParser.ofJson().parse(newPath, NObjectElement.class)
+            return NElementReader.ofJson().read(newPath, NObjectElement.class)
                     ;
         }
         return getConfigBaseConfig().getObjectByPath("customFields").get();
@@ -157,7 +157,7 @@ public class DocusaurusProject {
     public NObjectElement getConfig() {
         NPath newPath = NPath.of(Paths.get(resolvePath(".dir-template/ndocusaurus.config.json")));
         if (newPath.exists()) {
-            return NElementParser.ofJson().parse(newPath, NObjectElement.class);
+            return NElementReader.ofJson().read(newPath, NObjectElement.class);
         }
         return getConfigBaseConfig();
     }
@@ -184,8 +184,8 @@ public class DocusaurusProject {
         if (matcher.find()) {
             json = matcher.group("json");
             if (json != null) {
-                return NElementParser.ofJson()
-                        .parse(json, NElement.class);
+                return NElementReader.ofJson()
+                        .read(json, NElement.class);
             }
         }
         p = Pattern.compile("(?s)const[ ]*config[ ]*:[ ]*Config[ ]*=[ ]*(?<json>.*[^;])[;]?");
@@ -194,15 +194,15 @@ public class DocusaurusProject {
         if (matcher.find()) {
             json = matcher.group("json");
             if (json != null) {
-                return NElementParser.ofJson()
-                        .parse(json, NElement.class);
+                return NElementReader.ofJson()
+                        .read(json, NElement.class);
             }
         }
         if (json == null) {
             return NElement.ofObject();
         }
-        return NElementParser.ofJson()
-                .parse(json, NElement.class);
+        return NElementReader.ofJson()
+                .read(json, NElement.class);
     }
 
     private String toCanonicalPath(String path) {
