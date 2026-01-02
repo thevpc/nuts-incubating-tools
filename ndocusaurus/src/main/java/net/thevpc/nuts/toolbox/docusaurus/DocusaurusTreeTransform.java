@@ -124,7 +124,7 @@ public class DocusaurusTreeTransform extends MdElementTransformBase {
         switch (e.getTag()) {
             case "Tabs": {
                 String props = DocusaurusUtils.skipJsonJSXBrackets(e.getProperties().get("values"));
-                NArrayElement rows = NElementParser.ofJson().parse(props).asArray().orElse(NArrayElement.ofEmpty());
+                NArrayElement rows = NElementReader.ofJson().read(props).asArray().orElse(NArrayElement.ofEmpty());
                 Map<String,MdElement> sub=new HashMap<>();
                 for (MdElement item : MdFactory.asBody(e.getContent()).getChildren()) {
                     if (item.isXml()) {
@@ -132,7 +132,7 @@ public class DocusaurusTreeTransform extends MdElementTransformBase {
                         String t = tabItem.getTag();
                         if (t.equals("TabItem")) {
                             String tt = "Unknown";
-                            NElement v = NElementParser.ofJson().parse(tabItem.getProperties().get("value"));
+                            NElement v = NElementReader.ofJson().read(tabItem.getProperties().get("value"));
                             if (v != null) {
                                 tt = v.asStringValue().get();
                             }
@@ -159,12 +159,12 @@ public class DocusaurusTreeTransform extends MdElementTransformBase {
 
             case "TabItem": {
                 String tt = "Unknown";
-                NElement v = NElementParser.ofJson().parse(e.getProperties().get("value"));
+                NElement v = NElementReader.ofJson().read(e.getProperties().get("value"));
                 if (v != null) {
                     tt = v.asStringValue().get();
                 }
                 String props = DocusaurusUtils.skipJsonJSXBrackets(path.getParentPath().getElement().asXml().getProperties().get("values"));
-                for (NElement a : NElementParser.ofJson().parse(props).asArray().orElse(NArrayElement.ofEmpty())) {
+                for (NElement a : NElementReader.ofJson().read(props).asArray().orElse(NArrayElement.ofEmpty())) {
                     if (tt.equals(a.asObject().orElse(NObjectElement.ofEmpty()).getStringValue("value").orNull())) {
                         tt = a.asObject().orElse(NObjectElement.ofEmpty()).getStringValue("label").orNull();
                         break;
