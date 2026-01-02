@@ -59,7 +59,7 @@ public class NIndexerUtils {
     }
 
     public static String mapToJson(Map<String, String> map) {
-        return NElementWriter.ofJson().toString(map);
+        return NElementWriter.ofJson().formatPlain(map);
     }
 
     public static Map<String, String> nutsRepositoryToMap(NRepository repository) {
