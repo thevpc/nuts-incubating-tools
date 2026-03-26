@@ -4,9 +4,11 @@ import net.thevpc.nuts.artifact.NDependency;
 import net.thevpc.nuts.artifact.NId;
 import net.thevpc.nuts.artifact.NIdBuilder;
 import net.thevpc.nuts.core.NConstants;
+import net.thevpc.nuts.core.NStoreKey;
 import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.artifact.NEnvConditionBuilder;
+import net.thevpc.nuts.platform.NStoreScope;
 import net.thevpc.nuts.platform.NStoreType;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.core.NRepository;
@@ -18,20 +20,16 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class NIndexerUtils {
 
     public static Path getCacheDir(String entity) {
         String k = "NutsIndexerUtils.CACHE." + entity;
-        String m = NWorkspace.of().getProperty(k).flatMap(x->NLiteral.of(x).asString()).orNull();
+        String m = NWorkspace.of().getProperty(k).flatMap(x -> NLiteral.of(x).asString()).orNull();
         if (m == null) {
-            m = NPath.ofIdStore(NId.getForClass(NIndexerUtils.class).get(),
-                            NStoreType.CACHE) + File.separator + entity;
+            m = NPath.of(NStoreKey.ofConf(NId.getForClass(NIndexerUtils.class).get())).resolve(entity).toString();
             NWorkspace.of().setProperty(k, m);
         }
         return new File(m).toPath();
@@ -75,12 +73,12 @@ public class NIndexerUtils {
         _condPut(entity, "classifier", id.getClassifier());
         _condPut(entity, "version", id.getVersion().getValue());
         _condPut(entity, "face", id.getFace());
-        _condPut(entity, NConstants.IdProperties.OS, String.join(",",id.getCondition().getOs()));
-        _condPut(entity, NConstants.IdProperties.OS_DIST, String.join(",",id.getCondition().getOsDist()));
-        _condPut(entity, NConstants.IdProperties.ARCH, String.join(",",id.getCondition().getArch()));
-        _condPut(entity, NConstants.IdProperties.PLATFORM, String.join(",",id.getCondition().getPlatform()));
-        _condPut(entity, NConstants.IdProperties.PROFILE, String.join(",",id.getCondition().getProfiles()));
-        _condPut(entity, NConstants.IdProperties.DESKTOP, String.join(",",id.getCondition().getDesktopEnvironment()));
+        _condPut(entity, NConstants.IdProperties.OS, String.join(",", id.getCondition().getOs()));
+        _condPut(entity, NConstants.IdProperties.OS_DIST, String.join(",", id.getCondition().getOsDist()));
+        _condPut(entity, NConstants.IdProperties.ARCH, String.join(",", id.getCondition().getArch()));
+        _condPut(entity, NConstants.IdProperties.PLATFORM, String.join(",", id.getCondition().getPlatform()));
+        _condPut(entity, NConstants.IdProperties.PROFILE, String.join(",", id.getCondition().getProfiles()));
+        _condPut(entity, NConstants.IdProperties.DESKTOP, String.join(",", id.getCondition().getDesktopEnvironment()));
 //        _condPut(entity, NutsConstants.IdProperties.ALTERNATIVE, id.getAlternative());
         _condPut(entity, "stringId", id.toString());
         return entity;
@@ -98,12 +96,12 @@ public class NIndexerUtils {
                 .build();
         _condPut(entity, NConstants.IdProperties.FACE, id2.getFace());
 
-        _condPut(entity, NConstants.IdProperties.OS, String.join(",",id2.getCondition().getOs()));
-        _condPut(entity, NConstants.IdProperties.OS_DIST, String.join(",",id2.getCondition().getOsDist()));
-        _condPut(entity, NConstants.IdProperties.ARCH, String.join(",",id2.getCondition().getArch()));
-        _condPut(entity, NConstants.IdProperties.PLATFORM, String.join(",",id2.getCondition().getPlatform()));
-        _condPut(entity, NConstants.IdProperties.PROFILE, String.join(",",id2.getCondition().getProfiles()));
-        _condPut(entity, NConstants.IdProperties.DESKTOP, String.join(",",id2.getCondition().getDesktopEnvironment()));
+        _condPut(entity, NConstants.IdProperties.OS, String.join(",", id2.getCondition().getOs()));
+        _condPut(entity, NConstants.IdProperties.OS_DIST, String.join(",", id2.getCondition().getOsDist()));
+        _condPut(entity, NConstants.IdProperties.ARCH, String.join(",", id2.getCondition().getArch()));
+        _condPut(entity, NConstants.IdProperties.PLATFORM, String.join(",", id2.getCondition().getPlatform()));
+        _condPut(entity, NConstants.IdProperties.PROFILE, String.join(",", id2.getCondition().getProfiles()));
+        _condPut(entity, NConstants.IdProperties.DESKTOP, String.join(",", id2.getCondition().getDesktopEnvironment()));
 
 //        _condPut(entity, NutsConstants.IdProperties.ALTERNATIVE, dependency.getId().getAlternative());
         _condPut(entity, "stringId", id2.toString());
@@ -155,11 +153,11 @@ public class NIndexerUtils {
                 .setCondition(
                         NEnvConditionBuilder.of()
                                 //TODO what if the result is ',' separated array?
-                                .setArch(Arrays.asList(NStringUtils.trim(map.get(NConstants.IdProperties.ARCH))))
-                                .setOs(Arrays.asList(NStringUtils.trim(map.get(NConstants.IdProperties.OS))))
-                                .setOsDist(Arrays.asList(NStringUtils.trim(map.get(NConstants.IdProperties.OS_DIST))))
-                                .setPlatform(Arrays.asList(NStringUtils.trim(map.get(NConstants.IdProperties.PLATFORM))))
-                                .setDesktopEnvironment(Arrays.asList(NStringUtils.trim(map.get(NConstants.IdProperties.DESKTOP))))
+                                .setArch(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.ARCH))))
+                                .setOs(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.OS))))
+                                .setOsDist(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.OS_DIST))))
+                                .setPlatform(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.PLATFORM))))
+                                .setDesktopEnvironment(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.DESKTOP))))
                 )
 //                .setAlternative(trim(map.get(NutsConstants.IdProperties.ALTERNATIVE)))
                 .build();
