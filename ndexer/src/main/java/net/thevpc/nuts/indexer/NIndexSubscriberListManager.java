@@ -1,11 +1,13 @@
 package net.thevpc.nuts.indexer;
 
 import net.thevpc.nuts.artifact.NId;
+import net.thevpc.nuts.core.NStoreKey;
 import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.core.NWorkspaceLocation;
 import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
 
+import net.thevpc.nuts.platform.NStoreScope;
 import net.thevpc.nuts.platform.NStoreType;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.core.NRepository;
@@ -40,9 +42,8 @@ public class NIndexSubscriberListManager {
     }
 
     private NPath getConfigFile() {
-        return NPath.ofIdStore(NId.getForClass(NIndexSubscriberListManager.class).get(),
-                        NStoreType.CONF).resolve(
-                        name + "-nuts-subscriber-list.json");
+        return NPath.of(NStoreKey.ofConf(NId.getForClass(NIndexSubscriberListManager.class).get()))
+                .resolve(name + "-nuts-subscriber-list.json");
     }
 
     public List<NIndexSubscriber> getSubscribers() {
