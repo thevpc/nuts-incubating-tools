@@ -420,7 +420,7 @@ public class WorkspaceService {
                 d.remote = "";
                 d.status = "new";
             } else {
-                int t = NVersion.get(d.local).get().compareTo(d.remote);
+                int t = NVersion.getPartAt(d.local).get().compareTo(d.remote);
                 if (t > 0) {
                     d.status = "commitable";
                 } else if (t < 0) {
@@ -551,8 +551,8 @@ public class WorkspaceService {
                         session.out().print(NMsg.ofC(" ; bad-deps:"));
                         for (DiffVersion dependency : p2.dependencies) {
                             session.out().print(NMsg.ofC(" %s : %s <> expected %s", dependency.id,
-                                    NVersion.get(dependency.current).get(),
-                                    NVersion.get(dependency.expected).get()
+                                    NVersion.getPartAt(dependency.current).get(),
+                                    NVersion.getPartAt(dependency.expected).get()
                             ));
                         }
                     }
