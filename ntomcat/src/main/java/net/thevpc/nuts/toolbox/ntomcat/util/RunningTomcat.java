@@ -31,7 +31,7 @@ public class RunningTomcat {
             }
         }
         String b = TomcatUtils.getFolderCatalinaHomeVersion(home);
-        this.version= b==null?null: NVersion.getPartAt(b).get();
+        this.version= b==null?null: NVersion.get(b).get();
     }
 
     public NVersion getVersion() {
