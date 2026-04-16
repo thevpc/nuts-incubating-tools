@@ -554,7 +554,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                             }
                         })).callWith(() -> NInstall.of()
                                 .addId(finalR.getId())
-                                .getResult().findFirst().get());
+                                .getResultStream().findFirst().get());
                 //this is a workaround. Def returned by install does not include all information!
                 catalinaNDefinition = searchLatestCommand.setDefinitionFilter(NDefinitionFilters.of().byInstalled(true))
                         .getResultDefinitions().findFirst().orNull();
