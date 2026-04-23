@@ -31,10 +31,11 @@ public class FileScanner {
 
 
     public static Predicate<RichPath> parseExpr(String anyStr) {
-        NExprMutableDeclarations d = NExprs.of().newMutableDeclarations(true);
+        NExprMutableContext d = NExprContextBuilder.of()
+                .buildMutable();
         d.declareFunction("tag", new NExprFct() {
             @Override
-            public Object eval(String name, List<NExprNodeValue> args, NExprDeclarations context) {
+            public Object eval(String name, List<NExprNodeValue> args, NExprContext context) {
                 RichPath rc = (RichPath) context.getVar("this");
                 for (NExprNodeValue arg : args) {
                     Object v = arg.getValue();
@@ -73,9 +74,9 @@ public class FileScanner {
         d.declareVar("lastModified", new RichVar());
         NExprNode node = d.parse(anyStr).get();
         return richPath -> {
-            d.removeDeclaration(d.getVar("this").orNull());
+            d.remove(d.getVar("this").orNull());
             d.declareConstant("this", richPath);
-            return (Boolean) d.evalFunction("boolean", d.literalAsValue(node.eval(d).get())).get();
+            return (Boolean) d.evalFunction("boolean", d.bindNode(node)).get();
         };
     }
 
@@ -143,13 +144,13 @@ public class FileScanner {
         public RichVar() {
         }
 
-        RichPath getThis(NExprDeclarations context) {
+        RichPath getThis(NExprContext context) {
             NExprVarDeclaration r = context.getVar("this").get();
             return (RichPath) r.get(context);
         }
 
         @Override
-        public Object get(String name, NExprDeclarations context) {
+        public Object get(String name, NExprContext context) {
             RichPath richPath = getThis(context);
             switch (name) {
                 case "path":
@@ -229,7 +230,7 @@ public class FileScanner {
         }
 
         @Override
-        public Object set(String name, Object value, NExprDeclarations context) {
+        public Object set(String name, Object value, NExprContext context) {
             return get(name, context);
         }
     }
