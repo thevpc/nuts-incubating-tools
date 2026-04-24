@@ -58,26 +58,29 @@ public class FileScanner {
                 return true;
             }
         });
-        d.declareVar("path", new RichVar());
-        d.declareVar("name", new RichVar());
-        d.declareVar("length", new RichVar());
-        d.declareVar("size", new RichVar());
-        d.declareVar("dir", new RichVar());
-        d.declareVar("file", new RichVar());
-        d.declareVar("readable", new RichVar());
-        d.declareVar("executable", new RichVar());
-        d.declareVar("exists", new RichVar());
-        d.declareVar("hidden", new RichVar());
-        d.declareVar("symbolic", new RichVar());
-        d.declareVar("writable", new RichVar());
-        d.declareVar("owner", new RichVar());
-        d.declareVar("lastModified", new RichVar());
+        _declareVar(d,"path");
+        _declareVar(d,"name");
+        _declareVar(d,"length");
+        _declareVar(d,"size");
+        _declareVar(d,"dir");
+        _declareVar(d,"file");
+        _declareVar(d,"readable");
+        _declareVar(d,"executable");
+        _declareVar(d,"exists");
+        _declareVar(d,"hidden");
+        _declareVar(d,"symbolic");
+        _declareVar(d,"writable");
+        _declareVar(d,"owner");
+        _declareVar(d,"lastModified");
         NExprNode node = d.parse(anyStr).get();
         return richPath -> {
             d.remove(d.getVar("this").orNull());
             d.declareConstant("this", richPath);
             return (Boolean) d.evalFunction("boolean", d.bindNode(node)).get();
         };
+    }
+    private static void _declareVar(NExprMutableContext d,String name){
+        d.declareVar(new RichVar(name));
     }
 
     public List<TagScanner> getTagScanners() {
@@ -141,16 +144,23 @@ public class FileScanner {
     }
 
     private static class RichVar implements NExprVar {
-        public RichVar() {
+        private String name;
+        public RichVar(String name) {
+            this.name=name;
         }
 
         RichPath getThis(NExprContext context) {
-            NExprVarDeclaration r = context.getVar("this").get();
+            NExprVar r = context.getVar("this").get();
             return (RichPath) r.get(context);
         }
 
         @Override
-        public Object get(String name, NExprContext context) {
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public Object get(NExprContext context) {
             RichPath richPath = getThis(context);
             switch (name) {
                 case "path":
@@ -230,8 +240,7 @@ public class FileScanner {
         }
 
         @Override
-        public Object set(String name, Object value, NExprContext context) {
-            return get(name, context);
+        public void set(Object value, NExprContext context) {
         }
     }
 
