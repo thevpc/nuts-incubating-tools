@@ -33,7 +33,7 @@ public class FileScanner {
     public static Predicate<RichPath> parseExpr(String anyStr) {
         NExprMutableContext d = NExprContextBuilder.of()
                 .buildMutable();
-        d.declareFunction("tag", new NExprFct() {
+        d.declareFunction("tag", new NExprFunctionHandler() {
             @Override
             public Object eval(String name, List<NExprNodeValue> args, NExprContext context) {
                 RichPath rc = (RichPath) context.getVar("this");
@@ -74,7 +74,7 @@ public class FileScanner {
         _declareVar(d,"lastModified");
         NExprNode node = d.parse(anyStr).get();
         return richPath -> {
-            d.remove(d.getVar("this").orNull());
+            d.removeVar(d.getVar("this").orNull());
             d.declareConstant("this", richPath);
             return (Boolean) d.evalFunction("boolean", d.bindNode(node)).get();
         };
