@@ -32,13 +32,16 @@ public class FileScanner {
 
     public static Predicate<RichPath> parseExpr(String anyStr) {
         NExprMutableContext d = NExprContextBuilder.of()
+                .declareBuiltins()
                 .buildMutable();
-        d.declareFunction("tag", new NExprFunctionHandler() {
+        d.declareFunction(NExprFunction.of("tag", new NExprCallHandler() {
             @Override
-            public Object eval(String name, List<NExprNodeValue> args, NExprContext context) {
+            public Object eval(NExprCallContext callContext) {
+                List<NExprNodeValue> args = callContext.args();
+                NExprContext context = callContext.context();
                 RichPath rc = (RichPath) context.getVar("this");
                 for (NExprNodeValue arg : args) {
-                    Object v = arg.getValue();
+                    Object v = arg.value();
                     if (v != null) {
                         if (rc.getTags((String) context.evalFunction("string", arg).orNull()).size() == 0) {
                             return false;
@@ -47,7 +50,7 @@ public class FileScanner {
                 }
                 if (rc.getPath().toString().endsWith(".java")) {
                     for (NExprNodeValue arg : args) {
-                        Object v = arg.getValue();
+                        Object v = arg.value();
                         if (v != null) {
                             if (rc.getTags((String) context.evalFunction("string", arg).orNull()).size() == 0) {
                                 return false;
@@ -57,7 +60,7 @@ public class FileScanner {
                 }
                 return true;
             }
-        });
+        }));
         _declareVar(d,"path");
         _declareVar(d,"name");
         _declareVar(d,"length");
