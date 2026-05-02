@@ -41,7 +41,7 @@ public class FileScanner {
                 NExprContext context = callContext.context();
                 RichPath rc = (RichPath) context.getVar("this");
                 for (NExprNodeValue arg : args) {
-                    Object v = arg.value();
+                    Object v = arg.value().failFast().orNull();
                     if (v != null) {
                         if (rc.getTags((String) context.evalFunction("string", arg).orNull()).size() == 0) {
                             return false;
@@ -50,7 +50,7 @@ public class FileScanner {
                 }
                 if (rc.getPath().toString().endsWith(".java")) {
                     for (NExprNodeValue arg : args) {
-                        Object v = arg.value();
+                        Object v = arg.value().failFast().orNull();
                         if (v != null) {
                             if (rc.getTags((String) context.evalFunction("string", arg).orNull()).size() == 0) {
                                 return false;
