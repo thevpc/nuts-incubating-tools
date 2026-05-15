@@ -385,34 +385,34 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
 //            b.addCommand("-Dcatalina.home=" + catalinaHome);
 //        }
 //        b.addCommand("-Dcatalina.base=" + catalinaBase);
-        b.setDirectory(catalinaBase);
+        b.directory(catalinaBase);
         LocalTomcatConfig c = getConfig();
         String javaHome = c.getJavaHome();
         if (javaHome == null) {
             javaHome = System.getProperty("java.home");
         }
-        b.setEnv("JAVA_HOME", javaHome);
-        b.setEnv("JRE_HOME", javaHome);
+        b.env("JAVA_HOME", javaHome);
+        b.env("JRE_HOME", javaHome);
         StringBuilder javaOptions = new StringBuilder();
         javaOptions.append("-Dnuts-config-name=").append((getName() == null ? "" : getName()));
         if (getConfig().getJavaOptions() != null) {
             javaOptions.append(" ").append(getConfig().getJavaOptions());
         }
-        b.setEnv("JAVA_OPTS", javaOptions.toString());
+        b.env("JAVA_OPTS", javaOptions.toString());
 
-        b.setEnv("CATALINA_HOME", catalinaHome.toString());
-        b.setEnv("CATALINA_BASE", catalinaBase.toString());
-        b.setEnv("CATALINA_OUT", catalinaBase.resolve("logs").resolve("catalina.out").toString());
-        b.setEnv("CATALINA_TMPDIR", catalinaBase.resolve("temp").toString());
+        b.env("CATALINA_HOME", catalinaHome.toString());
+        b.env("CATALINA_BASE", catalinaBase.toString());
+        b.env("CATALINA_OUT", catalinaBase.resolve("logs").resolve("catalina.out").toString());
+        b.env("CATALINA_TMPDIR", catalinaBase.resolve("temp").toString());
 
         NElements elem = NElements.of();
         if ("start".equals(catalinaCommand)) {
             if (NOut.isPlain()) {
                 NOut.print(NMsg.ofC("%s starting Tomcat on port " + getHttpConnectorPort() + ". CMD=%s.\n", getFormattedPrefix(getName()), b.toString()));
-                b.getResultCode();
+                b.exitCode();
             } else {
                 b.grabAll();
-                int x = b.getResultCode();
+                int x = b.exitCode();
                 String txt = b.getGrabbedOutString();
                 NSession.of().eout().add(
                         NElement.ofObjectBuilder()
@@ -425,10 +425,10 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         } else if ("stop".equals(catalinaCommand)) {
             if (NSession.of().isPlainOut()) {
                 NOut.print(NMsg.ofC("%s stopping Tomcat. CMD=%s.\n", getFormattedPrefix(getName()), b.toString()));
-                b.getResultCode();
+                b.exitCode();
             } else {
                 b.grabAll();
-                int x = b.getResultCode();
+                int x = b.exitCode();
                 String txt = b.getGrabbedOutString();
                 NSession.of().eout().add(
                         NElement.ofObjectBuilder()

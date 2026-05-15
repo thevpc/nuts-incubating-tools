@@ -83,7 +83,7 @@ public class RemoteTomcatAppConfigService extends RemoteTomcatServiceBase {
         NExec s = NExec.of()
                 .grabAll()
                 .addCommand(cmd).run();
-        if (s.getResultCode() == 0) {
+        if (s.exitCode() == 0) {
             client.execRemoteNuts(
                     "net.thevpc.nuts.toolbox:tomcat",
                     "install",
