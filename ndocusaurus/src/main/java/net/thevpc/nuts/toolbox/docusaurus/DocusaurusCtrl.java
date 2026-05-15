@@ -189,7 +189,7 @@ public class DocusaurusCtrl {
 
     private void runNativeCommand(NPath workFolder, String... cmd) {
         NExec.of()
-                .setExecutionType(NExecutionType.EMBEDDED)
+                .executionType(NExecutionType.EMBEDDED)
                 .addCommand(cmd).directory(workFolder)
                 .failFast().exitCode();
     }
@@ -198,7 +198,7 @@ public class DocusaurusCtrl {
         NSession.of().copy().setConfirm(yes ? NConfirmationMode.YES : NConfirmationMode.ERROR)
                 .runWith(() -> {
                     NExec.of().addCommand(cmd).directory(workFolder)
-                            .setExecutionType(NExecutionType.EMBEDDED)
+                            .executionType(NExecutionType.EMBEDDED)
                             .failFast().exitCode();
                 });
     }
