@@ -191,7 +191,7 @@ public class DocusaurusCtrl {
         NExec.of()
                 .executionType(NExecutionType.EMBEDDED)
                 .addCommand(cmd).directory(workFolder)
-                .failFast().exitCode();
+                .failFast(true).exitCode();
     }
 
     public void runCommand(NPath workFolder, boolean yes, String... cmd) {
@@ -199,7 +199,7 @@ public class DocusaurusCtrl {
                 .runWith(() -> {
                     NExec.of().addCommand(cmd).directory(workFolder)
                             .executionType(NExecutionType.EMBEDDED)
-                            .failFast().exitCode();
+                            .failFast(true).exitCode();
                 });
     }
 

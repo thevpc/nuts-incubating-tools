@@ -216,7 +216,7 @@ public class ProjectService {
                 List<NDefinition> found = ws.callWith(() -> NSearch.of()
                         .addId(sid)
                         .addRepositoryFilter(NRepositoryFilters.of().byName(nutsRepository))
-                        .setLatest(true).getResultDefinitions().toList()
+                        .latest(true).getResultDefinitions().toList()
                 );
                 if (found.size() > 0) {
                     NPath p = found.get(0).getContent().orNull();
@@ -267,7 +267,7 @@ public class ProjectService {
                         List<NId> found = ws.callWith(() -> NSearch.of()
                                 .addId(g.getId().getGroupId() + ":" + g.getId().getArtifactId())
                                 .addRepositoryFilter(NRepositoryFilters.of().byName(nutsRepository))
-                                .setLatest(true).getResultIds().toList());
+                                .latest(true).getResultIds().toList());
                         if (found.size() > 0) {
                             return found.get(0).getVersion().toString();
                         }

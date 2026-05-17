@@ -526,7 +526,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             ).toString();
 
             NSearch searchLatestCommand = NSearch.of().addId(cid)
-                    .setLatest(true);
+                    .latest(true);
             NDefinition r = searchLatestCommand
                     .setDefinitionFilter(NDefinitionFilters.of().byDeployed(true))
                     .getResultDefinitions().findFirst().orNull();

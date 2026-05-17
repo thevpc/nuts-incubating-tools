@@ -63,7 +63,7 @@ public class RefreshDataService {
                     .collect(Collectors.toMap(map -> map.get("stringId"), map -> NIndexerUtils.mapToNutsId(map), (v1, v2) -> v1));
             Iterator<NDefinition> definitions = NSearch.of()
                     .setRepositoryFilter(NRepositoryFilters.of().byUuid(subscriber.getUuid()))
-                    .setFailFast(false)
+                    .failFast(false)
                     .getResultDefinitions().iterator();
             List<Map<String, String>> dataToIndex = new ArrayList<>();
             Map<String, Boolean> visited = new HashMap<>();

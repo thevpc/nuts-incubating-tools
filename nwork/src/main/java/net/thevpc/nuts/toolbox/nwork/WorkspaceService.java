@@ -300,7 +300,7 @@ public class WorkspaceService {
                     .addCommand(NPath.ofUserHome().resolve(".m2/repository")
                             .resolve(p).stream().map(NPath::toString).toList())
                     .addCommand(remoteUser + "@" + remoteServer + ":/home/" + remoteUser + "/.m2/repository/" + p
-                    ).failFast().run();
+                    ).failFast(true).run();
         }
     }
 

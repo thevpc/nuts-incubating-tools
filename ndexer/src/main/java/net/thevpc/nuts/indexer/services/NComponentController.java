@@ -250,7 +250,7 @@ public class NComponentController {
                                         NRepositoryFilters.of().byUuid(subscriber.getUuid())
                                 )
                                 .addId(id)
-                                .setFailFast(false)
+                                .failFast(false)
                                 .getResultDefinitions().iterator();
                         if (it.hasNext()) {
                             NDefinition definition = it.next();
