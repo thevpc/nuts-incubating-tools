@@ -254,7 +254,7 @@ public class NComponentController {
                                 .getResultDefinitions().iterator();
                         if (it.hasNext()) {
                             NDefinition definition = it.next();
-                            List<NDependency> directDependencies = definition.getEffectiveDescriptor().get().getDependencies();
+                            List<NDependency> directDependencies = definition.effectiveDescriptor().get().getDependencies();
                             data.put("dependencies", NElementWriter.ofJson()
                                     .formatPlain(directDependencies.stream().map(Object::toString)
                                             .collect(Collectors.toList()))

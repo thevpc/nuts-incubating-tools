@@ -72,7 +72,7 @@ public class MavenCli2 {
 
     public int doMain(String[] args) {
         if (multiModuleProjectDirectory == null) {
-            System.setProperty("maven.multiModuleProjectDirectory", NApp.of().getConfFolder().toString());
+            System.setProperty("maven.multiModuleProjectDirectory", NApp.of().confFolder().toString());
         } else {
             System.setProperty("maven.multiModuleProjectDirectory", multiModuleProjectDirectory);
         }

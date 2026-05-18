@@ -175,7 +175,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         }
         //last case
         NDefinition nf = getCatalinaNutsDefinition();
-        return nf.getId().getVersion().toString();
+        return nf.id().version().toString();
     }
 
     public NPath getCatalinaBase() {
@@ -193,7 +193,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             if (x2 > 0) {
                 v = v.substring(0, x2);
             }
-            catalinaBase = NApp.of().getSharedConfFolder().resolve("catalina-base-" + v).resolve("default");
+            catalinaBase = NApp.of().sharedConfFolder().resolve("catalina-base-" + v).resolve("default");
         } else {
             if (!catalinaBase.isAbsolute()) {
                 String v = getValidCatalinaVersion();
@@ -202,7 +202,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 if (x2 > 0) {
                     v = v.substring(0, x2);
                 }
-                catalinaBase = NApp.of().getSharedConfFolder().resolve("catalina-base-" + v).resolve(catalinaBase);
+                catalinaBase = NApp.of().sharedConfFolder().resolve("catalina-base-" + v).resolve(catalinaBase);
             }
         }
         return catalinaBase;
@@ -210,7 +210,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
 
     public NPath resolveCatalinaHome() {
         NDefinition f = getCatalinaNutsDefinition();
-        NPath u = f.getInstallInformation().get().getInstallFolder();
+        NPath u = f.installInformation().get().getInstallFolder();
         NPath[] paths;
         try {
             paths = u.stream().filter(NPredicate.of(NPath::isDirectory).withDescription(NDescribables.ofDesc("isDirectory"))).toArray(NPath[]::new);
@@ -494,7 +494,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         catalinaVersion = catalinaVersion.trim();
         
         if (catalinaVersion.isEmpty()) {
-            NVersion javaVersion = NEnv.of().getJava().getVersion();
+            NVersion javaVersion = NEnv.of().getJava().version();
             //  http://tomcat.apache.org/whichversion.html
             if (javaVersion.compareTo("1.8") >= 0) {
                 catalinaVersion = "[9,10.1[";
@@ -513,7 +513,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             }
         }
         if (catalinaNDefinition == null || !Objects.equals(catalinaVersion, this.catalinaVersion)
-                || !catalinaNDefinition.getInstallInformation().get().getInstallStatus().isInstalled()) {
+                || !catalinaNDefinition.installInformation().get().getInstallStatus().isInstalled()) {
             this.catalinaVersion = catalinaVersion;
             String cv = catalinaVersion;
             if (!cv.startsWith("[") && !cv.startsWith("]")) {
@@ -537,7 +537,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             if (r == null) {
                 r = NSession.of().copy().setFetchStrategy(NFetchStrategy.ONLINE).callWith(() -> searchLatestCommand.setDefinitionFilter(NDefinitionFilters.of().byInstalled(false)).getResultDefinitions().findFirst().get());
             }
-            if (r.getInstallInformation().get().isInstalledOrRequired()) {
+            if (r.installInformation().get().isInstalledOrRequired()) {
                 return r;
             } else {
                 //TODO: FIX install return
@@ -548,12 +548,12 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                             public void onInstall(NInstallEvent event) {
                                 if (NOut.isPlain()) {
                                     NOut.print(NMsg.ofC("%s Tomcat installed to catalina home %s\n", getFormattedPrefix(getName()),
-                                            event.getDefinition().getInstallInformation().get().getInstallFolder()
+                                            event.getDefinition().installInformation().get().getInstallFolder()
                                     ));
                                 }
                             }
                         })).callWith(() -> NInstall.of()
-                                .addId(finalR.getId())
+                                .addId(finalR.id())
                                 .getResultStream().findFirst().get());
                 //this is a workaround. Def returned by install does not include all information!
                 catalinaNDefinition = searchLatestCommand.setDefinitionFilter(NDefinitionFilters.of().byInstalled(true))

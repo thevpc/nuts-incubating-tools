@@ -8,8 +8,6 @@ import net.thevpc.nuts.core.NStoreKey;
 import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.artifact.NEnvConditionBuilder;
-import net.thevpc.nuts.platform.NStoreScope;
-import net.thevpc.nuts.platform.NStoreType;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.core.NRepository;
 import net.thevpc.nuts.util.NLiteral;
@@ -66,19 +64,19 @@ public class NIndexerUtils {
 
     public static Map<String, String> nutsIdToMap(NId id) {
         Map<String, String> entity = new HashMap<>();
-        id = id.builder().setFace(StringUtils.isEmpty(id.getFace()) ? "default" : id.getFace()).build();
-        _condPut(entity, "name", id.getArtifactId());
-        _condPut(entity, "namespace", id.getRepository());
-        _condPut(entity, "group", id.getGroupId());
-        _condPut(entity, "classifier", id.getClassifier());
-        _condPut(entity, "version", id.getVersion().getValue());
-        _condPut(entity, "face", id.getFace());
-        _condPut(entity, NConstants.IdProperties.OS, String.join(",", id.getCondition().getOs()));
-        _condPut(entity, NConstants.IdProperties.OS_DIST, String.join(",", id.getCondition().getOsDist()));
-        _condPut(entity, NConstants.IdProperties.ARCH, String.join(",", id.getCondition().getArch()));
-        _condPut(entity, NConstants.IdProperties.PLATFORM, String.join(",", id.getCondition().getPlatform()));
-        _condPut(entity, NConstants.IdProperties.PROFILE, String.join(",", id.getCondition().getProfiles()));
-        _condPut(entity, NConstants.IdProperties.DESKTOP, String.join(",", id.getCondition().getDesktopEnvironment()));
+        id = id.builder().setFace(StringUtils.isEmpty(id.face()) ? "default" : id.face()).build();
+        _condPut(entity, "name", id.artifactId());
+        _condPut(entity, "namespace", id.repository());
+        _condPut(entity, "group", id.groupId());
+        _condPut(entity, "classifier", id.classifier());
+        _condPut(entity, "version", id.version().value());
+        _condPut(entity, "face", id.face());
+        _condPut(entity, NConstants.IdProperties.OS, String.join(",", id.condition().getOs()));
+        _condPut(entity, NConstants.IdProperties.OS_DIST, String.join(",", id.condition().getOsDist()));
+        _condPut(entity, NConstants.IdProperties.ARCH, String.join(",", id.condition().getArch()));
+        _condPut(entity, NConstants.IdProperties.PLATFORM, String.join(",", id.condition().getPlatform()));
+        _condPut(entity, NConstants.IdProperties.PROFILE, String.join(",", id.condition().getProfiles()));
+        _condPut(entity, NConstants.IdProperties.DESKTOP, String.join(",", id.condition().getDesktopEnvironment()));
 //        _condPut(entity, NutsConstants.IdProperties.ALTERNATIVE, id.getAlternative());
         _condPut(entity, "stringId", id.toString());
         return entity;
@@ -90,18 +88,18 @@ public class NIndexerUtils {
         _condPut(entity, "namespace", dependency.getRepository());
         _condPut(entity, "group", dependency.getGroupId());
         _condPut(entity, "classifier", dependency.getGroupId());
-        _condPut(entity, "version", dependency.getVersion().getValue());
+        _condPut(entity, "version", dependency.getVersion().value());
         NId id2 = dependency.toId().builder()
-                .setFace(StringUtils.isEmpty(dependency.toId().getFace()) ? "default" : dependency.toId().getFace())
+                .setFace(StringUtils.isEmpty(dependency.toId().face()) ? "default" : dependency.toId().face())
                 .build();
-        _condPut(entity, NConstants.IdProperties.FACE, id2.getFace());
+        _condPut(entity, NConstants.IdProperties.FACE, id2.face());
 
-        _condPut(entity, NConstants.IdProperties.OS, String.join(",", id2.getCondition().getOs()));
-        _condPut(entity, NConstants.IdProperties.OS_DIST, String.join(",", id2.getCondition().getOsDist()));
-        _condPut(entity, NConstants.IdProperties.ARCH, String.join(",", id2.getCondition().getArch()));
-        _condPut(entity, NConstants.IdProperties.PLATFORM, String.join(",", id2.getCondition().getPlatform()));
-        _condPut(entity, NConstants.IdProperties.PROFILE, String.join(",", id2.getCondition().getProfiles()));
-        _condPut(entity, NConstants.IdProperties.DESKTOP, String.join(",", id2.getCondition().getDesktopEnvironment()));
+        _condPut(entity, NConstants.IdProperties.OS, String.join(",", id2.condition().getOs()));
+        _condPut(entity, NConstants.IdProperties.OS_DIST, String.join(",", id2.condition().getOsDist()));
+        _condPut(entity, NConstants.IdProperties.ARCH, String.join(",", id2.condition().getArch()));
+        _condPut(entity, NConstants.IdProperties.PLATFORM, String.join(",", id2.condition().getPlatform()));
+        _condPut(entity, NConstants.IdProperties.PROFILE, String.join(",", id2.condition().getProfiles()));
+        _condPut(entity, NConstants.IdProperties.DESKTOP, String.join(",", id2.condition().getDesktopEnvironment()));
 
 //        _condPut(entity, NutsConstants.IdProperties.ALTERNATIVE, dependency.getId().getAlternative());
         _condPut(entity, "stringId", id2.toString());

@@ -107,12 +107,12 @@ public class ProjectService {
                     NDescriptor g = NDescriptorParser.of()
                             .setDescriptorStyle(NDescriptorStyle.MAVEN)
                             .parse(new File(f, "pom.xml")).get();
-                    if (g.getId().getGroupId() != null
-                            && g.getId().getArtifactId() != null
-                            && g.getId().getVersion() != null
-                            && !g.getId().getGroupId().contains("$")
-                            && !g.getId().getArtifactId().contains("$")
-                            && !g.getId().getVersion().toString().contains("$")) {
+                    if (g.getId().groupId() != null
+                            && g.getId().artifactId() != null
+                            && g.getId().version() != null
+                            && !g.getId().groupId().contains("$")
+                            && !g.getId().artifactId().contains("$")
+                            && !g.getId().version().toString().contains("$")) {
 
                         String s = new String(Files.readAllBytes(new File(f, "pom.xml").toPath()));
                         //check if the s
@@ -131,7 +131,7 @@ public class ProjectService {
                         if (ok > 0) {
 
                             if (p2.getId() == null) {
-                                p2.setId(g.getId().getGroupId() + ":" + g.getId().getArtifactId());
+                                p2.setId(g.getId().groupId() + ":" + g.getId().artifactId());
                             }
                             if (new File(f, "src/main").isDirectory()) {
                                 p2.getTechnologies().add("maven");
@@ -175,7 +175,7 @@ public class ProjectService {
                     try {
                         return NDescriptorParser.of()
                                 .setDescriptorStyle(NDescriptorStyle.MAVEN)
-                                .parse(new File(f, "pom.xml")).get().getId().getVersion().toString();
+                                .parse(new File(f, "pom.xml")).get().getId().version().toString();
                     } catch (Exception e) {
                         throw new IllegalArgumentException(e);
                     }
@@ -219,7 +219,7 @@ public class ProjectService {
                         .latest(true).getResultDefinitions().toList()
                 );
                 if (found.size() > 0) {
-                    NPath p = found.get(0).getContent().orNull();
+                    NPath p = found.get(0).content().orNull();
                     if (p == null) {
                         return null;
                     }
@@ -265,11 +265,11 @@ public class ProjectService {
                             ws = NWorkspace.of();
                         }
                         List<NId> found = ws.callWith(() -> NSearch.of()
-                                .addId(g.getId().getGroupId() + ":" + g.getId().getArtifactId())
+                                .addId(g.getId().groupId() + ":" + g.getId().artifactId())
                                 .addRepositoryFilter(NRepositoryFilters.of().byName(nutsRepository))
                                 .latest(true).getResultIds().toList());
                         if (found.size() > 0) {
-                            return found.get(0).getVersion().toString();
+                            return found.get(0).version().toString();
                         }
                     } catch (Exception e) {
                         throw new NIllegalArgumentException(NMsg.ofC("unable to process %s", f), e);

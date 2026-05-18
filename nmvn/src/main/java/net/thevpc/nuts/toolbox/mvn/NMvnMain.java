@@ -48,7 +48,7 @@ public class NMvnMain  {
         List<String> args2 = new ArrayList<>();
         Options o = new Options();
         NSession session = NSession.of();
-        NCmdLine cmd = NApp.of().getCmdLine();
+        NCmdLine cmd = NApp.of().cmdLine();
         NArg a;
         while (cmd.hasNext()) {
             if (command == null) {

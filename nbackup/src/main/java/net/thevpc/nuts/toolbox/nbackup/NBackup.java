@@ -79,7 +79,7 @@ public class NBackup {
                     }
 
                     private NPath getConfigFile() {
-                        return NApp.of().getConfFolder().resolve("backup.json");
+                        return NApp.of().confFolder().resolve("backup.json");
                     }
 
                     @Override

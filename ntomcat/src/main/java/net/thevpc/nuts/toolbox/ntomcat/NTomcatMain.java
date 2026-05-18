@@ -26,7 +26,7 @@ public class NTomcatMain  {
 //
 //            );
 //        }
-        NCmdLine cmdLine = NApp.of().getCmdLine();
+        NCmdLine cmdLine = NApp.of().cmdLine();
         Boolean local = null;
         boolean skipFirst = false;
         if (cmdLine.hasNext()) {

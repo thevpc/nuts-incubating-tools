@@ -182,8 +182,8 @@ public class RemoteTomcat {
                                             , text.ofStyled("--server", NTextStyle.option())
                                     )
                             )
-                            .setDefaultValue("ssh://login@myserver/instanceName")
-                            .getValue()
+                            .defaultValue("ssh://login@myserver/instanceName")
+                            .value()
                     );
                 }
                 if (NBlankable.isBlank(c.getConfig().getRemoteTempPath())) {
@@ -193,8 +193,8 @@ public class RemoteTomcat {
                                     .forString(NMsg.ofC("[instance=%s] would you enter %s value ?"
                                             , text.ofStyled(c.getName(), NTextStyle.primary1())
                                             , text.ofStyled("--remote-temp-path", NTextStyle.option())
-                                    )).setDefaultValue("/tmp")
-                                    .getValue()
+                                    )).defaultValue("/tmp")
+                                    .value()
                             );
                 }
                 for (RemoteTomcatAppConfigService aa : c.getApps()) {
@@ -206,7 +206,7 @@ public class RemoteTomcat {
                                         , text.ofStyled(aa.getName(), NTextStyle.option())
                                         , text.ofStyled("--app.path", NTextStyle.option())
                                 ))
-                                .getValue());
+                                .value());
                     }
                 }
             } catch (NCancelException ex) {

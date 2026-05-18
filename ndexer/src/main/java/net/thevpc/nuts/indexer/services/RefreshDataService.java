@@ -69,7 +69,7 @@ public class RefreshDataService {
             Map<String, Boolean> visited = new HashMap<>();
             while (definitions.hasNext()) {
                 NDefinition definition = definitions.next();
-                Map<String, String> id = NIndexerUtils.nutsIdToMap(definition.getId());
+                Map<String, String> id = NIndexerUtils.nutsIdToMap(definition.id());
                 if (oldData.containsKey(id.get("stringId"))) {
                     visited.put(id.get("stringId"), true);
                     oldData.remove(id.get("stringId"));
@@ -81,7 +81,7 @@ public class RefreshDataService {
                 }
                 visited.put(id.get("stringId"), true);
 
-                List<NDependency> directDependencies = definition.getEffectiveDescriptor().get().getDependencies();
+                List<NDependency> directDependencies = definition.effectiveDescriptor().get().getDependencies();
                 id.put("dependencies",
                         NElementWriter.ofJson()
                                 .formatPlain(directDependencies.stream().map(Object::toString).collect(Collectors.toList()))

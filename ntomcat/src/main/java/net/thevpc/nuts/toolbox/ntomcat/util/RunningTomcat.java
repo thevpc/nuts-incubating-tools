@@ -16,9 +16,9 @@ public class RunningTomcat {
     private NVersion version;
 
     public RunningTomcat(NPsInfo r) {
-        pid =r.getPid();
-        argsLine=r.getCmdLine();
-        NCmdLine cmdline = NCmdLine.parse(r.getCmdLine())
+        pid =r.pid();
+        argsLine=r.cmdLine();
+        NCmdLine cmdline = NCmdLine.parse(r.cmdLine())
                 .get().setExpandSimpleOptions(false);
         NArg a=null;
         while(cmdline.hasNext()){

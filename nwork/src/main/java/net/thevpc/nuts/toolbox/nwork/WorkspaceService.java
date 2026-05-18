@@ -290,10 +290,10 @@ public class WorkspaceService {
             cmdLine.throwMissingArgument("--remote-server");
         }
         for (NId id : idsToPush) {
-            String groupIdPath = String.join("/", id.getGroupId().split("[.]"));
-            String p = groupIdPath + "/" + id.getArtifactId();
-            if (id.getVersion() != null) {
-                p += "/" + id.getVersion();
+            String groupIdPath = String.join("/", id.groupId().split("[.]"));
+            String p = groupIdPath + "/" + id.artifactId();
+            if (id.version() != null) {
+                p += "/" + id.version();
             }
             NExec.of().addCommand(
                             "rsync")
@@ -366,7 +366,7 @@ public class WorkspaceService {
             String id = projectService.getConfig().getId();
             NDescriptor pom = projectService.getPom();
             if (pom != null) {
-                dependencies.put(NId.get(id).get().getShortName(), pom);
+                dependencies.put(NId.get(id).get().shortName(), pom);
             }
         }
 
@@ -382,13 +382,13 @@ public class WorkspaceService {
             ProjectService projectService = all.get(i);
             DataRow d = new DataRow();
             d.id = projectService.getConfig().getId();
-            NDescriptor pom = dependencies.get(NId.get(d.id).get().getShortName());
+            NDescriptor pom = dependencies.get(NId.get(d.id).get().shortName());
             if (pom != null) {
                 for (NDependency dependency : pom.getDependencies()) {
                     String did = dependency.getGroupId() + ":" + dependency.getArtifactId();
-                    NDescriptor expectedPom = dependencies.get(NId.get(did).get().getShortName());
+                    NDescriptor expectedPom = dependencies.get(NId.get(did).get().shortName());
                     if (expectedPom != null) {
-                        String expectedVersion = expectedPom.getId().getVersion().toString();
+                        String expectedVersion = expectedPom.getId().version().toString();
                         String currentVersion = dependency.getVersion().toString();
                         currentVersion = currentVersion.trim();
                         if (currentVersion.contains("$")) {
@@ -581,7 +581,7 @@ public class WorkspaceService {
             for (String filter : filters) {
                 if (id.equals(filter)
                         || id.matches(wildcardToRegex(filter))
-                        || nid.getArtifactId().equals(filter)) {
+                        || nid.artifactId().equals(filter)) {
                     accept = true;
                     break;
                 }

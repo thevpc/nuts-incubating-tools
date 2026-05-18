@@ -18,7 +18,7 @@ public class NWorkMain {
     public void run() {
         NSession session = NSession.of();
         this.service = new WorkspaceService(session);
-        NCmdLine cmdLine = NApp.of().getCmdLine().setCommandName("nwork");
+        NCmdLine cmdLine = NApp.of().cmdLine().setCommandName("nwork");
         NArg a;
         do {
             if (session.configureFirst(cmdLine)) {

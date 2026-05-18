@@ -391,7 +391,7 @@ public class LocalTomcat {
                 case "instance": {
                     LocalTomcatConfigService s = nextLocalTomcatConfigService(args, NOpenMode.OPEN_OR_ERROR);
                     if (NIn.ask()
-                            .forBoolean(NMsg.ofC("Confirm Deleting %s?", s.getName())).setDefaultValue(true).getBooleanValue()) {
+                            .forBoolean(NMsg.ofC("Confirm Deleting %s?", s.getName())).defaultValue(true).booleanValue()) {
                         s.remove();
                     }
                     return;
@@ -399,7 +399,7 @@ public class LocalTomcat {
                 case "domain": {
                     LocalTomcatDomainConfigService s = nextLocalTomcatDomainConfigService(args, NOpenMode.OPEN_OR_ERROR);
                     if (NIn.ask()
-                            .forBoolean(NMsg.ofC("Confirm Deleting %s?", s.getName())).setDefaultValue(true).getBooleanValue()) {
+                            .forBoolean(NMsg.ofC("Confirm Deleting %s?", s.getName())).defaultValue(true).booleanValue()) {
                         s.remove();
                         s.getTomcat().save();
                     }
@@ -408,7 +408,7 @@ public class LocalTomcat {
                 case "app": {
                     LocalTomcatAppConfigService s = nextLocalTomcatAppConfigService(args, NOpenMode.OPEN_OR_ERROR);
                     if (NIn.ask()
-                            .forBoolean(NMsg.ofC("Confirm Deleting %s?", s.getName())).setDefaultValue(true).getBooleanValue()) {
+                            .forBoolean(NMsg.ofC("Confirm Deleting %s?", s.getName())).defaultValue(true).booleanValue()) {
                         s.remove();
                         s.getTomcat().save();
                     }
