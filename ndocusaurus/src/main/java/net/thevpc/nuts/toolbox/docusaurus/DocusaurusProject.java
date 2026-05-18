@@ -316,7 +316,7 @@ public class DocusaurusProject {
         for (DocusaurusFileOrFolder child : f) {
             NPath path = detectFile(child);
             if (path != null) {
-                valid.add(path.getParent());
+                valid.add(path.parent());
             }
         }
         if (valid.size() > 0) {

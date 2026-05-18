@@ -8,8 +8,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class DocusaurusPathFile extends DocusaurusFile {
     private final NPath path;
@@ -24,8 +22,8 @@ public class DocusaurusPathFile extends DocusaurusFile {
     }
 
     public static DocusaurusFile ofFile(NPath path, NPath root) {
-        int from = root.getNameCount();
-        int to = path.getNameCount() - 1;
+        int from = root.nameCount();
+        int to = path.nameCount() - 1;
         String partialPath = from == to ? "" : path.subpath(from, to).toString();
         try (BufferedReader br = path.getBufferedReader()) {
             DocusaurusFile df = DocusaurusContentFile.ofTreeFile(br, partialPath, path.toString(), false);

@@ -48,7 +48,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
 
     public LocalTomcatConfigService(NPath file, LocalTomcat app) {
         this(
-                file.getName().substring(0, file.getName().length() - LocalTomcatConfigService.LOCAL_CONFIG_EXT.length()),
+                file.name().substring(0, file.name().length() - LocalTomcatConfigService.LOCAL_CONFIG_EXT.length()),
                 app
         );
         loadConfig();
@@ -214,7 +214,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         NPath[] paths;
         try {
             paths = u.stream().filter(NPredicate.of(NPath::isDirectory).withDescription(NDescribables.ofDesc("isDirectory"))).toArray(NPath[]::new);
-            if (paths.length == 1 && paths[0].getName().toLowerCase().startsWith("apache-tomcat")) {
+            if (paths.length == 1 && paths[0].name().toLowerCase().startsWith("apache-tomcat")) {
                 return paths[0];
             }
         } catch (Exception e) {
@@ -323,7 +323,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         catalinaBaseUpdated |= mkdirs(catalinaBase.resolve("conf"));
         if (catalinaHome.resolve("conf").isDirectory()) {
             for (NPath conf : catalinaHome.resolve("conf").stream()) {
-                NPath confFile = catalinaBase.resolve("conf/" + conf.getName());
+                NPath confFile = catalinaBase.resolve("conf/" + conf.name());
                 if (!confFile.exists()) {
                     catalinaBaseUpdated = true;
                     NCp.of()
@@ -564,7 +564,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
     }
 
     public void deployFile(NPath file, String contextName, String domain) {
-        String fileName = file.getName();
+        String fileName = file.name();
         if (fileName.endsWith(".war")) {
             if (NBlankable.isBlank(contextName)) {
                 contextName = fileName.substring(0, fileName.length() - ".war".length());
@@ -600,7 +600,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
     }
 
     private boolean checkExec(NPath pathname) {
-        if (!pathname.getPermissions().contains(NPathPermission.CAN_EXECUTE)) {
+        if (!pathname.permissions().contains(NPathPermission.CAN_EXECUTE)) {
             pathname.addPermissions(NPathPermission.CAN_EXECUTE);
             return true;
         }
@@ -1062,7 +1062,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             logFolder.stream()
                     .forEach(file -> {
                         if (file.isRegularFile()) {
-                            String n = file.getName();
+                            String n = file.name();
                             if (n.endsWith(".out")
                                     || n.endsWith(".txt")
                                     || n.endsWith(".log")) {

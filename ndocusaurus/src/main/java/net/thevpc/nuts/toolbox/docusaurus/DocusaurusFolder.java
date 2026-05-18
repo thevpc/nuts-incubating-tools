@@ -80,9 +80,9 @@ public class DocusaurusFolder implements DocusaurusFileOrFolder {
             List<DocusaurusFileOrFolder> children = new ArrayList<>();
             int nexDepth = maxDepth < 0 ? -1 : maxDepth - 1;
             for (NPath path1 : path.list()) {
-                if (path1.isRegularFile() && path1.getName().equals(FOLDER_INFO_NAME)) {
+                if (path1.isRegularFile() && path1.name().equals(FOLDER_INFO_NAME)) {
                     baseContent = (DocusaurusFile) DocusaurusFolder.ofFileOrFolder(path1, root, configRoot, nexDepth);
-                } else if (maxDepth != 0 && (path1.isDirectory() || path1.getName().endsWith(".md"))) {
+                } else if (maxDepth != 0 && (path1.isDirectory() || path1.name().endsWith(".md"))) {
                     DocusaurusFileOrFolder cc = DocusaurusFolder.ofFileOrFolder(path1, root, configRoot, nexDepth);
                     if (cc != null) {
                         children.add(cc);
@@ -95,7 +95,7 @@ public class DocusaurusFolder implements DocusaurusFileOrFolder {
             );
 
         } else if (path.isDirectory()) {
-            String longId = path.subpath(root.getNameCount(), path.getNameCount()).toString();
+            String longId = path.subpath(root.nameCount(), path.nameCount()).toString();
             NPath dfi = path.resolve(FOLDER_INFO_NAME);
 //            Path cfi = configRoot.resolve(longId).resolve(".docusaurus-folder-config.json");
             int order = 1;
@@ -113,7 +113,7 @@ public class DocusaurusFolder implements DocusaurusFileOrFolder {
                 config = NElement.ofObject();
             }
             if (title == null || title.trim().isEmpty()) {
-                title = path.getName();
+                title = path.name();
             }
 
             if (order <= 0) {
@@ -123,9 +123,9 @@ public class DocusaurusFolder implements DocusaurusFileOrFolder {
             List<DocusaurusFileOrFolder> children = new ArrayList<>();
             int nexDepth = maxDepth < 0 ? -1 : maxDepth - 1;
             for (NPath path1 : path.list()) {
-                if (path1.isRegularFile() && path1.getName().equals(FOLDER_INFO_NAME)) {
+                if (path1.isRegularFile() && path1.name().equals(FOLDER_INFO_NAME)) {
                     baseContent = (DocusaurusFile) DocusaurusFolder.ofFileOrFolder(path1, root, configRoot, nexDepth);
-                } else if (maxDepth != 0 && (path1.isDirectory() || path1.getName().endsWith(".md"))) {
+                } else if (maxDepth != 0 && (path1.isDirectory() || path1.name().endsWith(".md"))) {
                     DocusaurusFileOrFolder cc = DocusaurusFolder.ofFileOrFolder(path1, root, configRoot, nexDepth);
                     if (cc != null) {
                         children.add(cc);

@@ -126,7 +126,7 @@ public class LocalTomcatAppConfigService extends LocalTomcatServiceBase {
 
     public NPath getDeployFolder() {
         NPath f = getDeployFile();
-        String fn = f.getName().toString();
+        String fn = f.name().toString();
         return f.resolveSibling(fn.substring(0, fn.length() - ".war".length()));
     }
 

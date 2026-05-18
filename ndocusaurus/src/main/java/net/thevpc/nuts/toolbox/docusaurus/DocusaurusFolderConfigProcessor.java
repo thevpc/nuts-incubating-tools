@@ -27,7 +27,7 @@ class DocusaurusFolderConfigProcessor implements NSiteProcessor {
 
     @Override
     public void processPath(NPath source, String mimeType, NSiteContext context) {
-        NObjectElement config = DocusaurusFolder.ofFolder(source.getParent(),
+        NObjectElement config = DocusaurusFolder.ofFolder(source.parent(),
                         NPath.of(context.getRootDirRequired()).resolve("docs"),
                         docusaurusCtrl.getPreProcessorBaseDir().resolve("src"),
                         0)
@@ -44,9 +44,9 @@ class DocusaurusFolderConfigProcessor implements NSiteProcessor {
             }
             String[] packages = config.getArray("packages").orElse(NArrayElement.ofEmpty())
                     .stream().map(x -> x.asStringValue().orNull()).filter(Objects::nonNull).toArray(String[]::new);
-            String target = context.getPathTranslator().translatePath(source.getParent().toString());
+            String target = context.getPathTranslator().translatePath(source.parent().toString());
             if (target == null) {
-                throw new IllegalArgumentException("invalid source " + source.getParent());
+                throw new IllegalArgumentException("invalid source " + source.parent());
             }
             ArrayList<String> cmd = new ArrayList<>();
 //                cmd.add("--bot");
@@ -55,7 +55,7 @@ class DocusaurusFolderConfigProcessor implements NSiteProcessor {
             for (String s : sources) {
                 s = context.getProcessorManager().processString(s, MimeTypeConstants.PLACEHOLDER_DOLLAR);
                 cmd.add("--source");
-                cmd.add(FileProcessorUtils.toAbsolutePath(NPath.of(s), source.getParent()).toString());
+                cmd.add(FileProcessorUtils.toAbsolutePath(NPath.of(s), source.parent()).toString());
             }
             for (String s : packages) {
                 s = context.getProcessorManager().processString(s, MimeTypeConstants.PLACEHOLDER_DOLLAR);

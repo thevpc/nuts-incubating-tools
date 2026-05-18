@@ -352,7 +352,7 @@ public class RemoteTomcat {
     public RemoteTomcatConfigService[] listConfig() {
         return
                 sharedConfigFolder.stream().filter(
-                                NPredicate.of((NPath pathname) -> pathname.isRegularFile() && pathname.getName().endsWith(RemoteTomcatConfigService.REMOTE_CONFIG_EXT))
+                                NPredicate.of((NPath pathname) -> pathname.isRegularFile() && pathname.name().endsWith(RemoteTomcatConfigService.REMOTE_CONFIG_EXT))
                                         .withDescription(
                                                 NDescribables.ofDesc("isRegularFile() && matches(*" + RemoteTomcatConfigService.REMOTE_CONFIG_EXT + ")")
                                         )

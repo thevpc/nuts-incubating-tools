@@ -598,7 +598,7 @@ public class WorkspaceService {
         NPath storeLocation = sharedConfigFolder.resolve("projects");
         if (storeLocation.isDirectory()) {
             for (NPath file : storeLocation.list()) {
-                if (file.isRegularFile() && file.getName().endsWith(".config")) {
+                if (file.isRegularFile() && file.name().endsWith(".config")) {
                     file.delete();
                 }
             }
@@ -611,7 +611,7 @@ public class WorkspaceService {
 
         if (storeLocation.isDirectory()) {
             for (NPath file : storeLocation.list()) {
-                if (file.isRegularFile() && file.getName().endsWith(".config")) {
+                if (file.isRegularFile() && file.name().endsWith(".config")) {
                     try {
                         all.add(new ProjectService(config.getDefaultRepositoryAddress(), file));
                     } catch (IOException e) {

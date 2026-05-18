@@ -40,7 +40,7 @@ public class RemoteTomcatConfigService extends RemoteTomcatServiceBase {
 
     public RemoteTomcatConfigService(NPath file, RemoteTomcat client) {
         this(
-                file.getName().substring(0, file.getName().length() - LocalTomcatConfigService.LOCAL_CONFIG_EXT.length()),
+                file.name().substring(0, file.name().length() - LocalTomcatConfigService.LOCAL_CONFIG_EXT.length()),
                 client
         );
     }

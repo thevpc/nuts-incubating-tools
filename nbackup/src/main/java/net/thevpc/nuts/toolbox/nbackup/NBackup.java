@@ -165,7 +165,7 @@ public class NBackup {
                                 "--delete",
                                 config.getRemoteUser() + "@" + config.getRemoteServer() + ":" + remotePath,
                                 localPath};
-                        NPath.of(localPath).getParent().mkdirs();
+                        NPath.of(localPath).parent().mkdirs();
                         NOut.println(NMsg.ofC("[%s] Backup %s from %s.",
                                 NMsg.ofStyledWarn(config.getRemoteServer()),
                                 NMsg.ofStyledKeyword(name),

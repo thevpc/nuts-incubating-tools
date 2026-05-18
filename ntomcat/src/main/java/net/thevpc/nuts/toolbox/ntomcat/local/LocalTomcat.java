@@ -866,7 +866,7 @@ public class LocalTomcat {
     public LocalTomcatConfigService[] listConfig() {
         return
                 sharedConfigFolder.stream().filter(
-                                NPredicate.of((NPath pathname) -> pathname.isRegularFile() && pathname.getName().toString().endsWith(LocalTomcatConfigService.LOCAL_CONFIG_EXT))
+                                NPredicate.of((NPath pathname) -> pathname.isRegularFile() && pathname.name().toString().endsWith(LocalTomcatConfigService.LOCAL_CONFIG_EXT))
                                         .withDescription(NDescribables.ofDesc("isRegularFile() && matches(*" + LocalTomcatConfigService.LOCAL_CONFIG_EXT + ")"))
                         )
                         .mapUnsafe(
