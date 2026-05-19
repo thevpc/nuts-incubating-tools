@@ -56,7 +56,7 @@ public class NBackup {
     }
 
     public void runPull(NCmdLine cmdLine) {
-        cmdLine.setConfigurable(NSession.of())
+        cmdLine.configurable(NSession.of())
                 .run(new NCmdLineRunner() {
                     private Options options = new Options();
 

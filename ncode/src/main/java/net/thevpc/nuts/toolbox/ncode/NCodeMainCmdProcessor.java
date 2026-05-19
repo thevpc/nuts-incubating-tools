@@ -31,7 +31,7 @@ class NCodeMainCmdProcessor implements NCmdLineRunner {
 
     @Override
     public void init(NCmdLine cmdLine) {
-        cmdLine.setExpandSimpleOptions(true);
+        cmdLine.expandSimpleOptions(true);
     }
 
     @Override

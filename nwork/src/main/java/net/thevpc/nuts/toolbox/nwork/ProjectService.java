@@ -85,7 +85,7 @@ public class ProjectService {
             if (new File(f, "pom.xml").isFile()) {
                 try {
                     return NDescriptorParser.of()
-                            .setDescriptorStyle(NDescriptorStyle.MAVEN)
+                            .descriptorStyle(NDescriptorStyle.MAVEN)
                             .parse(new File(f, "pom.xml")).get();
                 } catch (Exception ex) {
                     //
@@ -105,14 +105,14 @@ public class ProjectService {
             if (new File(f, "pom.xml").isFile()) {
                 try {
                     NDescriptor g = NDescriptorParser.of()
-                            .setDescriptorStyle(NDescriptorStyle.MAVEN)
+                            .descriptorStyle(NDescriptorStyle.MAVEN)
                             .parse(new File(f, "pom.xml")).get();
-                    if (g.getId().groupId() != null
-                            && g.getId().artifactId() != null
-                            && g.getId().version() != null
-                            && !g.getId().groupId().contains("$")
-                            && !g.getId().artifactId().contains("$")
-                            && !g.getId().version().toString().contains("$")) {
+                    if (g.id().groupId() != null
+                            && g.id().artifactId() != null
+                            && g.id().version() != null
+                            && !g.id().groupId().contains("$")
+                            && !g.id().artifactId().contains("$")
+                            && !g.id().version().toString().contains("$")) {
 
                         String s = new String(Files.readAllBytes(new File(f, "pom.xml").toPath()));
                         //check if the s
@@ -131,7 +131,7 @@ public class ProjectService {
                         if (ok > 0) {
 
                             if (p2.getId() == null) {
-                                p2.setId(g.getId().groupId() + ":" + g.getId().artifactId());
+                                p2.setId(g.id().groupId() + ":" + g.id().artifactId());
                             }
                             if (new File(f, "src/main").isDirectory()) {
                                 p2.getTechnologies().add("maven");
@@ -174,8 +174,8 @@ public class ProjectService {
                 if (new File(f, "pom.xml").isFile()) {
                     try {
                         return NDescriptorParser.of()
-                                .setDescriptorStyle(NDescriptorStyle.MAVEN)
-                                .parse(new File(f, "pom.xml")).get().getId().version().toString();
+                                .descriptorStyle(NDescriptorStyle.MAVEN)
+                                .parse(new File(f, "pom.xml")).get().id().version().toString();
                     } catch (Exception e) {
                         throw new IllegalArgumentException(e);
                     }
@@ -250,7 +250,7 @@ public class ProjectService {
                     }
                     try {
                         NDescriptor g = NDescriptorParser.of()
-                                .setDescriptorStyle(NDescriptorStyle.MAVEN)
+                                .descriptorStyle(NDescriptorStyle.MAVEN)
                                 .parse(new File(f, "pom.xml")).get();
                         NWorkspace ws = null;
                         if (a.getNutsWorkspace() != null && a.getNutsWorkspace().trim().length() > 0 && !a.getNutsWorkspace().equals(NWorkspace.of().getWorkspaceLocation().toString())) {
@@ -265,7 +265,7 @@ public class ProjectService {
                             ws = NWorkspace.of();
                         }
                         List<NId> found = ws.callWith(() -> NSearch.of()
-                                .addId(g.getId().groupId() + ":" + g.getId().artifactId())
+                                .addId(g.id().groupId() + ":" + g.id().artifactId())
                                 .addRepositoryFilter(NRepositoryFilters.of().byName(nutsRepository))
                                 .latest(true).getResultIds().toList());
                         if (found.size() > 0) {

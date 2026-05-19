@@ -163,7 +163,7 @@ public class WorkspaceService {
     public void list(NCmdLine cmd, NSession session) {
         NArg a;
         List<String> filters = new ArrayList<>();
-        cmd.setCommandName("nwork list");
+        cmd.commandName("nwork list");
         while (cmd.hasNext()) {
             if ((a = cmd.nextNonOption().orNull()) != null) {
                 filters.add(a.asString().get());
@@ -268,7 +268,7 @@ public class WorkspaceService {
     }
 
     public void push(NCmdLine cmdLine, NSession session) {
-        cmdLine.setCommandName("nwork push");
+        cmdLine.commandName("nwork push");
         //rsync /home/me/.m2/repository/net/thevpc/nuts/nuts/0.8.4/*  vpc@thevpc.net:/home/me/.m2/repository/net/thevpc/nuts/nuts/0.8.4/
         List<NId> idsToPush = new ArrayList<>();
         NRef<String> remoteServer = NRef.ofNull(String.class);
@@ -339,7 +339,7 @@ public class WorkspaceService {
             } else if ((a = cmd.nextFlag("-v", "--verbose").orNull()) != null) {
                 verbose = a.getBooleanValue().get();
             } else if (cmd.isNextOption()) {
-                cmd.setCommandName("nwork check").throwUnexpectedArgument();
+                cmd.commandName("nwork check").throwUnexpectedArgument();
             } else {
                 filters.add(cmd.next().get().image());
             }
@@ -384,18 +384,18 @@ public class WorkspaceService {
             d.id = projectService.getConfig().getId();
             NDescriptor pom = dependencies.get(NId.get(d.id).get().shortName());
             if (pom != null) {
-                for (NDependency dependency : pom.getDependencies()) {
-                    String did = dependency.getGroupId() + ":" + dependency.getArtifactId();
+                for (NDependency dependency : pom.dependencies()) {
+                    String did = dependency.groupId() + ":" + dependency.artifactId();
                     NDescriptor expectedPom = dependencies.get(NId.get(did).get().shortName());
                     if (expectedPom != null) {
-                        String expectedVersion = expectedPom.getId().version().toString();
-                        String currentVersion = dependency.getVersion().toString();
+                        String expectedVersion = expectedPom.id().version().toString();
+                        String currentVersion = dependency.version().toString();
                         currentVersion = currentVersion.trim();
                         if (currentVersion.contains("$")) {
-                            for (NDescriptorProperty entry : pom.getProperties()) {
-                                String k = "${" + entry.getName() + "}";
+                            for (NDescriptorProperty entry : pom.properties()) {
+                                String k = "${" + entry.name() + "}";
                                 if (currentVersion.equals(k)) {
-                                    currentVersion = entry.getValue().asString().get();
+                                    currentVersion = entry.value().asString().get();
                                     break;
                                 }
                             }
@@ -812,7 +812,7 @@ public class WorkspaceService {
                 conf.getDefaultRepositoryAddress().setNutsWorkspace(a.getStringValue().get());
                 setWorkspaceConfig(conf);
             } else {
-                cmd.setCommandName("nwork set").throwUnexpectedArgument();
+                cmd.commandName("nwork set").throwUnexpectedArgument();
             }
         }
         return 0;

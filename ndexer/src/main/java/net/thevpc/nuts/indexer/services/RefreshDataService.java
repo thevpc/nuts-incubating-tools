@@ -62,7 +62,7 @@ public class RefreshDataService {
                     .stream()
                     .collect(Collectors.toMap(map -> map.get("stringId"), map -> NIndexerUtils.mapToNutsId(map), (v1, v2) -> v1));
             Iterator<NDefinition> definitions = NSearch.of()
-                    .setRepositoryFilter(NRepositoryFilters.of().byUuid(subscriber.getUuid()))
+                    .repositoryFilter(NRepositoryFilters.of().byUuid(subscriber.getUuid()))
                     .failFast(false)
                     .getResultDefinitions().iterator();
             List<Map<String, String>> dataToIndex = new ArrayList<>();
@@ -81,7 +81,7 @@ public class RefreshDataService {
                 }
                 visited.put(id.get("stringId"), true);
 
-                List<NDependency> directDependencies = definition.effectiveDescriptor().get().getDependencies();
+                List<NDependency> directDependencies = definition.effectiveDescriptor().get().dependencies();
                 id.put("dependencies",
                         NElementWriter.ofJson()
                                 .formatPlain(directDependencies.stream().map(Object::toString).collect(Collectors.toList()))

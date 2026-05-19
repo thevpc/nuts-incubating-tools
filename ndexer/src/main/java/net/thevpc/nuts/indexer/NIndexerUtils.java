@@ -38,18 +38,18 @@ public class NIndexerUtils {
             return new HashMap<>();
         }
         Map<String, String> entity = new HashMap<>();
-        entity.put("name", repository.getName());
-        entity.put("type", repository.getRepositoryType());
-        entity.put("location", repository.config().getLocation().toString());
+        entity.put("name", repository.name());
+        entity.put("type", repository.repositoryType());
+        entity.put("location", repository.config().location().toString());
         entity.put("enabled", String.valueOf(repository.config().isEnabled()));
-        entity.put("speed", String.valueOf(repository.config().getSpeed()));
-        NWorkspace ws = repository.getWorkspace();
+        entity.put("speed", String.valueOf(repository.config().speed()));
+        NWorkspace ws = repository.workspace();
         if (level == 0) {
             entity.put("mirrors", Arrays.toString(
-                    repository.config().getMirrors().stream()
+                    repository.config().mirrors().stream()
                             .map(nutsRepository -> mapToJson(nutsRepositoryToMap(nutsRepository, level + 1)))
                             .toArray()));
-            entity.put("parents", mapToJson(nutsRepositoryToMap(repository.getParentRepository(), level + 1)));
+            entity.put("parents", mapToJson(nutsRepositoryToMap(repository.parentRepository(), level + 1)));
         }
         return entity;
     }
@@ -71,12 +71,12 @@ public class NIndexerUtils {
         _condPut(entity, "classifier", id.classifier());
         _condPut(entity, "version", id.version().value());
         _condPut(entity, "face", id.face());
-        _condPut(entity, NConstants.IdProperties.OS, String.join(",", id.condition().getOs()));
-        _condPut(entity, NConstants.IdProperties.OS_DIST, String.join(",", id.condition().getOsDist()));
-        _condPut(entity, NConstants.IdProperties.ARCH, String.join(",", id.condition().getArch()));
-        _condPut(entity, NConstants.IdProperties.PLATFORM, String.join(",", id.condition().getPlatform()));
-        _condPut(entity, NConstants.IdProperties.PROFILE, String.join(",", id.condition().getProfiles()));
-        _condPut(entity, NConstants.IdProperties.DESKTOP, String.join(",", id.condition().getDesktopEnvironment()));
+        _condPut(entity, NConstants.IdProperties.OS, String.join(",", id.condition().os()));
+        _condPut(entity, NConstants.IdProperties.OS_DIST, String.join(",", id.condition().osDist()));
+        _condPut(entity, NConstants.IdProperties.ARCH, String.join(",", id.condition().arch()));
+        _condPut(entity, NConstants.IdProperties.PLATFORM, String.join(",", id.condition().platform()));
+        _condPut(entity, NConstants.IdProperties.PROFILE, String.join(",", id.condition().profiles()));
+        _condPut(entity, NConstants.IdProperties.DESKTOP, String.join(",", id.condition().desktopEnvironment()));
 //        _condPut(entity, NutsConstants.IdProperties.ALTERNATIVE, id.getAlternative());
         _condPut(entity, "stringId", id.toString());
         return entity;
@@ -84,22 +84,22 @@ public class NIndexerUtils {
 
     public static Map<String, String> nutsDependencyToMap(NDependency dependency) {
         Map<String, String> entity = new HashMap<>();
-        _condPut(entity, "name", dependency.getArtifactId());
-        _condPut(entity, "namespace", dependency.getRepository());
-        _condPut(entity, "group", dependency.getGroupId());
-        _condPut(entity, "classifier", dependency.getGroupId());
-        _condPut(entity, "version", dependency.getVersion().value());
+        _condPut(entity, "name", dependency.artifactId());
+        _condPut(entity, "namespace", dependency.repository());
+        _condPut(entity, "group", dependency.groupId());
+        _condPut(entity, "classifier", dependency.groupId());
+        _condPut(entity, "version", dependency.version().value());
         NId id2 = dependency.toId().builder()
                 .setFace(StringUtils.isEmpty(dependency.toId().face()) ? "default" : dependency.toId().face())
                 .build();
         _condPut(entity, NConstants.IdProperties.FACE, id2.face());
 
-        _condPut(entity, NConstants.IdProperties.OS, String.join(",", id2.condition().getOs()));
-        _condPut(entity, NConstants.IdProperties.OS_DIST, String.join(",", id2.condition().getOsDist()));
-        _condPut(entity, NConstants.IdProperties.ARCH, String.join(",", id2.condition().getArch()));
-        _condPut(entity, NConstants.IdProperties.PLATFORM, String.join(",", id2.condition().getPlatform()));
-        _condPut(entity, NConstants.IdProperties.PROFILE, String.join(",", id2.condition().getProfiles()));
-        _condPut(entity, NConstants.IdProperties.DESKTOP, String.join(",", id2.condition().getDesktopEnvironment()));
+        _condPut(entity, NConstants.IdProperties.OS, String.join(",", id2.condition().os()));
+        _condPut(entity, NConstants.IdProperties.OS_DIST, String.join(",", id2.condition().osDist()));
+        _condPut(entity, NConstants.IdProperties.ARCH, String.join(",", id2.condition().arch()));
+        _condPut(entity, NConstants.IdProperties.PLATFORM, String.join(",", id2.condition().platform()));
+        _condPut(entity, NConstants.IdProperties.PROFILE, String.join(",", id2.condition().profiles()));
+        _condPut(entity, NConstants.IdProperties.DESKTOP, String.join(",", id2.condition().desktopEnvironment()));
 
 //        _condPut(entity, NutsConstants.IdProperties.ALTERNATIVE, dependency.getId().getAlternative());
         _condPut(entity, "stringId", id2.toString());
@@ -143,19 +143,19 @@ public class NIndexerUtils {
 
     public static NId mapToNutsId(Map<String, String> map) {
         return NIdBuilder.of()
-                .setArtifactId(NStringUtils.trim(map.get("name")))
-                .setRepository(NStringUtils.trim(map.get("namespace")))
-                .setGroupId(NStringUtils.trim(map.get("group")))
-                .setClassifier(NStringUtils.trim(map.get("classifier")))
-                .setVersion(NStringUtils.trim(map.get("version")))
-                .setCondition(
+                .artifactId(NStringUtils.trim(map.get("name")))
+                .repository(NStringUtils.trim(map.get("namespace")))
+                .groupId(NStringUtils.trim(map.get("group")))
+                .classifier(NStringUtils.trim(map.get("classifier")))
+                .version(NStringUtils.trim(map.get("version")))
+                .condition(
                         NEnvConditionBuilder.of()
                                 //TODO what if the result is ',' separated array?
-                                .setArch(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.ARCH))))
-                                .setOs(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.OS))))
-                                .setOsDist(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.OS_DIST))))
-                                .setPlatform(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.PLATFORM))))
-                                .setDesktopEnvironment(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.DESKTOP))))
+                                .arch(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.ARCH))))
+                                .os(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.OS))))
+                                .osDist(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.OS_DIST))))
+                                .platform(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.PLATFORM))))
+                                .desktopEnvironment(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.DESKTOP))))
                 )
 //                .setAlternative(trim(map.get(NutsConstants.IdProperties.ALTERNATIVE)))
                 .build();

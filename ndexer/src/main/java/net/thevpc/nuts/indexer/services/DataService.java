@@ -140,8 +140,8 @@ public class DataService {
         Map<String, String> row = rows.get(0);
         if (!row.containsKey("allDependencies")) {
             List<NId> allDependencies = NSearch.of()
-                    .setBasePackage(false)
-                    .setInlineDependencies(true)
+                    .basePackage(false)
+                    .inlineDependencies(true)
                     .addId(id)
                     .failFast(false)
                     .getResultIds().toList();

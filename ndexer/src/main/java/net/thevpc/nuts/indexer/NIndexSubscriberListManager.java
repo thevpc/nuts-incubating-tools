@@ -7,8 +7,6 @@ import net.thevpc.nuts.core.NWorkspaceLocation;
 import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
 
-import net.thevpc.nuts.platform.NStoreScope;
-import net.thevpc.nuts.platform.NStoreType;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.core.NRepository;
 
@@ -89,8 +87,8 @@ public class NIndexSubscriberListManager {
     private String getRepositoryNameFromUuid(String repositoryUuid) {
         List<NRepository> repositories = NWorkspace.of().getRepositories();
         for (NRepository repository : repositories) {
-            if (repository.getUuid().equals(repositoryUuid)) {
-                return repository.getName();
+            if (repository.uuid().equals(repositoryUuid)) {
+                return repository.name();
             }
 
         }

@@ -18,7 +18,7 @@ public class NWorkMain {
     public void run() {
         NSession session = NSession.of();
         this.service = new WorkspaceService(session);
-        NCmdLine cmdLine = NApp.of().cmdLine().setCommandName("nwork");
+        NCmdLine cmdLine = NApp.of().cmdLine().commandName("nwork");
         NArg a;
         do {
             if (session.configureFirst(cmdLine)) {
@@ -50,7 +50,7 @@ public class NWorkMain {
                 service.setWorkspaceConfigParam(cmdLine, session);
                 return;
             } else {
-                cmdLine.setCommandName("nwork").throwUnexpectedArgument();
+                cmdLine.commandName("nwork").throwUnexpectedArgument();
             }
         } while (cmdLine.hasNext());
         cmdLine.throwMissingArgument();

@@ -210,7 +210,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
 
     public NPath resolveCatalinaHome() {
         NDefinition f = getCatalinaNutsDefinition();
-        NPath u = f.installInformation().get().getInstallFolder();
+        NPath u = f.installInformation().get().installFolder();
         NPath[] paths;
         try {
             paths = u.stream().filter(NPredicate.of(NPath::isDirectory).withDescription(NDescribables.ofDesc("isDirectory"))).toArray(NPath[]::new);
@@ -513,14 +513,14 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             }
         }
         if (catalinaNDefinition == null || !Objects.equals(catalinaVersion, this.catalinaVersion)
-                || !catalinaNDefinition.installInformation().get().getInstallStatus().isInstalled()) {
+                || !catalinaNDefinition.installInformation().get().installStatus().isInstalled()) {
             this.catalinaVersion = catalinaVersion;
             String cv = catalinaVersion;
             if (!cv.startsWith("[") && !cv.startsWith("]")) {
                 cv = "[" + catalinaVersion + "," + catalinaVersion + ".99999]";
             }
             String cid = "org.apache.catalina:apache-tomcat";//+"#"+cv;
-            cid = NIdBuilder.of().copyFrom(NId.get(cid).get()).setCondition(
+            cid = NIdBuilder.of().copyFrom(NId.get(cid).get()).condition(
                     NEnvConditionBuilder.of()
                             .addPlatform(NEnv.of().getJava().toString())
             ).toString();
@@ -528,14 +528,14 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             NSearch searchLatestCommand = NSearch.of().addId(cid)
                     .latest(true);
             NDefinition r = searchLatestCommand
-                    .setDefinitionFilter(NDefinitionFilters.of().byDeployed(true))
+                    .definitionFilter(NDefinitionFilters.of().byDeployed(true))
                     .getResultDefinitions().findFirst().orNull();
             if (r == null) {
-                r = NSession.of().copy().setFetchStrategy(NFetchStrategy.OFFLINE).callWith(() -> searchLatestCommand.setDefinitionFilter(NDefinitionFilters.of().byInstalled(false))
+                r = NSession.of().copy().setFetchStrategy(NFetchStrategy.OFFLINE).callWith(() -> searchLatestCommand.definitionFilter(NDefinitionFilters.of().byInstalled(false))
                         .getResultDefinitions().findFirst().orNull());
             }
             if (r == null) {
-                r = NSession.of().copy().setFetchStrategy(NFetchStrategy.ONLINE).callWith(() -> searchLatestCommand.setDefinitionFilter(NDefinitionFilters.of().byInstalled(false)).getResultDefinitions().findFirst().get());
+                r = NSession.of().copy().setFetchStrategy(NFetchStrategy.ONLINE).callWith(() -> searchLatestCommand.definitionFilter(NDefinitionFilters.of().byInstalled(false)).getResultDefinitions().findFirst().get());
             }
             if (r.installInformation().get().isInstalledOrRequired()) {
                 return r;
@@ -548,7 +548,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                             public void onInstall(NInstallEvent event) {
                                 if (NOut.isPlain()) {
                                     NOut.print(NMsg.ofC("%s Tomcat installed to catalina home %s\n", getFormattedPrefix(getName()),
-                                            event.getDefinition().installInformation().get().getInstallFolder()
+                                            event.definition().installInformation().get().installFolder()
                                     ));
                                 }
                             }
@@ -556,7 +556,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                                 .addId(finalR.id())
                                 .getResultStream().findFirst().get());
                 //this is a workaround. Def returned by install does not include all information!
-                catalinaNDefinition = searchLatestCommand.setDefinitionFilter(NDefinitionFilters.of().byInstalled(true))
+                catalinaNDefinition = searchLatestCommand.definitionFilter(NDefinitionFilters.of().byInstalled(true))
                         .getResultDefinitions().findFirst().orNull();
             }
         }

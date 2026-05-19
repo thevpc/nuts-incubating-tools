@@ -90,13 +90,13 @@ public class NComponentController {
                 NWorkspaceLocation workspaceLocation = iterator.next();
                 NWorkspace workspace = Nuts.openWorkspace("--workspace", workspaceLocation.getLocation());
                 NId id = NIdBuilder.of(group,name)
-                        .setRepository(namespace)
-                        .setVersion(version)
-                        .setCondition(
+                        .repository(namespace)
+                        .version(version)
+                        .condition(
                                 NEnvConditionBuilder.of()
-                                        .setArch(Arrays.asList(arch))
-                                        .setOs(Arrays.asList(os))
-                                        .setOsDist(Arrays.asList(osdist)).build()
+                                        .arch(Arrays.asList(arch))
+                                        .os(Arrays.asList(os))
+                                        .osDist(Arrays.asList(osdist)).build()
                         )
                         .setFace(face)
 //                        .setAlternative(alternative)
@@ -136,13 +136,13 @@ public class NComponentController {
                 NWorkspaceLocation workspaceLocation = iterator.next();
                 NWorkspace workspace = Nuts.openWorkspace("--workspace", workspaceLocation.getLocation());
                 NId id = NIdBuilder.of(group,name)
-                        .setRepository(namespace)
-                        .setCondition(NEnvConditionBuilder.of()
-                                .setArch(Arrays.asList(arch))
-                                .setOs(Arrays.asList(os))
-                                .setOsDist(Arrays.asList(osdist))
-                                .setPlatform(Arrays.asList(platform))
-                                .setDesktopEnvironment(Arrays.asList(desktopEnvironment))
+                        .repository(namespace)
+                        .condition(NEnvConditionBuilder.of()
+                                .arch(Arrays.asList(arch))
+                                .os(Arrays.asList(os))
+                                .osDist(Arrays.asList(osdist))
+                                .platform(Arrays.asList(platform))
+                                .desktopEnvironment(Arrays.asList(desktopEnvironment))
                         )
                         .setFace(face)
 //                        .setAlternative(alternative)
@@ -180,16 +180,16 @@ public class NComponentController {
                 NWorkspace workspace = Nuts.openWorkspace("--workspace", workspaceLocation.getLocation());
                 Map<String, String> data = NIndexerUtils.nutsIdToMap(
                         NIdBuilder.of()
-                                .setArtifactId(name)
-                                .setRepository(namespace)
-                                .setGroupId(group)
-                                .setVersion(version)
-                                .setCondition(NEnvConditionBuilder.of()
-                                        .setArch(Arrays.asList(arch))
-                                        .setOs(Arrays.asList(os))
-                                        .setOsDist(Arrays.asList(osdist))
-                                        .setPlatform(Arrays.asList(platform))
-                                        .setDesktopEnvironment(Arrays.asList(desktopEnvironment))
+                                .artifactId(name)
+                                .repository(namespace)
+                                .groupId(group)
+                                .version(version)
+                                .condition(NEnvConditionBuilder.of()
+                                        .arch(Arrays.asList(arch))
+                                        .os(Arrays.asList(os))
+                                        .osDist(Arrays.asList(osdist))
+                                        .platform(Arrays.asList(platform))
+                                        .desktopEnvironment(Arrays.asList(desktopEnvironment))
                                 )
                                 .setFace(face)
 //                                .setAlternative(alternative)
@@ -226,16 +226,16 @@ public class NComponentController {
                 NWorkspaceLocation workspaceLocation = iterator.next();
                 NWorkspace workspace = Nuts.openWorkspace("--workspace", workspaceLocation.getLocation());
                 NId id = NIdBuilder.of()
-                        .setArtifactId(name)
-                        .setRepository(namespace)
-                        .setGroupId(group)
-                        .setVersion(version)
-                        .setCondition(NEnvConditionBuilder.of()
-                                .setArch(Arrays.asList(arch))
-                                .setOs(Arrays.asList(os))
-                                .setOsDist(Arrays.asList(osdist))
-                                .setPlatform(Arrays.asList(platform))
-                                .setDesktopEnvironment(Arrays.asList(desktopEnvironment))
+                        .artifactId(name)
+                        .repository(namespace)
+                        .groupId(group)
+                        .version(version)
+                        .condition(NEnvConditionBuilder.of()
+                                .arch(Arrays.asList(arch))
+                                .os(Arrays.asList(os))
+                                .osDist(Arrays.asList(osdist))
+                                .platform(Arrays.asList(platform))
+                                .desktopEnvironment(Arrays.asList(desktopEnvironment))
                         )
                         .setFace(face)
 //                        .setAlternative(alternative)
@@ -246,7 +246,7 @@ public class NComponentController {
                     List<Map<String, String>> list = this.dataService.searchData(NIndexerUtils.getCacheDir(subscriber.cacheFolderName()), data, null);
                     if (list.isEmpty()) {
                         Iterator<NDefinition> it = NSearch.of()
-                                .setRepositoryFilter(
+                                .repositoryFilter(
                                         NRepositoryFilters.of().byUuid(subscriber.getUuid())
                                 )
                                 .addId(id)
@@ -254,7 +254,7 @@ public class NComponentController {
                                 .getResultDefinitions().iterator();
                         if (it.hasNext()) {
                             NDefinition definition = it.next();
-                            List<NDependency> directDependencies = definition.effectiveDescriptor().get().getDependencies();
+                            List<NDependency> directDependencies = definition.effectiveDescriptor().get().dependencies();
                             data.put("dependencies", NElementWriter.ofJson()
                                     .formatPlain(directDependencies.stream().map(Object::toString)
                                             .collect(Collectors.toList()))

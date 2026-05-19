@@ -19,7 +19,7 @@ public class RunningTomcat {
         pid =r.pid();
         argsLine=r.cmdLine();
         NCmdLine cmdline = NCmdLine.parse(r.cmdLine())
-                .get().setExpandSimpleOptions(false);
+                .get().expandSimpleOptions(false);
         NArg a=null;
         while(cmdline.hasNext()){
             if((a=cmdline.nextEntry("-Dcatalina.home").orNull())!=null) {
