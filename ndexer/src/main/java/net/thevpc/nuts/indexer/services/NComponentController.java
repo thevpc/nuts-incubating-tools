@@ -59,7 +59,7 @@ public class NComponentController {
             Iterator<NWorkspaceLocation> iterator = subscriber.getWorkspaceLocations().values().iterator();
             if (iterator.hasNext()) {
                 NWorkspaceLocation workspaceLocation = iterator.next();
-                NWorkspace workspace = Nuts.openWorkspace("--workspace", workspaceLocation.getLocation());
+                NWorkspace workspace = Nuts.openWorkspace("--workspace", workspaceLocation.location());
                 List<Map<String, String>> rows = this.dataService.
                         getAllData(NIndexerUtils.getCacheDir(subscriber.cacheFolderName()));
                 List<Map<String, Object>> resData = cleanNutsIdMap(rows);
@@ -88,7 +88,7 @@ public class NComponentController {
             Iterator<NWorkspaceLocation> iterator = subscriber.getWorkspaceLocations().values().iterator();
             if (iterator.hasNext()) {
                 NWorkspaceLocation workspaceLocation = iterator.next();
-                NWorkspace workspace = Nuts.openWorkspace("--workspace", workspaceLocation.getLocation());
+                NWorkspace workspace = Nuts.openWorkspace("--workspace", workspaceLocation.location());
                 NId id = NIdBuilder.of(group,name)
                         .repository(namespace)
                         .version(version)
@@ -134,7 +134,7 @@ public class NComponentController {
             Iterator<NWorkspaceLocation> iterator = subscriber.getWorkspaceLocations().values().iterator();
             if (iterator.hasNext()) {
                 NWorkspaceLocation workspaceLocation = iterator.next();
-                NWorkspace workspace = Nuts.openWorkspace("--workspace", workspaceLocation.getLocation());
+                NWorkspace workspace = Nuts.openWorkspace("--workspace", workspaceLocation.location());
                 NId id = NIdBuilder.of(group,name)
                         .repository(namespace)
                         .condition(NEnvConditionBuilder.of()
@@ -177,7 +177,7 @@ public class NComponentController {
             Iterator<NWorkspaceLocation> iterator = subscriber.getWorkspaceLocations().values().iterator();
             if (iterator.hasNext()) {
                 NWorkspaceLocation workspaceLocation = iterator.next();
-                NWorkspace workspace = Nuts.openWorkspace("--workspace", workspaceLocation.getLocation());
+                NWorkspace workspace = Nuts.openWorkspace("--workspace", workspaceLocation.location());
                 Map<String, String> data = NIndexerUtils.nutsIdToMap(
                         NIdBuilder.of()
                                 .artifactId(name)
@@ -224,7 +224,7 @@ public class NComponentController {
             Iterator<NWorkspaceLocation> iterator = subscriber.getWorkspaceLocations().values().iterator();
             if (iterator.hasNext()) {
                 NWorkspaceLocation workspaceLocation = iterator.next();
-                NWorkspace workspace = Nuts.openWorkspace("--workspace", workspaceLocation.getLocation());
+                NWorkspace workspace = Nuts.openWorkspace("--workspace", workspaceLocation.location());
                 NId id = NIdBuilder.of()
                         .artifactId(name)
                         .repository(namespace)

@@ -642,7 +642,7 @@ public class WorkspaceService {
             stack.push(folder);
         }
         int scanned = 0;
-        boolean structuredOutContentType = session.isTrace() && session.getOutputFormat().orDefault() != NContentType.PLAIN;
+        boolean structuredOutContentType = session.isTrace() && session.outputFormat().orDefault() != NContentType.PLAIN;
         while (!stack.isEmpty()) {
             File folder = stack.pop();
             if (folder.isDirectory()) {
@@ -717,7 +717,7 @@ public class WorkspaceService {
                                 session.out().println(NMsg.ofC("detected Project Folder %s", formatProjectConfig(session, p2)));
                             }
                             if (interactive) {
-                                String id = session.getTerminal().readLine(NMsg.ofC("enter Id %s: ",
+                                String id = session.terminal().readLine(NMsg.ofC("enter Id %s: ",
                                         (p2.getId() == null ? "" : ("(" + text.ofPlain(p2.getId()) + ")"))));
                                 if (!NBlankable.isBlank(id)) {
                                     p2.setId(id);

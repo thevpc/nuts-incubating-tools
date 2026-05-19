@@ -78,7 +78,7 @@ public class NDocusaurusMain {
                         .setBuildWebSite(build)
                         .setStartWebSite(start)
                         .setBuildPdf(buildPdf)
-                        .setAutoInstallNutsPackages(NWorkspace.of().getBootOptions().confirm().orElse(NConfirmationMode.ASK) == NConfirmationMode.YES)
+                        .setAutoInstallNutsPackages(NWorkspace.of().bootOptions().confirm().orElse(NConfirmationMode.ASK) == NConfirmationMode.YES)
                         .run();
             }
         });

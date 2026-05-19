@@ -195,7 +195,7 @@ public class DocusaurusCtrl {
     }
 
     public void runCommand(NPath workFolder, boolean yes, String... cmd) {
-        NSession.of().copy().setConfirm(yes ? NConfirmationMode.YES : NConfirmationMode.ERROR)
+        NSession.of().copy().confirm(yes ? NConfirmationMode.YES : NConfirmationMode.ERROR)
                 .runWith(() -> {
                     NExec.of().addCommand(cmd).directory(workFolder)
                             .executionType(NExecutionType.EMBEDDED)

@@ -201,7 +201,7 @@ public class ProjectService {
             }
             try {
                 NWorkspace ws = null;
-                if (a.getNutsWorkspace() != null && a.getNutsWorkspace().trim().length() > 0 && !a.getNutsWorkspace().equals(NWorkspace.of().getWorkspaceLocation().toString())) {
+                if (a.getNutsWorkspace() != null && a.getNutsWorkspace().trim().length() > 0 && !a.getNutsWorkspace().equals(NWorkspace.of().workspaceLocation().toString())) {
                     ws = Nuts.openWorkspace(
                             NWorkspaceOptionsBuilder.of()
                                     .setOpenMode(NOpenMode.OPEN_OR_ERROR)
@@ -253,7 +253,7 @@ public class ProjectService {
                                 .descriptorStyle(NDescriptorStyle.MAVEN)
                                 .parse(new File(f, "pom.xml")).get();
                         NWorkspace ws = null;
-                        if (a.getNutsWorkspace() != null && a.getNutsWorkspace().trim().length() > 0 && !a.getNutsWorkspace().equals(NWorkspace.of().getWorkspaceLocation().toString())) {
+                        if (a.getNutsWorkspace() != null && a.getNutsWorkspace().trim().length() > 0 && !a.getNutsWorkspace().equals(NWorkspace.of().workspaceLocation().toString())) {
                             ws = Nuts.openWorkspace(
                                     NWorkspaceOptionsBuilder.of()
                                             .setOpenMode(NOpenMode.OPEN_OR_ERROR)

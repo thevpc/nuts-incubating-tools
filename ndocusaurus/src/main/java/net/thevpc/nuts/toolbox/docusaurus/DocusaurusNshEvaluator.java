@@ -55,7 +55,7 @@ public class DocusaurusNshEvaluator implements NSiteExprEvaluator {
     @Override
     public Object eval(String content, NSiteContext context) {
         return NSession.of().copy()
-                .setTerminal(NTerminal.ofMem())
+                .terminal(NTerminal.ofMem())
                 .callWith(
                         () -> {
                             NshContext ctx = shell.createInlineContext(

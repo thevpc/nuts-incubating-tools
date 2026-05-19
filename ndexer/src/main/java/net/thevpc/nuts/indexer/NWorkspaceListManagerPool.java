@@ -15,7 +15,7 @@ public class NWorkspaceListManagerPool {
     public synchronized NWorkspaceList openListManager(String name) {
         NWorkspaceList o = pool.get(name);
         if (o == null) {
-            o = NWorkspaceList.of().setName(name);
+            o = NWorkspaceList.of().name(name);
             pool.put(name, o);
         }
         return o;

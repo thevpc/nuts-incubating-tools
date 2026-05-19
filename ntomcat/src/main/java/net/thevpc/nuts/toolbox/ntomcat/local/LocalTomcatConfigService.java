@@ -531,11 +531,11 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                     .definitionFilter(NDefinitionFilters.of().byDeployed(true))
                     .getResultDefinitions().findFirst().orNull();
             if (r == null) {
-                r = NSession.of().copy().setFetchStrategy(NFetchStrategy.OFFLINE).callWith(() -> searchLatestCommand.definitionFilter(NDefinitionFilters.of().byInstalled(false))
+                r = NSession.of().copy().fetchStrategy(NFetchStrategy.OFFLINE).callWith(() -> searchLatestCommand.definitionFilter(NDefinitionFilters.of().byInstalled(false))
                         .getResultDefinitions().findFirst().orNull());
             }
             if (r == null) {
-                r = NSession.of().copy().setFetchStrategy(NFetchStrategy.ONLINE).callWith(() -> searchLatestCommand.definitionFilter(NDefinitionFilters.of().byInstalled(false)).getResultDefinitions().findFirst().get());
+                r = NSession.of().copy().fetchStrategy(NFetchStrategy.ONLINE).callWith(() -> searchLatestCommand.definitionFilter(NDefinitionFilters.of().byInstalled(false)).getResultDefinitions().findFirst().get());
             }
             if (r.installInformation().get().isInstalledOrRequired()) {
                 return r;

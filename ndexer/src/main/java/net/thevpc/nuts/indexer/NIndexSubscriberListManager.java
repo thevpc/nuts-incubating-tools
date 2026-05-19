@@ -73,19 +73,19 @@ public class NIndexSubscriberListManager {
     public NIndexSubscriber subscribe(String repositoryUuid, NWorkspaceLocation workspaceLocation) {
         if (subscribers.containsKey(repositoryUuid)) {
             subscribers.get(repositoryUuid)
-                    .getWorkspaceLocations().put(workspaceLocation.getUuid(), workspaceLocation.copy());
+                    .getWorkspaceLocations().put(workspaceLocation.uuid(), workspaceLocation.copy());
         } else {
             subscribers.put(repositoryUuid, new NIndexSubscriber()
                     .setUuid(repositoryUuid)
                     .setName(getRepositoryNameFromUuid(repositoryUuid))
-                    .setWorkspaceLocations(Collections.singletonMap(workspaceLocation.getUuid(), workspaceLocation.copy())));
+                    .setWorkspaceLocations(Collections.singletonMap(workspaceLocation.uuid(), workspaceLocation.copy())));
         }
         this.save();
         return subscribers.get(repositoryUuid);
     }
 
     private String getRepositoryNameFromUuid(String repositoryUuid) {
-        List<NRepository> repositories = NWorkspace.of().getRepositories();
+        List<NRepository> repositories = NWorkspace.of().repositories();
         for (NRepository repository : repositories) {
             if (repository.uuid().equals(repositoryUuid)) {
                 return repository.name();
@@ -106,7 +106,7 @@ public class NIndexSubscriberListManager {
 
     public boolean unsubscribe(String repositoryUuid, NWorkspaceLocation workspaceLocation) {
         boolean b = subscribers.get(repositoryUuid)
-                .getWorkspaceLocations().remove(workspaceLocation.getUuid()) != null;
+                .getWorkspaceLocations().remove(workspaceLocation.uuid()) != null;
         if (subscribers.get(repositoryUuid).getWorkspaceLocations().isEmpty()) {
             b = subscribers.remove(repositoryUuid) != null;
         }
@@ -118,6 +118,6 @@ public class NIndexSubscriberListManager {
 
     public boolean isSubscribed(String repositoryUuid, NWorkspaceLocation workspaceLocation) {
         return this.subscribers.containsKey(repositoryUuid)
-                && this.subscribers.get(repositoryUuid).getWorkspaceLocations().containsKey(workspaceLocation.getUuid());
+                && this.subscribers.get(repositoryUuid).getWorkspaceLocations().containsKey(workspaceLocation.uuid());
     }
 }

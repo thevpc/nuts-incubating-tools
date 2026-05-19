@@ -20,7 +20,7 @@ public class NWorkspacePool {
     public NWorkspace openWorkspace(String ws) {
         NWorkspace o = pool.get(ws);
         if (o == null) {
-            if (NWorkspace.of().getWorkspaceLocation().toString().equals(ws)) {
+            if (NWorkspace.of().workspaceLocation().toString().equals(ws)) {
                 o = workspace;
             } else {
                 o = Nuts.openWorkspace(NWorkspaceOptionsBuilder.of()
@@ -30,7 +30,7 @@ public class NWorkspacePool {
                 );
             }
             pool.put(ws, o);
-            pool.put(o.getUuid(), o);
+            pool.put(o.uuid(), o);
         }
         return o;
     }

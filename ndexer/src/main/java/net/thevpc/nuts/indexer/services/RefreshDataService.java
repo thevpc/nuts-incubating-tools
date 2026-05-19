@@ -56,7 +56,7 @@ public class RefreshDataService {
         Iterator<NWorkspaceLocation> iterator = subscriber.getWorkspaceLocations().values().iterator();
         if (iterator.hasNext()) {
             NWorkspaceLocation workspaceLocation = iterator.next();
-            NWorkspace workspace = workspacePool.openWorkspace(workspaceLocation.getLocation());
+            NWorkspace workspace = workspacePool.openWorkspace(workspaceLocation.location());
             Map<String, NId> oldData = this.dataService
                     .getAllData(NIndexerUtils.getCacheDir(subscriber.cacheFolderName()))
                     .stream()
