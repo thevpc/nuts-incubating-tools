@@ -204,9 +204,9 @@ public class ProjectService {
                 if (a.getNutsWorkspace() != null && a.getNutsWorkspace().trim().length() > 0 && !a.getNutsWorkspace().equals(NWorkspace.of().workspaceLocation().toString())) {
                     ws = Nuts.openWorkspace(
                             NWorkspaceOptionsBuilder.of()
-                                    .setOpenMode(NOpenMode.OPEN_OR_ERROR)
-                                    .setReadOnly(true)
-                                    .setWorkspace(a.getNutsWorkspace())
+                                    .openMode(NOpenMode.OPEN_OR_ERROR)
+                                    .readOnly(true)
+                                    .workspace(a.getNutsWorkspace())
                                     .build()
                     );
                 } else {
@@ -256,9 +256,9 @@ public class ProjectService {
                         if (a.getNutsWorkspace() != null && a.getNutsWorkspace().trim().length() > 0 && !a.getNutsWorkspace().equals(NWorkspace.of().workspaceLocation().toString())) {
                             ws = Nuts.openWorkspace(
                                     NWorkspaceOptionsBuilder.of()
-                                            .setOpenMode(NOpenMode.OPEN_OR_ERROR)
-                                            .setReadOnly(true)
-                                            .setWorkspace(a.getNutsWorkspace())
+                                            .openMode(NOpenMode.OPEN_OR_ERROR)
+                                            .readOnly(true)
+                                            .workspace(a.getNutsWorkspace())
                                             .build()
                             );
                         } else {

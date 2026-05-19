@@ -124,7 +124,7 @@ public class TomcatUtils {
         if(h!=null) {
             NPath file = h.resolve("RELEASE-NOTES");
             if (file.exists()) {
-                try (BufferedReader r = file.getBufferedReader()) {
+                try (BufferedReader r = file.asBufferedReader()) {
                     String line = null;
                     while ((line = r.readLine()) != null) {
                         line = line.trim();
@@ -144,7 +144,7 @@ public class TomcatUtils {
     }
 
     public static RunningTomcat[] getRunningInstances() {
-        return NPs.of().setPlatformFamily(NExecutionEngineFamily.JAVA).getResultList()
+        return NPs.of().platformFamily(NExecutionEngineFamily.JAVA).getResultList()
                 .stream().filter((p) -> p.name().equals("org.apache.catalina.startup.Bootstrap"))
                 .map(x -> new RunningTomcat(x)).toArray(RunningTomcat[]::new);
     }

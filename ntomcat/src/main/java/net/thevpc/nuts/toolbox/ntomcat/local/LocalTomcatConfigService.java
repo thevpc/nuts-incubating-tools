@@ -315,7 +315,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         NPath catalinaBase = getCatalinaBase();
         boolean catalinaBaseUpdated = false;
         catalinaBaseUpdated |= mkdirs(catalinaBase);
-        String ext = NEnv.of().getOsFamily() == NOsFamily.WINDOWS ? "bat" : "sh";
+        String ext = NEnv.of().osFamily() == NOsFamily.WINDOWS ? "bat" : "sh";
         catalinaBaseUpdated |= checkExec(catalinaHome.resolve("bin").resolve("catalina." + ext));
         LocalTomcatConfig c = getConfig();
         catalinaBaseUpdated |= mkdirs(catalinaBase.resolve("logs"));
@@ -372,7 +372,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         NPath catalinaHome = getCatalinaHome();
         NPath catalinaBase = getCatalinaBase();
         
-        String ext = NEnv.of().getOsFamily() == NOsFamily.WINDOWS ? "bat" : "sh";
+        String ext = NEnv.of().osFamily() == NOsFamily.WINDOWS ? "bat" : "sh";
 
         //b.
 //        b.setOutput(context.NOut);
@@ -494,7 +494,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         catalinaVersion = catalinaVersion.trim();
         
         if (catalinaVersion.isEmpty()) {
-            NVersion javaVersion = NEnv.of().getJava().version();
+            NVersion javaVersion = NEnv.of().java().version();
             //  http://tomcat.apache.org/whichversion.html
             if (javaVersion.compareTo("1.8") >= 0) {
                 catalinaVersion = "[9,10.1[";
@@ -522,7 +522,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             String cid = "org.apache.catalina:apache-tomcat";//+"#"+cv;
             cid = NIdBuilder.of().copyFrom(NId.get(cid).get()).condition(
                     NEnvConditionBuilder.of()
-                            .addPlatform(NEnv.of().getJava().toString())
+                            .addPlatform(NEnv.of().java().toString())
             ).toString();
 
             NSearch searchLatestCommand = NSearch.of().addId(cid)

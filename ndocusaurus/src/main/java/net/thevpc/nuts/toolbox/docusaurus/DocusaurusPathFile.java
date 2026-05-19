@@ -25,7 +25,7 @@ public class DocusaurusPathFile extends DocusaurusFile {
         int from = root.nameCount();
         int to = path.nameCount() - 1;
         String partialPath = from == to ? "" : path.subpath(from, to).toString();
-        try (BufferedReader br = path.getBufferedReader()) {
+        try (BufferedReader br = path.asBufferedReader()) {
             DocusaurusFile df = DocusaurusContentFile.ofTreeFile(br, partialPath, path.toString(), false);
             if (df != null && df.getShortId() != null) {
                 return ofFile(df.getShortId(),
@@ -44,7 +44,7 @@ public class DocusaurusPathFile extends DocusaurusFile {
     }
 
     public MdElement getContent() {
-        try (Reader reader = getPath().getBufferedReader()) {
+        try (Reader reader = getPath().asBufferedReader()) {
             DocusaurusFile tree = DocusaurusContentFile.ofTreeFile(reader, getLongId(), getLongId(),
                     true);
             return tree != null ? tree.getContent() : null;

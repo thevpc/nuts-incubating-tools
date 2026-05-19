@@ -136,10 +136,10 @@ public class NutsHttpServlet extends HttpServlet {
         Map<String, NWorkspace> workspacesByWebContextPath = new HashMap<>();
         NWorkspace ws = Nuts.openWorkspace(
                 NWorkspaceOptionsBuilder.of()
-                        .setRuntimeId(runtimeId)
-                        .setWorkspace(workspaceLocation)
-                        .setOpenMode(NOpenMode.OPEN_OR_CREATE)
-                        .setArchetype("server")
+                        .runtimeId(runtimeId)
+                        .workspace(workspaceLocation)
+                        .openMode(NOpenMode.OPEN_OR_CREATE)
+                        .archetype("server")
                         .build()
         );
         DefaultNWorkspaceServerManager serverManager = new DefaultNWorkspaceServerManager(ws);
@@ -158,10 +158,10 @@ public class NutsHttpServlet extends HttpServlet {
             if (ws2 == null) {
                 ws2 = Nuts.openWorkspace(
                         NWorkspaceOptionsBuilder.of()
-                                .setRuntimeId(runtimeId)
-                                .setWorkspace(location)
-                                .setOpenMode(NOpenMode.OPEN_OR_CREATE)
-                                .setArchetype("server")
+                                .runtimeId(runtimeId)
+                                .workspace(location)
+                                .openMode(NOpenMode.OPEN_OR_CREATE)
+                                .archetype("server")
                                 .build()
                 );
                 workspacesByLocation.put(location, ws2);
