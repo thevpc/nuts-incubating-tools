@@ -304,7 +304,7 @@ public class LocalTomcat {
                 if (c == null) {
                     c = openTomcatConfig("", autoCreate);
                 }
-                c.getConfig().setShutdownWaitTime(a.toLiteral().asInt().get());
+                c.getConfig().setShutdownWaitTime(a.literalValue().asInt().get());
             } else if ((a = args.nextEntry("--archive-folder").orNull()) != null) {
                 if (c == null) {
                     c = openTomcatConfig("", NOpenMode.OPEN_OR_ERROR);
@@ -319,12 +319,12 @@ public class LocalTomcat {
                 if (c == null) {
                     c = openTomcatConfig("", NOpenMode.OPEN_OR_ERROR);
                 }
-                c.setHttpConnectorPort(false, a.toLiteral().asInt().get());
+                c.setHttpConnectorPort(false, a.literalValue().asInt().get());
             } else if ((a = args.nextEntry("--port").orNull()) != null) {
                 if (c == null) {
                     c = openTomcatConfig("", NOpenMode.OPEN_OR_ERROR);
                 }
-                c.setHttpConnectorPort(false, a.toLiteral().asInt().get());
+                c.setHttpConnectorPort(false, a.literalValue().asInt().get());
             } else if ((a = args.nextFlag("-d", "--dev").orNull()) != null) {
                 if (c == null) {
                     c = openTomcatConfig("", NOpenMode.OPEN_OR_ERROR);
@@ -653,22 +653,22 @@ public class LocalTomcat {
             } else if ((a = args.nextFlag("--ajp").orNull()) != null) {
                 type = "ajp";
             } else if ((a = args.nextEntry("--set").orNull()) != null) {
-                newValue = a.toLiteral().asInt().get();
+                newValue = a.literalValue().asInt().get();
                 setValue = true;
             } else if ((a = args.nextEntry("--set-port").orNull()) != null) {
-                int port = a.toLiteral().asInt().get();
+                int port = a.literalValue().asInt().get();
                 runnables.add(() -> c.setHttpConnectorPort(false, port));
             } else if ((a = args.nextEntry("--set-redirect-port").orNull()) != null) {
-                int port = a.toLiteral().asInt().get();
+                int port = a.literalValue().asInt().get();
                 runnables.add(() -> c.setHttpConnectorPort(true, port));
             } else if ((a = args.nextEntry("--set-shutdown-port").orNull()) != null) {
-                int port = a.toLiteral().asInt().get();
+                int port = a.literalValue().asInt().get();
                 runnables.add(() -> c.setShutdownPort(port));
             } else if ((a = args.nextEntry("--set-ajp-port").orNull()) != null) {
-                int port = a.toLiteral().asInt().get();
+                int port = a.literalValue().asInt().get();
                 runnables.add(() -> c.setAjpConnectorPort(false, port));
             } else if ((a = args.nextEntry("--set-redirect-ajp-port").orNull()) != null) {
-                int port = a.toLiteral().asInt().get();
+                int port = a.literalValue().asInt().get();
                 runnables.add(() -> c.setAjpConnectorPort(true, port));
             } else {
                 NSession.of().configureLast(args);
@@ -816,22 +816,22 @@ public class LocalTomcat {
             } else if ((a = args.nextEntry("--deploy").orNull()) != null) {
                 apps.add(a.getStringValue().get());
             } else if ((a = args.nextEntry("--port").orNull()) != null) {
-                int port = a.toLiteral().asInt().get();
+                int port = a.literalValue().asInt().get();
                 runnables.add(() -> srvRef[0].setHttpConnectorPort(false, port));
             } else if ((a = args.nextEntry("--http-port").orNull()) != null) {
-                int port = a.toLiteral().asInt().get();
+                int port = a.literalValue().asInt().get();
                 runnables.add(() -> srvRef[0].setHttpConnectorPort(false, port));
             } else if ((a = args.nextEntry("--redirect-port").orNull()) != null) {
-                int port = a.toLiteral().asInt().get();
+                int port = a.literalValue().asInt().get();
                 runnables.add(() -> srvRef[0].setHttpConnectorPort(true, port));
             } else if ((a = args.nextEntry("--shutdown-port").orNull()) != null) {
-                int port = a.toLiteral().asInt().get();
+                int port = a.literalValue().asInt().get();
                 runnables.add(() -> srvRef[0].setShutdownPort(port));
             } else if ((a = args.nextEntry("--ajp-port").orNull()) != null) {
-                int port = a.toLiteral().asInt().get();
+                int port = a.literalValue().asInt().get();
                 runnables.add(() -> srvRef[0].setAjpConnectorPort(false, port));
             } else if ((a = args.nextEntry("--redirect-ajp-port").orNull()) != null) {
-                int port = a.toLiteral().asInt().get();
+                int port = a.literalValue().asInt().get();
                 runnables.add(() -> srvRef[0].setAjpConnectorPort(true, port));
             } else if ((a = args.nextNonOption().orNull()) != null) {
                 if (instance == null) {
