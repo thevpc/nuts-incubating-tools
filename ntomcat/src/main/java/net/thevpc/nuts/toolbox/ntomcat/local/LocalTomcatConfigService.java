@@ -413,7 +413,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             } else {
                 b.grabAll();
                 int x = b.exitCode();
-                String txt = b.getGrabbedOutString();
+                String txt = b.grabbedOut();
                 NSession.of().eout().add(
                         NElement.ofObjectBuilder()
                                 .set("command", "catalina-start")
@@ -429,7 +429,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             } else {
                 b.grabAll();
                 int x = b.exitCode();
-                String txt = b.getGrabbedOutString();
+                String txt = b.grabbedOut();
                 NSession.of().eout().add(
                         NElement.ofObjectBuilder()
                                 .set("command", "catalina-stop")

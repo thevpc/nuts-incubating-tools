@@ -92,7 +92,7 @@ public class RemoteTomcatAppConfigService extends RemoteTomcatServiceBase {
                     "--app",
                     name,
                     "--version",
-                    s.getGrabbedOutString().trim(),
+                    s.grabbedOut().trim(),
                     "--file",
                     remoteFilePath
             );
@@ -104,7 +104,7 @@ public class RemoteTomcatAppConfigService extends RemoteTomcatServiceBase {
             );
         } else {
             throw new NExecutionException(NMsg.ofC("unable to detect file version of %s.\n%s",localWarPath ,
-                    s.getGrabbedOutString()), NExecutionException.ERROR_2);
+                    s.grabbedOut()), NExecutionException.ERROR_2);
         }
     }
 

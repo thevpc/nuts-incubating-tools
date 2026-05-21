@@ -30,14 +30,14 @@ public class NWorkMain {
                 service.find(cmdLine, session);
                 return;
             } else if ((a = cmdLine.next("status", "t").orNull()) != null) {
-                if (a.getValue().isBoolean()) {
+                if (a.toLiteral().isBoolean()) {
                     service.enableScan(cmdLine, session, a.getBooleanValue().get());
                 } else {
                     service.status(cmdLine, session);
                 }
                 return;
             } else if ((a = cmdLine.next("push").orNull()) != null) {
-                if (a.getValue().isBoolean()) {
+                if (a.toLiteral().isBoolean()) {
                     service.enableScan(cmdLine, session, a.getBooleanValue().get());
                 } else {
                     service.push(cmdLine, session);
