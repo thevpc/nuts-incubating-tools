@@ -35,8 +35,8 @@ public class DocusaurusFolder implements DocusaurusFileOrFolder {
             if (x != 0) {
                 return x;
             }
-            String title1 = NStringUtils.trim(o1.getTitle());
-            String title2 = NStringUtils.trim(o2.getTitle());
+            String title1 = NStringUtils.strip(o1.getTitle());
+            String title2 = NStringUtils.strip(o2.getTitle());
             x = title1.toLowerCase().compareTo(title2.toLowerCase());
             if (x != 0) {
                 return x;

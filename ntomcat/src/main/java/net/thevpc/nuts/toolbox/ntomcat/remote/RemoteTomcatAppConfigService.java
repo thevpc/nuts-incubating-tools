@@ -117,7 +117,7 @@ public class RemoteTomcatAppConfigService extends RemoteTomcatServiceBase {
                 "--app",
                 name,
                 "--version",
-                NStringUtils.trim(version)
+                NStringUtils.strip(version)
         );
     }
 

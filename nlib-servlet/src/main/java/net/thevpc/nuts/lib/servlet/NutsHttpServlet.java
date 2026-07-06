@@ -69,7 +69,7 @@ public class NutsHttpServlet extends HttpServlet {
             if (NBlankable.isBlank(v1)) {
                 return defaultValue;
             }
-            return Integer.parseInt(NStringUtils.trim(v1));
+            return Integer.parseInt(NStringUtils.strip(v1));
         } catch (NumberFormatException e) {
             return defaultValue;
         }

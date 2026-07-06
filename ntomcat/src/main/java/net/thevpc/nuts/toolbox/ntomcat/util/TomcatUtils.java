@@ -14,9 +14,9 @@ import java.util.*;
 public class TomcatUtils {
 
     public static String toValidFileName(String name, String defaultName) {
-        String r = NStringUtils.trim(name);
+        String r = NStringUtils.strip(name);
         if (r.isEmpty()) {
-            return NStringUtils.trim(defaultName);
+            return NStringUtils.strip(defaultName);
         }
         return r
                 .replace('/', '_')

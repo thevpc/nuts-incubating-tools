@@ -3,7 +3,7 @@
 
     <groupId>net.thevpc.nuts.installer</groupId>
     <artifactId>nuts-installer</artifactId>
-    <version>0.8.9</version>
+    <version>1.0.0</version>
     <name>Nuts Installer</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,7 +23,7 @@
 
     <!-- must have a dependency on our separate package that contains the custom panels -->
     <dependencies>
-        <dependency><groupId>net.thevpc.nuts.installer</groupId><artifactId>nuts-installer-panels</artifactId><version>0.8.9</version></dependency>
+        <dependency><groupId>net.thevpc.nuts.installer</groupId><artifactId>nuts-installer-panels</artifactId><version>1.0.0</version></dependency>
     </dependencies>
 
     <build>
@@ -145,11 +145,7 @@
                         <artifactId>izpack-panel</artifactId>
                         <version>${izpack.version}</version>
                     </dependency>
-                    <dependency>
-                        <groupId>net.thevpc.nuts.installer</groupId>
-                        <artifactId>nuts-installer-panels</artifactId>
-                        <version>0.8.9</version>
-                    </dependency>
+                    <dependency><groupId>net.thevpc.nuts.installer</groupId><artifactId>nuts-installer-panels</artifactId><version>1.0.0</version></dependency>
                 </dependencies>
             </plugin>
             <plugin>

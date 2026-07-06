@@ -70,7 +70,7 @@ public class DataService {
     private Document mapToDocument(Map<String, String> data) {
         Document document = new Document();
         for (Map.Entry<String, String> entry : data.entrySet()) {
-            document.add(new StringField(entry.getKey(), NStringUtils.trim(entry.getValue()), Field.Store.YES));
+            document.add(new StringField(entry.getKey(), NStringUtils.strip(entry.getValue()), Field.Store.YES));
         }
         return document;
     }

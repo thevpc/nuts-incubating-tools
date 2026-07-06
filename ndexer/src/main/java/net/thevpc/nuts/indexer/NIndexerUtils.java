@@ -107,7 +107,7 @@ public class NIndexerUtils {
     }
 
     private static void _condPut(Map<String, String> m, String k, String v) {
-        if (!NStringUtils.trim(v).isEmpty()) {
+        if (!NStringUtils.strip(v).isEmpty()) {
             m.put(k, v);
         }
     }
@@ -143,19 +143,19 @@ public class NIndexerUtils {
 
     public static NId mapToNutsId(Map<String, String> map) {
         return NIdBuilder.of()
-                .artifactId(NStringUtils.trim(map.get("name")))
-                .repository(NStringUtils.trim(map.get("namespace")))
-                .groupId(NStringUtils.trim(map.get("group")))
-                .classifier(NStringUtils.trim(map.get("classifier")))
-                .version(NStringUtils.trim(map.get("version")))
+                .artifactId(NStringUtils.strip(map.get("name")))
+                .repository(NStringUtils.strip(map.get("namespace")))
+                .groupId(NStringUtils.strip(map.get("group")))
+                .classifier(NStringUtils.strip(map.get("classifier")))
+                .version(NStringUtils.strip(map.get("version")))
                 .condition(
                         NEnvConditionBuilder.of()
                                 //TODO what if the result is ',' separated array?
-                                .arch(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.ARCH))))
-                                .os(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.OS))))
-                                .osDist(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.OS_DIST))))
-                                .platform(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.PLATFORM))))
-                                .desktopEnvironment(Collections.singletonList(NStringUtils.trim(map.get(NConstants.IdProperties.DESKTOP))))
+                                .arch(Collections.singletonList(NStringUtils.strip(map.get(NConstants.IdProperties.ARCH))))
+                                .os(Collections.singletonList(NStringUtils.strip(map.get(NConstants.IdProperties.OS))))
+                                .osDist(Collections.singletonList(NStringUtils.strip(map.get(NConstants.IdProperties.OS_DIST))))
+                                .platform(Collections.singletonList(NStringUtils.strip(map.get(NConstants.IdProperties.PLATFORM))))
+                                .desktopEnvironment(Collections.singletonList(NStringUtils.strip(map.get(NConstants.IdProperties.DESKTOP))))
                 )
 //                .setAlternative(trim(map.get(NutsConstants.IdProperties.ALTERNATIVE)))
                 .build();
@@ -171,7 +171,7 @@ public class NIndexerUtils {
             if (!set.contains(entry.getKey())) {
                 builder.add(new PhraseQuery.Builder()
                                 .add(new Term(entry.getKey(),
-                                        NStringUtils.trim(entry.getValue()))).build(),
+                                        NStringUtils.strip(entry.getValue()))).build(),
                         BooleanClause.Occur.MUST);
             }
         }
