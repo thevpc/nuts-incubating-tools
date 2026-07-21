@@ -295,11 +295,11 @@ public class WorkspaceService {
             if (id.version() != null) {
                 p += "/" + id.version();
             }
-            NExec.of().addCommand(
+            NExec.of().command(
                             "rsync")
-                    .addCommand(NPath.ofUserHome().resolve(".m2/repository")
+                    .command(NPath.ofUserHome().resolve(".m2/repository")
                             .resolve(p).stream().map(NPath::toString).toList())
-                    .addCommand(remoteUser + "@" + remoteServer + ":/home/" + remoteUser + "/.m2/repository/" + p
+                    .command(remoteUser + "@" + remoteServer + ":/home/" + remoteUser + "/.m2/repository/" + p
                     ).failFast(true).run();
         }
     }

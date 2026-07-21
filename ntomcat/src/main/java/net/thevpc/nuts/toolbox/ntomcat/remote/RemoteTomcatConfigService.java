@@ -234,7 +234,7 @@ public class RemoteTomcatConfigService extends RemoteTomcatServiceBase {
         cmdList.add("--bot");
         cmdList.addAll(Arrays.asList(cmd));
         NExec.of()
-                .addCommand(cmdList)
+                .command(cmdList)
                 .failFast(true)
                 .run();
 

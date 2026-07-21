@@ -55,7 +55,7 @@ public class RemoteTomcatAppConfigService extends RemoteTomcatServiceBase {
             server = "ssh://" + server;
         }
         NExec.of()
-                .addCommand(
+                .command(
                         "nsh",
                         "--bot",
                         "cp",
@@ -82,7 +82,7 @@ public class RemoteTomcatAppConfigService extends RemoteTomcatServiceBase {
         }
         NExec s = NExec.of()
                 .grabAll()
-                .addCommand(cmd).run();
+                .command(cmd).run();
         if (s.exitCode() == 0) {
             client.execRemoteNuts(
                     "net.thevpc.nuts.toolbox:tomcat",

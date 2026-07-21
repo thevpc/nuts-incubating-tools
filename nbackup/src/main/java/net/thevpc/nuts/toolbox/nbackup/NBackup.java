@@ -172,7 +172,7 @@ public class NBackup {
                                 NMsg.ofStyledPath(remotePath)
                         ));
                         NOut.println(NCmdLine.of(cmd));
-                        NExec.of().addCommand(cmd).failFast(true).run();
+                        NExec.of().command(cmd).failFast(true).run();
                     }
                 });
     }
