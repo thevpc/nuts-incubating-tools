@@ -4,7 +4,7 @@ import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.command.NExec;
 import net.thevpc.nuts.command.NExecutionException;
 import net.thevpc.nuts.core.NSession;
-import net.thevpc.nuts.elem.NElements;
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.nuts.text.NObjectObjectWriter;
 import net.thevpc.nuts.io.NPrintStream;
 import net.thevpc.nuts.text.NText;
@@ -132,7 +132,7 @@ public class RemoteTomcatAppConfigService extends RemoteTomcatServiceBase {
     public RemoteTomcatAppConfigService print(NPrintStream out) {
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("config-name", getName());
-        m.putAll(NElements.of().convert(getConfig(), Map.class));
+        m.putAll(NElement.convertAny(getConfig(), Map.class));
         NObjectObjectWriter.of().print(m, out);
         return this;
     }

@@ -405,7 +405,6 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         b.env("CATALINA_OUT", catalinaBase.resolve("logs").resolve("catalina.out").toString());
         b.env("CATALINA_TMPDIR", catalinaBase.resolve("temp").toString());
 
-        NElements elem = NElements.of();
         if ("start".equals(catalinaCommand)) {
             if (NOut.isPlain()) {
                 NOut.print(NMsg.ofC("%s starting Tomcat on port " + getHttpConnectorPort() + ". CMD=%s.\n", getFormattedPrefix(getName()), b.toString()));
@@ -528,14 +527,14 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             NSearch searchLatestCommand = NSearch.of().addId(cid)
                     .latest(true);
             NDefinition r = searchLatestCommand
-                    .definitionFilter(NDefinitionFilters.of().byDeployed(true))
+                    .definitionFilter(NDefinitionFilter.ofDeployed(true))
                     .getResultDefinitions().findFirst().orNull();
             if (r == null) {
-                r = NSession.of().copy().fetchStrategy(NFetchStrategy.OFFLINE).callWith(() -> searchLatestCommand.definitionFilter(NDefinitionFilters.of().byInstalled(false))
+                r = NSession.of().copy().fetchStrategy(NFetchStrategy.OFFLINE).callWith(() -> searchLatestCommand.definitionFilter(NDefinitionFilter.ofInstalled(false))
                         .getResultDefinitions().findFirst().orNull());
             }
             if (r == null) {
-                r = NSession.of().copy().fetchStrategy(NFetchStrategy.ONLINE).callWith(() -> searchLatestCommand.definitionFilter(NDefinitionFilters.of().byInstalled(false)).getResultDefinitions().findFirst().get());
+                r = NSession.of().copy().fetchStrategy(NFetchStrategy.ONLINE).callWith(() -> searchLatestCommand.definitionFilter(NDefinitionFilter.ofInstalled(false)).getResultDefinitions().findFirst().get());
             }
             if (r.installInformation().get().isInstalledOrRequired()) {
                 return r;
@@ -556,7 +555,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                                 .addId(finalR.id())
                                 .getResultStream().findFirst().get());
                 //this is a workaround. Def returned by install does not include all information!
-                catalinaNDefinition = searchLatestCommand.definitionFilter(NDefinitionFilters.of().byInstalled(true))
+                catalinaNDefinition = searchLatestCommand.definitionFilter(NDefinitionFilter.ofInstalled(true))
                         .getResultDefinitions().findFirst().orNull();
             }
         }
@@ -624,7 +623,6 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
         long startTime = System.currentTimeMillis();
         AppStatus y = getStatus(domain, app);
         
-        NElements elem = NElements.of();
         if (y == AppStatus.RUNNING) {
             if (NSession.of().isPlainOut()) {
                 NOut.print(NMsg.ofC("%s Tomcat started on port " + getHttpConnectorPort() + ".\n", getFormattedPrefix(getName())));

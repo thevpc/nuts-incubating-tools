@@ -195,14 +195,13 @@ public class WorkspaceService {
     }
 
     private NTextBuilder formatProjectConfig(NSession session, ProjectConfig p2) {
-        NTexts text = NTexts.of();
-        return text.ofBuilder()
+        return NTextBuilder.of()
                 .append(p2.getId(), NTextStyle.primary4())
                 .append(" ")
                 .appendJoined(
-                        text.ofPlain(", "),
+                        NText.ofPlain(", "),
                         p2.getTechnologies().stream().map(
-                                x -> text.ofStyled(x, NTextStyle.primary5())
+                                x -> NText.ofStyled(x, NTextStyle.primary5())
                         ).collect(Collectors.toList())
                 )
                 .append(" : ")
@@ -495,30 +494,28 @@ public class WorkspaceService {
 //            tf.addRow(d.id, d.local, d.remote, d.status);
         }
         if (!ddd.isEmpty() || !session.isPlainOut()) {
-            NTexts tfactory = NTexts.of();
             if (session.isPlainOut()) {
                 for (DataRow p2 : ddd) {
                     String status = p2.status;
-                    NTexts tf = NTexts.of();
-                    int len = tf.of(status).length();
+                    int len = NText.of(status).length();
                     while (len < 10) {
                         status += " ";
                         len++;
                     }
-                    switch (tf.ofPlain(p2.status).filteredText()) {
+                    switch (NText.ofPlain(p2.status).filteredText()) {
                         case "new": {
                             NOut.print(NMsg.ofC("[%s] %s : %s",
-                                    tfactory.ofStyled("new", NTextStyle.primary3()),
+                                    NText.ofStyled("new", NTextStyle.primary3()),
                                     p2.id,
-                                    tfactory.ofStyled(p2.local, NTextStyle.primary2())
+                                    NText.ofStyled(p2.local, NTextStyle.primary2())
                             ));
                             break;
                         }
                         case "commitable": {
                             NOut.print(NMsg.ofC("[%s] %s : %s - %s",
-                                    tfactory.ofStyled("commitable", NTextStyle.primary4()),
+                                    NText.ofStyled("commitable", NTextStyle.primary4()),
                                     p2.id,
-                                    tfactory.ofStyled(p2.local, NTextStyle.primary2()),
+                                    NText.ofStyled(p2.local, NTextStyle.primary2()),
                                     p2.remote
                             ));
                             break;
@@ -530,7 +527,7 @@ public class WorkspaceService {
                         }
                         case "old": {
                             NOut.print(NMsg.ofC("[%s] %s : ```error %s``` - %s",
-                                    tfactory.ofStyled("old", NTextStyle.primary2()),
+                                    NText.ofStyled("old", NTextStyle.primary2()),
                                     p2.id, p2.local, p2.remote));
                             break;
                         }
@@ -647,7 +644,6 @@ public class WorkspaceService {
             File folder = stack.pop();
             if (folder.isDirectory()) {
                 if (isScanEnabled(folder)) {
-                    NTexts text = NTexts.of();
                     ProjectConfig p2 = new ProjectService(config.getDefaultRepositoryAddress(), new ProjectConfig().setPath(folder.getPath())
                     ).rebuildProjectMetadata();
                     if (p2.getTechnologies().size() > 0) {
@@ -672,9 +668,9 @@ public class WorkspaceService {
                                 if (session.isPlainOut()) {
                                     session.out().println(NMsg.ofC("```error [CONFLICT]``` multiple paths for the same id %s. "
                                                     + "please consider adding .nuts-info file with " + SCAN + "=false  :  %s -- %s",
-                                            text.ofStyled(p2.getId(), NTextStyle.primary2()),
-                                            text.ofStyled(p2.getPath(), NTextStyle.path()),
-                                            text.ofStyled(p3.getPath(), NTextStyle.path())
+                                            NText.ofStyled(p2.getId(), NTextStyle.primary2()),
+                                            NText.ofStyled(p2.getPath(), NTextStyle.path()),
+                                            NText.ofStyled(p3.getPath(), NTextStyle.path())
                                     ));
                                 }
                                 if (structuredOutContentType) {
@@ -718,7 +714,7 @@ public class WorkspaceService {
                             }
                             if (interactive) {
                                 String id = session.terminal().readLine(NMsg.ofC("enter Id %s: ",
-                                        (p2.getId() == null ? "" : ("(" + text.ofPlain(p2.getId()) + ")"))));
+                                        (p2.getId() == null ? "" : ("(" + NText.ofPlain(p2.getId()) + ")"))));
                                 if (!NBlankable.isBlank(id)) {
                                     p2.setId(id);
                                 }
@@ -736,7 +732,7 @@ public class WorkspaceService {
                             try {
                                 ps.save();
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                //e.printStackTrace();
                             }
                             scanned++;
                         }

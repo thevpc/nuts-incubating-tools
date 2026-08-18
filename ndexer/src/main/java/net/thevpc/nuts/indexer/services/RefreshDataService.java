@@ -4,11 +4,11 @@ import net.thevpc.nuts.artifact.NDefinition;
 import net.thevpc.nuts.artifact.NDependency;
 import net.thevpc.nuts.artifact.NId;
 import net.thevpc.nuts.command.NSearch;
+import net.thevpc.nuts.core.NRepositoryFilter;
 import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.core.NWorkspaceLocation;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.indexer.*;
-import net.thevpc.nuts.core.NRepositoryFilters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +62,7 @@ public class RefreshDataService {
                     .stream()
                     .collect(Collectors.toMap(map -> map.get("stringId"), map -> NIndexerUtils.mapToNutsId(map), (v1, v2) -> v1));
             Iterator<NDefinition> definitions = NSearch.of()
-                    .repositoryFilter(NRepositoryFilters.of().byUuid(subscriber.getUuid()))
+                    .repositoryFilter(NRepositoryFilter.ofUuid(subscriber.getUuid()))
                     .failFast(false)
                     .getResultDefinitions().iterator();
             List<Map<String, String>> dataToIndex = new ArrayList<>();

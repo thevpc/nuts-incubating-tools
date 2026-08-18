@@ -190,7 +190,6 @@ public class LocalTomcat {
                     .requireDefaults();
         }
         if (args.isExecMode()) {
-            NTexts factory = NTexts.of();
             if (NOut.isPlain()) {
                 NPrintStream out = NOut.out();
                 for (RunningTomcat jpsResult : TomcatUtils.getRunningInstances()) {

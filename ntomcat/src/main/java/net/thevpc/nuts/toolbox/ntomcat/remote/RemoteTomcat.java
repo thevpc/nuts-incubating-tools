@@ -12,7 +12,6 @@ import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.text.NMsg;
 import net.thevpc.nuts.text.NText;
 import net.thevpc.nuts.text.NTextStyle;
-import net.thevpc.nuts.text.NTexts;
 import net.thevpc.nuts.toolbox.ntomcat.NTomcatConfigVersions;
 import net.thevpc.nuts.toolbox.ntomcat.remote.config.RemoteTomcatConfig;
 import net.thevpc.nuts.toolbox.ntomcat.util.TomcatUtils;
@@ -169,7 +168,6 @@ public class RemoteTomcat {
             c = loadOrCreateTomcatConfig(null);
         }
         boolean ok = false;
-        NTexts text = NTexts.of();
         while (!ok) {
             try {
                 ok = true;
@@ -178,8 +176,8 @@ public class RemoteTomcat {
                     c.getConfig().setServer(NIn.ask()
                             .forString(
                                     NMsg.ofC("[instance=%s] would you enter %s value ?"
-                                            , text.ofStyled(c.getName(), NTextStyle.primary1())
-                                            , text.ofStyled("--server", NTextStyle.option())
+                                            , NText.ofStyled(c.getName(), NTextStyle.primary1())
+                                            , NText.ofStyled("--server", NTextStyle.option())
                                     )
                             )
                             .defaultValue("ssh://login@myserver/instanceName")
@@ -191,8 +189,8 @@ public class RemoteTomcat {
                     c.getConfig()
                             .setRemoteTempPath(NIn.ask()
                                     .forString(NMsg.ofC("[instance=%s] would you enter %s value ?"
-                                            , text.ofStyled(c.getName(), NTextStyle.primary1())
-                                            , text.ofStyled("--remote-temp-path", NTextStyle.option())
+                                            , NText.ofStyled(c.getName(), NTextStyle.primary1())
+                                            , NText.ofStyled("--remote-temp-path", NTextStyle.option())
                                     )).defaultValue("/tmp")
                                     .value()
                             );
@@ -202,9 +200,9 @@ public class RemoteTomcat {
                         ok = false;
                         aa.getConfig().setPath(NIn.ask()
                                 .forString(NMsg.ofC("[instance=%s] [app=%s] would you enter %s value ?"
-                                        , text.ofStyled(c.getName(), NTextStyle.primary1())
-                                        , text.ofStyled(aa.getName(), NTextStyle.option())
-                                        , text.ofStyled("--app.path", NTextStyle.option())
+                                        , NText.ofStyled(c.getName(), NTextStyle.primary1())
+                                        , NText.ofStyled(aa.getName(), NTextStyle.option())
+                                        , NText.ofStyled("--app.path", NTextStyle.option())
                                 ))
                                 .value());
                     }

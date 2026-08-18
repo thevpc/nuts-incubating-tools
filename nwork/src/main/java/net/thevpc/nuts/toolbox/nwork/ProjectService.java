@@ -5,15 +5,12 @@ import net.thevpc.nuts.app.NApp;
 import net.thevpc.nuts.artifact.*;
 import net.thevpc.nuts.command.NExecutionException;
 import net.thevpc.nuts.command.NSearch;
-import net.thevpc.nuts.core.NOpenMode;
-import net.thevpc.nuts.core.NWorkspace;
-import net.thevpc.nuts.core.NWorkspaceOptionsBuilder;
+import net.thevpc.nuts.core.*;
 import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
 
 import net.thevpc.nuts.platform.NStoreType;
 import net.thevpc.nuts.io.NPath;
-import net.thevpc.nuts.core.NRepositoryFilters;
 import net.thevpc.nuts.toolbox.nwork.config.ProjectConfig;
 import net.thevpc.nuts.toolbox.nwork.config.RepositoryAddress;
 import net.thevpc.nuts.util.NBlankable;
@@ -215,7 +212,7 @@ public class ProjectService {
 
                 List<NDefinition> found = ws.callWith(() -> NSearch.of()
                         .addId(sid)
-                        .addRepositoryFilter(NRepositoryFilters.of().byName(nutsRepository))
+                        .addRepositoryFilter(NRepositoryFilter.ofName(nutsRepository))
                         .latest(true).getResultDefinitions().toList()
                 );
                 if (found.size() > 0) {
@@ -266,7 +263,7 @@ public class ProjectService {
                         }
                         List<NId> found = ws.callWith(() -> NSearch.of()
                                 .addId(g.id().groupId() + ":" + g.id().artifactId())
-                                .addRepositoryFilter(NRepositoryFilters.of().byName(nutsRepository))
+                                .addRepositoryFilter(NRepositoryFilter.ofName(nutsRepository))
                                 .latest(true).getResultIds().toList());
                         if (found.size() > 0) {
                             return found.get(0).version().toString();

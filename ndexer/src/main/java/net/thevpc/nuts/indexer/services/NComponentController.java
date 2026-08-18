@@ -2,15 +2,11 @@ package net.thevpc.nuts.indexer.services;
 
 import net.thevpc.nuts.artifact.*;
 import net.thevpc.nuts.command.NSearch;
-import net.thevpc.nuts.core.NConstants;
-import net.thevpc.nuts.core.NWorkspace;
-import net.thevpc.nuts.core.NWorkspaceList;
-import net.thevpc.nuts.core.NWorkspaceLocation;
+import net.thevpc.nuts.core.*;
 import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.indexer.*;
 import net.thevpc.nuts.*;
-import net.thevpc.nuts.core.NRepositoryFilters;
 import net.thevpc.nuts.util.NRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -247,7 +243,7 @@ public class NComponentController {
                     if (list.isEmpty()) {
                         Iterator<NDefinition> it = NSearch.of()
                                 .repositoryFilter(
-                                        NRepositoryFilters.of().byUuid(subscriber.getUuid())
+                                        NRepositoryFilter.ofUuid(subscriber.getUuid())
                                 )
                                 .addId(id)
                                 .failFast(false)
