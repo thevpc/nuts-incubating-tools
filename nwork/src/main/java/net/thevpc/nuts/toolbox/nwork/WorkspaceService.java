@@ -2,9 +2,7 @@ package net.thevpc.nuts.toolbox.nwork;
 
 import net.thevpc.nuts.app.NApp;
 import net.thevpc.nuts.artifact.*;
-import net.thevpc.nuts.cmdline.NArg;
-import net.thevpc.nuts.cmdline.NArgName;
-import net.thevpc.nuts.cmdline.NCmdLine;
+import net.thevpc.nuts.cmdline.*;
 import net.thevpc.nuts.command.NExec;
 import net.thevpc.nuts.command.NExecutionException;
 import net.thevpc.nuts.core.NSession;
@@ -220,7 +218,7 @@ public class WorkspaceService {
             } else if ((a = cmdLine.nextFlag("-r", "--reset").orNull()) != null) {
                 reset = a.getBooleanValue().get();
             } else if (cmdLine.peek().get().isNonOption()) {
-                String folder = cmdLine.nextNonOption(NArgName.of("Folder"))
+                String folder = cmdLine.nextNonOption("Folder",(p,s)-> NArgCompleteResult.ofFlags(NArgCompleteFlag.DIRNAMES))
                         .flatMap(NArg::asString).get();
                 run = true;
                 toScan.add(new File(folder));
@@ -251,7 +249,7 @@ public class WorkspaceService {
             if ((a = cmdLine.nextEntry("-w", "--where").orNull()) != null) {
                 where = a.getStringValue().get();
             } else if (cmdLine.peek().get().isNonOption()) {
-                String folder = cmdLine.nextNonOption(NArgName.of("Folder"))
+                String folder = cmdLine.nextNonOption("Folder",(p,s)-> NArgCompleteResult.ofFlags(NArgCompleteFlag.DIRNAMES))
                         .flatMap(NArg::asString).get();
                 toScan.add(new File(folder));
             } else {

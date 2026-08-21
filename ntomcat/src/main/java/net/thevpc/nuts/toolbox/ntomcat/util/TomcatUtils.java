@@ -145,7 +145,7 @@ public class TomcatUtils {
 
     public static RunningTomcat[] getRunningInstances() {
         return NPs.of().platformFamily(NExecutionEngineFamily.JAVA).getResultList()
-                .stream().filter((p) -> p.name().equals("org.apache.catalina.startup.Bootstrap"))
+                .jstream().filter((p) -> p.name().equals("org.apache.catalina.startup.Bootstrap"))
                 .map(x -> new RunningTomcat(x)).toArray(RunningTomcat[]::new);
     }
 }
