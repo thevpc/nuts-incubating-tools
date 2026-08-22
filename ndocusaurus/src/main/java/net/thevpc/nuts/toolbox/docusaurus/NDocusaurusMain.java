@@ -35,7 +35,7 @@ public class NDocusaurusMain {
                         case "-d":
                         case "--dir": {
                             if (workdir == null) {
-                                return cmdLine.matcher().withAny().matchEntry((v) -> workdir = v.stringValue()).anyMatch();
+                                return cmdLine.matcher().whenAny().asEntry((v) -> workdir = v.stringValue()).anyMatch();
                             }
                             return false;
                         }
@@ -44,13 +44,13 @@ public class NDocusaurusMain {
                 } else {
                     switch (arg.asString().get()) {
                         case "start": {
-                            return cmdLine.matcher().withAny().matchFlag((v) -> start = v.booleanValue()).anyMatch();
+                            return cmdLine.matcher().whenAny().asFlag((v) -> start = v.booleanValue()).anyMatch();
                         }
                         case "build": {
-                            return cmdLine.matcher().withAny().matchFlag((v) -> build = v.booleanValue()).anyMatch();
+                            return cmdLine.matcher().whenAny().asFlag((v) -> build = v.booleanValue()).anyMatch();
                         }
                         case "pdf": {
-                            return cmdLine.matcher().withAny().matchFlag((v) -> buildPdf = v.booleanValue()).anyMatch();
+                            return cmdLine.matcher().whenAny().asFlag((v) -> buildPdf = v.booleanValue()).anyMatch();
                         }
                     }
                     return false;

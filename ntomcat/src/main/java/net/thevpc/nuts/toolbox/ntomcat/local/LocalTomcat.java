@@ -186,8 +186,10 @@ public class LocalTomcat {
         args.commandName("tomcat --local show");
         while (args.hasNext()) {
             args.matcher()
-                    .with("-l", "--long").matchTrueFlag((b) -> format.set("long"))
-                    .requireDefaults();
+                    .when("-l", "--long").asTrueFlag((b) -> format.set("long"))
+                    .withDefaults()
+                    .require()
+            ;
         }
         if (args.isExecMode()) {
             if (NOut.isPlain()) {

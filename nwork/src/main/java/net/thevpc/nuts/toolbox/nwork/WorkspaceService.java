@@ -218,7 +218,7 @@ public class WorkspaceService {
             } else if ((a = cmdLine.nextFlag("-r", "--reset").orNull()) != null) {
                 reset = a.getBooleanValue().get();
             } else if (cmdLine.peek().get().isNonOption()) {
-                String folder = cmdLine.nextNonOption("Folder",(p,s)-> NArgCompleteResult.ofFlags(NArgCompleteFlag.DIRNAMES))
+                String folder = cmdLine.nextNonOption("Folder",c-> NArgCompleteResult.ofFlags(NArgCompleteFlag.DIRNAMES))
                         .flatMap(NArg::asString).get();
                 run = true;
                 toScan.add(new File(folder));
@@ -249,7 +249,7 @@ public class WorkspaceService {
             if ((a = cmdLine.nextEntry("-w", "--where").orNull()) != null) {
                 where = a.getStringValue().get();
             } else if (cmdLine.peek().get().isNonOption()) {
-                String folder = cmdLine.nextNonOption("Folder",(p,s)-> NArgCompleteResult.ofFlags(NArgCompleteFlag.DIRNAMES))
+                String folder = cmdLine.nextNonOption("Folder", NArgValueComplete.ofFlags(NArgCompleteFlag.DIRNAMES))
                         .flatMap(NArg::asString).get();
                 toScan.add(new File(folder));
             } else {
@@ -272,10 +272,12 @@ public class WorkspaceService {
         NRef<String> remoteUser = NRef.ofNull(String.class);
         while (cmdLine.hasNext()) {
             cmdLine.matcher()
-                    .with("--remote-server", "--to-server", "--to", "-t").matchEntry((v) -> remoteServer.set(v.stringValue()))
-                    .with("--remote-user").matchEntry((v) -> remoteUser.set(v.stringValue()))
-                    .withNonOption().matchAny(a -> idsToPush.add(NId.get(a.toString()).get()))
-                    .requireDefaults();
+                    .when("--remote-server", "--to-server", "--to", "-t").asEntry((v) -> remoteServer.set(v.stringValue()))
+                    .when("--remote-user").asEntry((v) -> remoteUser.set(v.stringValue()))
+                    .whenNonOption().asArg(a -> idsToPush.add(NId.get(a.toString()).get()))
+                    .withDefaults()
+                    .require()
+            ;
         }
         if (idsToPush.isEmpty()) {
             cmdLine.throwMissingArgument();
