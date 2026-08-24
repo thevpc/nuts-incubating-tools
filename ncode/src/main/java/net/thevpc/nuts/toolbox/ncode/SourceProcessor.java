@@ -5,8 +5,6 @@
  */
 package net.thevpc.nuts.toolbox.ncode;
 
-import net.thevpc.nuts.core.NSession;
-
 /**
  *
  * @author thevpc
@@ -16,8 +14,7 @@ public interface SourceProcessor {
     /**
      *
      * @param source source
-     * @param session session
      * @return processed source value
      */
-    Object process(Source source, NSession session);
+    Object process(Source source);
 }

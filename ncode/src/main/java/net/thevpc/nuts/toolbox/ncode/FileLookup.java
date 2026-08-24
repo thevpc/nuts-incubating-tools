@@ -6,7 +6,6 @@
 package net.thevpc.nuts.toolbox.ncode;
 
 import net.thevpc.nuts.io.NPath;
-import net.thevpc.nuts.core.NSession;
 
 /**
  * @author thevpc
@@ -17,7 +16,7 @@ public class FileLookup implements SourceProcessor {
     }
 
     @Override
-    public Object process(Source source, NSession session) {
+    public Object process(Source source) {
         return NPath.of(source.getExternalPath());
     }
 
