@@ -5,8 +5,8 @@
  */
 package net.thevpc.nuts.toolbox.ncode;
 
-import net.thevpc.nuts.app.NApp;
-import net.thevpc.nuts.app.NAppRunner;
+import net.thevpc.nuts.app.NApplication;
+import net.thevpc.nuts.app.NAppRun;
 import net.thevpc.nuts.core.NSession;
 
 /**
@@ -14,13 +14,13 @@ import net.thevpc.nuts.core.NSession;
  */
 public class NCodeMain  {
     public static void main(String[] args) {
-        NApp.builder(args).run();
+        NApplication.builder(args).run();
     }
 
-    @NAppRunner
+    @NAppRun
     public void run() {
         NSession session = NSession.of();
-        NApp.of().runCmdLine(new NCodeMainCmdProcessor(session));
+        NApplication.of().runCmdLine(new NCodeMainCmdProcessor(session));
     }
 
 }

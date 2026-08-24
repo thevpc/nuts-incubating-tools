@@ -1,6 +1,6 @@
 package net.thevpc.nuts.toolbox.ntomcat.local;
 
-import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.app.NApplication;
 import net.thevpc.nuts.core.NOpenMode;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.io.*;
@@ -33,7 +33,7 @@ public class LocalTomcatAppConfigService extends LocalTomcatServiceBase {
         this.name = name;
         this.config = config;
         this.tomcat = tomcat;
-        sharedConfigFolder = NApp.of().getVersionFolder(NStoreType.CONF, NTomcatConfigVersions.CURRENT);
+        sharedConfigFolder = NApplication.of().getVersionFolder(NStoreType.CONF, NTomcatConfigVersions.CURRENT);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class LocalTomcatAppConfigService extends LocalTomcatServiceBase {
     public Path getArchiveFile(String version) {
         String runningFolder = tomcat.getConfig().getArchiveFolder();
         if (runningFolder == null || runningFolder.trim().isEmpty()) {
-            runningFolder = NApp.of().sharedConfFolder().resolve("archive").toString();
+            runningFolder = NApplication.of().sharedConfFolder().resolve("archive").toString();
         }
         String packaging = "war";
         return Paths.get(runningFolder).resolve(name + "-" + version + "." + packaging);
@@ -62,7 +62,7 @@ public class LocalTomcatAppConfigService extends LocalTomcatServiceBase {
         String _runningFolder = tomcat.getConfig().getRunningFolder();
         NPath runningFolder = (_runningFolder == null || _runningFolder.trim().isEmpty()) ? null : NPath.of(_runningFolder);
         if (runningFolder == null) {
-            runningFolder = NApp.of().sharedConfFolder().resolve("running");
+            runningFolder = NApplication.of().sharedConfFolder().resolve("running");
         }
         String packaging = "war";
         return runningFolder.resolve(name + "." + packaging);

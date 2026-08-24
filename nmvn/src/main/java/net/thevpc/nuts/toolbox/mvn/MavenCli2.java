@@ -1,6 +1,6 @@
 package net.thevpc.nuts.toolbox.mvn;
 
-import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.app.NApplication;
 import net.thevpc.nuts.io.NOut;
 import net.thevpc.nuts.core.NSession;
 import org.apache.maven.cli.MavenCli;
@@ -72,7 +72,7 @@ public class MavenCli2 {
 
     public int doMain(String[] args) {
         if (multiModuleProjectDirectory == null) {
-            System.setProperty("maven.multiModuleProjectDirectory", NApp.of().confFolder().toString());
+            System.setProperty("maven.multiModuleProjectDirectory", NApplication.of().confFolder().toString());
         } else {
             System.setProperty("maven.multiModuleProjectDirectory", multiModuleProjectDirectory);
         }

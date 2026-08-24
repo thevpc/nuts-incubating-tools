@@ -1,6 +1,6 @@
 package net.thevpc.nuts.toolbox.nwork;
 
-import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.app.NApplication;
 import net.thevpc.nuts.artifact.*;
 import net.thevpc.nuts.cmdline.*;
 import net.thevpc.nuts.command.NExec;
@@ -41,7 +41,7 @@ public class WorkspaceService {
 
     public WorkspaceService(NSession session) {
         this.session = session;
-        sharedConfigFolder = NApp.of().getVersionFolder(NStoreType.CONF, NWorkConfigVersions.CURRENT);
+        sharedConfigFolder = NApplication.of().getVersionFolder(NStoreType.CONF, NWorkConfigVersions.CURRENT);
         NPath c = getConfigFile();
         if (c.isRegularFile()) {
             try {

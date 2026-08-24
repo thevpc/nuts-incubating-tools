@@ -1,6 +1,6 @@
 package net.thevpc.nuts.toolbox.ntomcat.local;
 
-import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.app.NApplication;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.command.NExecutionException;
@@ -28,7 +28,7 @@ public class LocalTomcat {
 
     public LocalTomcat(NCmdLine cmdLine) {
         this.cmdLine = cmdLine;
-        sharedConfigFolder = NApp.of().getVersionFolder(NStoreType.CONF, NTomcatConfigVersions.CURRENT);
+        sharedConfigFolder = NApplication.of().getVersionFolder(NStoreType.CONF, NTomcatConfigVersions.CURRENT);
     }
 
     public void runArgs() {

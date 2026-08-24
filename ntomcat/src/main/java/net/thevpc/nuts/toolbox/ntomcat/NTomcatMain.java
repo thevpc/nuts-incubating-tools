@@ -1,7 +1,7 @@
 package net.thevpc.nuts.toolbox.ntomcat;
 
-import net.thevpc.nuts.app.NApp;
-import net.thevpc.nuts.app.NAppRunner;
+import net.thevpc.nuts.app.NApplication;
+import net.thevpc.nuts.app.NAppRun;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.core.NSession;
@@ -11,10 +11,10 @@ import net.thevpc.nuts.toolbox.ntomcat.local.LocalTomcat;
 public class NTomcatMain  {
 
     public static void main(String[] args) {
-        NApp.builder(args).run();
+        NApplication.builder(args).run();
     }
 
-    @NAppRunner
+    @NAppRun
     public void run() {
 //        NRepository apacheRepo = NWorkspace.of().findRepository("apache-tomcat").orNull();
         NSession session = NSession.of();
@@ -26,7 +26,7 @@ public class NTomcatMain  {
 //
 //            );
 //        }
-        NCmdLine cmdLine = NApp.of().cmdLine();
+        NCmdLine cmdLine = NApplication.of().cmdLine();
         Boolean local = null;
         boolean skipFirst = false;
         if (cmdLine.hasNext()) {

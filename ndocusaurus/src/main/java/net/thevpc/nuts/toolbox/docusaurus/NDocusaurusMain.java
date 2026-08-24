@@ -1,8 +1,8 @@
 package net.thevpc.nuts.toolbox.docusaurus;
 
+import net.thevpc.nuts.app.NApplication;
 import net.thevpc.nuts.app.NApp;
-import net.thevpc.nuts.app.NAppDefinition;
-import net.thevpc.nuts.app.NAppRunner;
+import net.thevpc.nuts.app.NAppRun;
 import net.thevpc.nuts.cmdline.NCmdLineRunner;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
@@ -13,7 +13,7 @@ import net.thevpc.nuts.text.NMsg;
 
 import java.nio.file.Paths;
 
-@NAppDefinition
+@NApp
 public class NDocusaurusMain {
 
     boolean start;
@@ -22,12 +22,12 @@ public class NDocusaurusMain {
     boolean buildPdf = false;
 
     public static void main(String[] args) {
-        NApp.builder(args).run();
+        NApplication.builder(args).run();
     }
 
-    @NAppRunner
+    @NAppRun
     public void run() {
-        NApp.of().runCmdLine(new NCmdLineRunner() {
+        NApplication.of().runCmdLine(new NCmdLineRunner() {
             @Override
             public boolean next(NArg arg, NCmdLine cmdLine) {
                 if (arg.isOption()) {

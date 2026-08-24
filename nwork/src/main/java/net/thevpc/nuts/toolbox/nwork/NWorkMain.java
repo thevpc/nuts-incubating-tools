@@ -1,7 +1,7 @@
 package net.thevpc.nuts.toolbox.nwork;
 
-import net.thevpc.nuts.app.NApp;
-import net.thevpc.nuts.app.NAppRunner;
+import net.thevpc.nuts.app.NApplication;
+import net.thevpc.nuts.app.NAppRun;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.core.NSession;
@@ -11,14 +11,14 @@ public class NWorkMain {
     private WorkspaceService service;
 
     public static void main(String[] args) {
-        NApp.builder(args).run();
+        NApplication.builder(args).run();
     }
 
-    @NAppRunner
+    @NAppRun
     public void run() {
         NSession session = NSession.of();
         this.service = new WorkspaceService(session);
-        NCmdLine cmdLine = NApp.of().cmdLine().commandName("nwork");
+        NCmdLine cmdLine = NApplication.of().cmdLine().commandName("nwork");
         NArg a;
         do {
             if (session.configureFirst(cmdLine)) {

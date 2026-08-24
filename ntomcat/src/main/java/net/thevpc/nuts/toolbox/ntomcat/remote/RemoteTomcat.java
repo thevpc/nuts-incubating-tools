@@ -1,6 +1,6 @@
 package net.thevpc.nuts.toolbox.ntomcat.remote;
 
-import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.app.NApplication;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.command.NExecutionException;
@@ -29,7 +29,7 @@ public class RemoteTomcat {
     public RemoteTomcat(NSession session, NCmdLine cmdLine) {
         this.setSession(session);
         this.cmdLine = cmdLine;
-        sharedConfigFolder = NApp.of().getVersionFolder(NStoreType.CONF, NTomcatConfigVersions.CURRENT);
+        sharedConfigFolder = NApplication.of().getVersionFolder(NStoreType.CONF, NTomcatConfigVersions.CURRENT);
     }
 
     public void runArgs() {

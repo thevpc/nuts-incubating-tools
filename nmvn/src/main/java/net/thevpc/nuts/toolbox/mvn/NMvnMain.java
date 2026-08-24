@@ -1,7 +1,7 @@
 package net.thevpc.nuts.toolbox.mvn;
 
-import net.thevpc.nuts.app.NApp;
-import net.thevpc.nuts.app.NAppRunner;
+import net.thevpc.nuts.app.NApplication;
+import net.thevpc.nuts.app.NAppRun;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.command.NExecutionException;
@@ -39,16 +39,16 @@ public class NMvnMain  {
     }
 
     public static void main(String[] args) {
-        NApp.builder(args).run();
+        NApplication.builder(args).run();
     }
 
-    @NAppRunner
+    @NAppRun
     public void run() {
         String command = null;
         List<String> args2 = new ArrayList<>();
         Options o = new Options();
         NSession session = NSession.of();
-        NCmdLine cmd = NApp.of().cmdLine();
+        NCmdLine cmd = NApplication.of().cmdLine();
         NArg a;
         while (cmd.hasNext()) {
             if (command == null) {

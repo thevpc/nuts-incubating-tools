@@ -1,7 +1,7 @@
 package net.thevpc.nuts.toolbox.nwork;
 
 import net.thevpc.nuts.*;
-import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.app.NApplication;
 import net.thevpc.nuts.artifact.*;
 import net.thevpc.nuts.command.NExecutionException;
 import net.thevpc.nuts.command.NSearch;
@@ -31,13 +31,13 @@ public class ProjectService {
     public ProjectService(RepositoryAddress defaultRepositoryAddress, NPath file) throws IOException {
         this.defaultRepositoryAddress = defaultRepositoryAddress == null ? new RepositoryAddress() : defaultRepositoryAddress;
         config = NElementReader.ofJson().read(file, ProjectConfig.class);
-        sharedConfigFolder = NApp.of().getVersionFolder(NStoreType.CONF, NWorkConfigVersions.CURRENT);
+        sharedConfigFolder = NApplication.of().getVersionFolder(NStoreType.CONF, NWorkConfigVersions.CURRENT);
     }
 
     public ProjectService(RepositoryAddress defaultRepositoryAddress, ProjectConfig config) {
         this.config = config;
         this.defaultRepositoryAddress = defaultRepositoryAddress;
-        sharedConfigFolder = NApp.of().getVersionFolder(NStoreType.CONF, NWorkConfigVersions.CURRENT);
+        sharedConfigFolder = NApplication.of().getVersionFolder(NStoreType.CONF, NWorkConfigVersions.CURRENT);
     }
 
     public ProjectConfig getConfig() {

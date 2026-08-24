@@ -1,6 +1,6 @@
 package net.thevpc.nuts.toolbox.ntomcat.remote;
 
-import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.app.NApplication;
 import net.thevpc.nuts.command.NExec;
 import net.thevpc.nuts.command.NExecutionException;
 import net.thevpc.nuts.core.NSession;
@@ -35,7 +35,7 @@ public class RemoteTomcatConfigService extends RemoteTomcatServiceBase {
         setName(name);
         this.client = client;
         this.session = client.session;
-        sharedConfigFolder = NApp.of().getVersionFolder(NStoreType.CONF, NTomcatConfigVersions.CURRENT);
+        sharedConfigFolder = NApplication.of().getVersionFolder(NStoreType.CONF, NTomcatConfigVersions.CURRENT);
     }
 
     public RemoteTomcatConfigService(NPath file, RemoteTomcat client) {

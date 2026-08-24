@@ -1,6 +1,6 @@
 package net.thevpc.nuts.toolbox.ntomcat.local;
 
-import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.app.NApplication;
 import net.thevpc.nuts.artifact.*;
 import net.thevpc.nuts.command.*;
 import net.thevpc.nuts.core.NOpenMode;
@@ -57,7 +57,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
     public LocalTomcatConfigService(String name, LocalTomcat app) {
         this.app = app;
         setName(name);
-        sharedConfigFolder = NApp.of().getVersionFolder(NStoreType.CONF, NTomcatConfigVersions.CURRENT);
+        sharedConfigFolder = NApplication.of().getVersionFolder(NStoreType.CONF, NTomcatConfigVersions.CURRENT);
     }
 
     public void open(NOpenMode autoCreate) {
@@ -193,7 +193,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             if (x2 > 0) {
                 v = v.substring(0, x2);
             }
-            catalinaBase = NApp.of().sharedConfFolder().resolve("catalina-base-" + v).resolve("default");
+            catalinaBase = NApplication.of().sharedConfFolder().resolve("catalina-base-" + v).resolve("default");
         } else {
             if (!catalinaBase.isAbsolute()) {
                 String v = getValidCatalinaVersion();
@@ -202,7 +202,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                 if (x2 > 0) {
                     v = v.substring(0, x2);
                 }
-                catalinaBase = NApp.of().sharedConfFolder().resolve("catalina-base-" + v).resolve(catalinaBase);
+                catalinaBase = NApplication.of().sharedConfFolder().resolve("catalina-base-" + v).resolve(catalinaBase);
             }
         }
         return catalinaBase;

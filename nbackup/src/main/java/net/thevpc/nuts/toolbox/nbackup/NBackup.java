@@ -5,8 +5,8 @@
 
 package net.thevpc.nuts.toolbox.nbackup;
 
-import net.thevpc.nuts.app.NApp;
-import net.thevpc.nuts.app.NAppRunner;
+import net.thevpc.nuts.app.NApplication;
+import net.thevpc.nuts.app.NAppRun;
 import net.thevpc.nuts.cmdline.*;
 import net.thevpc.nuts.command.NExec;
 import net.thevpc.nuts.core.NSession;
@@ -25,14 +25,14 @@ import java.util.Objects;
 public class NBackup {
 
     public static void main(String[] args) {
-        NApp.builder(args).run();
+        NApplication.builder(args).run();
     }
 
-    @NAppRunner
+    @NAppRun
     public void run() {
         NSession session = NSession.of();
         NOut.println(NMsg.ofC("%s Backup Tool.", NMsg.ofStyledKeyword("Nuts")));
-        NApp.of().runCmdLine(new NCmdLineRunner() {
+        NApplication.of().runCmdLine(new NCmdLineRunner() {
             @Override
             public boolean next(NArg arg, NCmdLine cmdLine) {
                 if (arg.isOption()) {
@@ -79,7 +79,7 @@ public class NBackup {
                     }
 
                     private NPath getConfigFile() {
-                        return NApp.of().confFolder().resolve("backup.json");
+                        return NApplication.of().confFolder().resolve("backup.json");
                     }
 
                     @Override
