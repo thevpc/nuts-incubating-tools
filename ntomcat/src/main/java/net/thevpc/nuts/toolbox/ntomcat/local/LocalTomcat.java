@@ -109,7 +109,7 @@ public class LocalTomcat {
                 }
             }
         }
-        throw new NExecutionException(NMsg.ofPlain("missing tomcat action. Type: nuts tomcat --help"), NExecutionException.ERROR_1);
+        throw new NExecutionException(NMsg.ofP("missing tomcat action. Type: nuts tomcat --help"), NExecutionException.ERROR_1);
     }
 
     public void list(NCmdLine args) {
@@ -142,7 +142,7 @@ public class LocalTomcat {
                             NOut.println(NMsg.ofC("[%s]:", "Apps"));
                         }
                         for (LocalTomcatAppConfigService app : apps) {
-                            NOut.print(NMsg.ofPlain(app.getName()));
+                            NOut.print(NMsg.ofP(app.getName()));
                         }
                     }
                 }
@@ -153,7 +153,7 @@ public class LocalTomcat {
                             NOut.println(NMsg.ofC("[%s]:", "Domains"));
                         }
                         for (LocalTomcatDomainConfigService app : domains) {
-                            NOut.println(NMsg.ofPlain(app.getName()));
+                            NOut.println(NMsg.ofP(app.getName()));
                         }
                     }
                 }
@@ -269,13 +269,13 @@ public class LocalTomcat {
                 }
                 default: {
                     args.pushBack(a);
-                    args.commandName("tomcat --local add").throwUnexpectedArgument(NMsg.ofPlain("expected instance|domain|app"));
+                    args.commandName("tomcat --local add").throwUnexpectedArgument(NMsg.ofP("expected instance|domain|app"));
                     return;
                 }
             }
         }
         args.commandName("tomcat --local add")
-                .throwMissingArgument(NMsg.ofPlain("expected instance|domain|app"));
+                .throwMissingArgument(NMsg.ofP("expected instance|domain|app"));
     }
 
     public void addInstance(LocalTomcatConfigService c, NCmdLine args, NOpenMode autoCreate) {
@@ -417,7 +417,7 @@ public class LocalTomcat {
                 }
             }
         }
-        args.throwMissingArgument(NMsg.ofPlain("expected instance|domain|app"));
+        args.throwMissingArgument(NMsg.ofP("expected instance|domain|app"));
     }
 
     public void stop(NCmdLine args) {
@@ -428,7 +428,7 @@ public class LocalTomcat {
             NSession.of().configureLast(args);
         }
         if (!c.stop()) {
-            throw new NExecutionException(NMsg.ofPlain("unable to stop"), NExecutionException.ERROR_1);
+            throw new NExecutionException(NMsg.ofP("unable to stop"), NExecutionException.ERROR_1);
         }
     }
 
@@ -495,10 +495,10 @@ public class LocalTomcat {
             }
         }
         if (app == null) {
-            throw new NExecutionException(NMsg.ofPlain("tomcat install: Missing Application"), NExecutionException.ERROR_2);
+            throw new NExecutionException(NMsg.ofP("tomcat install: Missing Application"), NExecutionException.ERROR_2);
         }
         if (file == null) {
-            throw new NExecutionException(NMsg.ofPlain("tomcat install: Missing File"), NExecutionException.ERROR_2);
+            throw new NExecutionException(NMsg.ofP("tomcat install: Missing File"), NExecutionException.ERROR_2);
         }
         app.install(version, file, true);
     }
@@ -517,7 +517,7 @@ public class LocalTomcat {
                 args.commandName("tomcat --local delete").throwUnexpectedArgument();
             }
         } else {
-            args.commandName("tomcat --local delete").throwUnexpectedArgument(NMsg.ofPlain("missing log|temp|work"));
+            args.commandName("tomcat --local delete").throwUnexpectedArgument(NMsg.ofP("missing log|temp|work"));
         }
     }
 
@@ -771,7 +771,7 @@ public class LocalTomcat {
             }
         }
         if (file == null) {
-            throw new NExecutionException(NMsg.ofPlain("tomcat deploy: Missing File"), NExecutionException.ERROR_2);
+            throw new NExecutionException(NMsg.ofP("tomcat deploy: Missing File"), NExecutionException.ERROR_2);
         }
         LocalTomcatConfigService c = openTomcatConfig(instance, NOpenMode.OPEN_OR_ERROR);
         c.deployFile(NPath.of(file), contextName, domain);

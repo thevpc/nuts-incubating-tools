@@ -194,7 +194,7 @@ public class ProjectService {
             }
             String nutsRepository = a.getNutsRepository();
             if (NBlankable.isBlank(nutsRepository)) {
-                throw new NExecutionException(NMsg.ofPlain("missing repository. try 'nwork set -r vpc-public-maven' or something like that"), NExecutionException.ERROR_2);
+                throw new NExecutionException(NMsg.ofP("missing repository. try 'nwork set -r vpc-public-maven' or something like that"), NExecutionException.ERROR_2);
             }
             try {
                 NWorkspace ws = null;
@@ -243,7 +243,7 @@ public class ProjectService {
                     }
                     String nutsRepository = a.getNutsRepository();
                     if (NBlankable.isBlank(nutsRepository)) {
-                        throw new NExecutionException(NMsg.ofPlain("missing repository. try 'nwork set -r vpc-public-maven' or something like that"), NExecutionException.ERROR_2);
+                        throw new NExecutionException(NMsg.ofP("missing repository. try 'nwork set -r vpc-public-maven' or something like that"), NExecutionException.ERROR_2);
                     }
                     try {
                         NDescriptor g = NDescriptorParser.of()

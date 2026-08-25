@@ -663,7 +663,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                     );
                 }
             }
-            throw new NExecutionException(NMsg.ofPlain("unable to start tomcat"), NExecutionException.ERROR_2);
+            throw new NExecutionException(NMsg.ofP("unable to start tomcat"), NExecutionException.ERROR_2);
         }
         for (int i = 0; i < timeout; i++) {
             try {
@@ -705,7 +705,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
             }
             return y;
         }
-        throw new NExecutionException(NMsg.ofPlain("unable to start tomcat"), NExecutionException.ERROR_2);
+        throw new NExecutionException(NMsg.ofP("unable to start tomcat"), NExecutionException.ERROR_2);
     }
 
     public boolean waitForStoppedStatus(int timeout, boolean kill) {
@@ -1254,7 +1254,7 @@ public class LocalTomcatConfigService extends LocalTomcatServiceBase {
                     transformer.transform(domSource, streamResult);
                     return;
                 }
-                throw new NIllegalArgumentException(NMsg.ofPlain("not found connector"));
+                throw new NIllegalArgumentException(NMsg.ofP("not found connector"));
             }
         } catch (SAXException | IOException | ParserConfigurationException | TransformerException ex) {
             if (NOut.isPlain()) {

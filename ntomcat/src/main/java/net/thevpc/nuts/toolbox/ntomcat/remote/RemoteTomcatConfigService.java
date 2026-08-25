@@ -167,7 +167,7 @@ public class RemoteTomcatConfigService extends RemoteTomcatServiceBase {
 
     public RemoteTomcatConfigService loadConfig() {
         if (name == null) {
-            throw new NExecutionException(NMsg.ofPlain("missing instance name"), NExecutionException.ERROR_2);
+            throw new NExecutionException(NMsg.ofP("missing instance name"), NExecutionException.ERROR_2);
         }
         NPath f = getConfigPath();
         if (f.exists()) {

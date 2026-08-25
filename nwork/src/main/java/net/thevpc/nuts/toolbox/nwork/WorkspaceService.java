@@ -154,7 +154,7 @@ public class WorkspaceService {
         }
 
         if (count == 0) {
-            throw new NExecutionException(NMsg.ofPlain("missing projects"), NExecutionException.ERROR_1);
+            throw new NExecutionException(NMsg.ofP("missing projects"), NExecutionException.ERROR_1);
         }
     }
 
@@ -721,7 +721,7 @@ public class WorkspaceService {
                             }
                             if (structuredOutContentType) {
                                 result.add(new ScanResult(folder.getPath(), "detected",
-                                        NMsg.ofPlain("detected Project Folder").toString()
+                                        NMsg.ofP("detected Project Folder").toString()
                                 ));
                             }
 //                String repo = term.readLine("Enter Repository ####%s####: ", ((p2.getAddress() == null || p2.getAddress().getNutsRepository() == null )? "" : ("(" + p2.getAddress().getNutsRepository() + ")")));

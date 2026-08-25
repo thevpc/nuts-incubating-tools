@@ -75,7 +75,7 @@ public class RemoteTomcat {
                 }
             }
         }
-        throw new NExecutionException(NMsg.ofPlain("missing tomcat action. Type: nuts tomcat --help"), NExecutionException.ERROR_1);
+        throw new NExecutionException(NMsg.ofP("missing tomcat action. Type: nuts tomcat --help"), NExecutionException.ERROR_1);
     }
 
     public void list(NCmdLine args) {
@@ -89,7 +89,7 @@ public class RemoteTomcat {
                 processed = true;
                 List<RemoteTomcatAppConfigService> apps = c.getApps();
                 for (RemoteTomcatAppConfigService app : apps) {
-                    session.out().println(NMsg.ofPlain(app.getName()));
+                    session.out().println(NMsg.ofP(app.getName()));
                 }
             }
         }
@@ -122,7 +122,7 @@ public class RemoteTomcat {
                     instanceName = a.getStringValue().get();
                     c = loadOrCreateTomcatConfig(instanceName);
                 } else {
-                    throw new NExecutionException(NMsg.ofPlain("instance already defined"), NExecutionException.ERROR_2);
+                    throw new NExecutionException(NMsg.ofP("instance already defined"), NExecutionException.ERROR_2);
                 }
             } else if ((a = args.nextEntry("--server").orNull()) != null) {
                 if (c == null) {
@@ -208,7 +208,7 @@ public class RemoteTomcat {
                     }
                 }
             } catch (NCancelException ex) {
-                throw new NExecutionException(NMsg.ofPlain("cancelled"), NExecutionException.ERROR_1);
+                throw new NExecutionException(NMsg.ofP("cancelled"), NExecutionException.ERROR_1);
             }
         }
         c.save();
@@ -233,10 +233,10 @@ public class RemoteTomcat {
             }
         }
         if (!processed) {
-            throw new NExecutionException(NMsg.ofPlain("invalid parameters"), NExecutionException.ERROR_2);
+            throw new NExecutionException(NMsg.ofP("invalid parameters"), NExecutionException.ERROR_2);
         }
         if (lastExitCode != NExecutionException.SUCCESS) {
-            throw new NExecutionException(NMsg.ofPlain("tomcat remove failed"), lastExitCode);
+            throw new NExecutionException(NMsg.ofP("tomcat remove failed"), lastExitCode);
         }
     }
 
