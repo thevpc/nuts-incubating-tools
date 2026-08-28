@@ -94,7 +94,7 @@ public class NComponentController {
                                         .os(Arrays.asList(os))
                                         .osDist(Arrays.asList(osdist)).build()
                         )
-                        .setFace(face)
+                        .face(face)
 //                        .setAlternative(alternative)
                         .build();
                 List<Map<String, String>> result=workspace.callWith(()->{
@@ -140,7 +140,7 @@ public class NComponentController {
                                 .platform(Arrays.asList(platform))
                                 .desktopEnvironment(Arrays.asList(desktopEnvironment))
                         )
-                        .setFace(face)
+                        .face(face)
 //                        .setAlternative(alternative)
                         .build();
                 List<Map<String, String>> rows
@@ -187,7 +187,7 @@ public class NComponentController {
                                         .platform(Arrays.asList(platform))
                                         .desktopEnvironment(Arrays.asList(desktopEnvironment))
                                 )
-                                .setFace(face)
+                                .face(face)
 //                                .setAlternative(alternative)
                                 .build());
                 workspace.runWith(()-> {
@@ -233,7 +233,7 @@ public class NComponentController {
                                 .platform(Arrays.asList(platform))
                                 .desktopEnvironment(Arrays.asList(desktopEnvironment))
                         )
-                        .setFace(face)
+                        .face(face)
 //                        .setAlternative(alternative)
                         .build();
                 NRef<Boolean> ret=NRef.of(false);

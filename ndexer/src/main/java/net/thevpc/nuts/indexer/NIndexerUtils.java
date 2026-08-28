@@ -64,7 +64,7 @@ public class NIndexerUtils {
 
     public static Map<String, String> nutsIdToMap(NId id) {
         Map<String, String> entity = new HashMap<>();
-        id = id.builder().setFace(StringUtils.isEmpty(id.face()) ? "default" : id.face()).build();
+        id = id.builder().face(StringUtils.isEmpty(id.face()) ? "default" : id.face()).build();
         _condPut(entity, "name", id.artifactId());
         _condPut(entity, "namespace", id.repository());
         _condPut(entity, "group", id.groupId());
@@ -90,7 +90,7 @@ public class NIndexerUtils {
         _condPut(entity, "classifier", dependency.groupId());
         _condPut(entity, "version", dependency.version().value());
         NId id2 = dependency.toId().builder()
-                .setFace(StringUtils.isEmpty(dependency.toId().face()) ? "default" : dependency.toId().face())
+                .face(StringUtils.isEmpty(dependency.toId().face()) ? "default" : dependency.toId().face())
                 .build();
         _condPut(entity, NConstants.IdProperties.FACE, id2.face());
 
