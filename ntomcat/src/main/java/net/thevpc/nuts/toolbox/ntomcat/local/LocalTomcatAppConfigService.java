@@ -151,7 +151,7 @@ public class LocalTomcatAppConfigService extends LocalTomcatServiceBase {
         NCp.of()
                 .from(runningFile)
                 .to(deployFile)
-                .addOptions(NPathOption.REPLACE_EXISTING)
+                .options(NPathOption.REPLACE_EXISTING)
                 .run();
         return this;
     }
