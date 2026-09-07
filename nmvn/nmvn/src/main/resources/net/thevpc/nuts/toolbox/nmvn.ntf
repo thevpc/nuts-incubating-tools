@@ -1,0 +1,22 @@
+##) SYNOPSIS:
+==nmvn== **\<command-options\>**
+manage local maven configurations and multi-project versions
+
+==nmvn== [**--version** <MVN_VERSION>] [{{args...}}]
+==nmvn== **version scan**    [**--config** <FILE>] [**-j**|**--json**]
+==nmvn== **version bump**    [**--config** <FILE>] [**--dry-run**|**--apply**] [**--cascade-references-only**|**--cascade-versions**] [**-a** <GA=VER>]...
+==nmvn== **version release** [**--config** <FILE>] [**--dry-run**|**--apply**] [**--strict**] [**-a** <GA=VER>]...
+
+##) EXAMPLES:
+
+```sh nmvn clean install```
+   maven clean install
+
+```sh nmvn version scan```
+   scan and print multi-project dependency graph
+
+```sh nmvn version bump --artifact com.example:my-lib=1.1.0-SNAPSHOT --dry-run```
+   dry-run bump artifact and cascade references
+
+```sh nmvn version release --apply --strict```
+   resolve all snapshot versions to release and apply changes

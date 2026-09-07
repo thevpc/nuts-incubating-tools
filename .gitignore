@@ -3,6 +3,8 @@
 /ndb/target/
 /ndiff/target
 /ndocusaurus/target/
+/nmvn/**/target/
+/nmvn/**/.nmvn/
 /nmvn/target/
 /nserver/target/
 /ntalk-agent/target/

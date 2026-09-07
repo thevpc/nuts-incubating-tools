@@ -1,0 +1,546 @@
+package net.thevpc.nmvn.lib;
+
+import net.thevpc.nmvn.lib.config.NMvnConfig;
+import net.thevpc.nmvn.lib.config.NMvnConfigLoader;
+import net.thevpc.nmvn.lib.exception.AmbiguousArtifactException;
+import net.thevpc.nmvn.lib.exception.CycleDetectedException;
+import net.thevpc.nmvn.lib.exception.StrictSnapshotException;
+import net.thevpc.nmvn.lib.model.*;
+import net.thevpc.nmvn.lib.modifier.PomModifier;
+import net.thevpc.nmvn.lib.service.BumpResult;
+import net.thevpc.nmvn.lib.service.ReleaseResult;
+import net.thevpc.nmvn.lib.service.ScanResult;
+import net.thevpc.nmvn.lib.service.VersionService;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+
+public class NMvnLibTest {
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
+
+    private VersionService service;
+
+    @Before
+    public void setup() {
+        service = new VersionService();
+    }
+
+    private Path createPom(Path dir, String content) throws IOException {
+        Files.createDirectories(dir);
+        Path pomFile = dir.resolve("pom.xml");
+        Files.write(pomFile, content.getBytes(StandardCharsets.UTF_8));
+        return pomFile;
+    }
+
+    @Test
+    public void testPropertyInheritanceAndChildOverride() throws Exception {
+        Path root = tempFolder.newFolder("prop-test").toPath();
+        Path parentDir = root.resolve("parent");
+        Path child1Dir = root.resolve("child1");
+        Path child2Dir = root.resolve("child2");
+
+        createPom(parentDir,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.test</groupId>\n" +
+                "  <artifactId>parent-pom</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "  <packaging>pom</packaging>\n" +
+                "  <properties>\n" +
+                "    <shared.version>1.0.0-SNAPSHOT</shared.version>\n" +
+                "  </properties>\n" +
+                "</project>");
+
+        // Child 1 inherits <shared.version>
+        createPom(child1Dir,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <parent>\n" +
+                "    <groupId>com.test</groupId>\n" +
+                "    <artifactId>parent-pom</artifactId>\n" +
+                "    <version>1.0.0-SNAPSHOT</version>\n" +
+                "  </parent>\n" +
+                "  <artifactId>child-1</artifactId>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.external</groupId>\n" +
+                "      <artifactId>ext-lib</artifactId>\n" +
+                "      <version>${shared.version}</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+
+        // Child 2 overrides <shared.version>
+        createPom(child2Dir,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <parent>\n" +
+                "    <groupId>com.test</groupId>\n" +
+                "    <artifactId>parent-pom</artifactId>\n" +
+                "    <version>1.0.0-SNAPSHOT</version>\n" +
+                "  </parent>\n" +
+                "  <artifactId>child-2</artifactId>\n" +
+                "  <properties>\n" +
+                "    <shared.version>2.0.0-SNAPSHOT</shared.version>\n" +
+                "  </properties>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.external</groupId>\n" +
+                "      <artifactId>ext-lib</artifactId>\n" +
+                "      <version>${shared.version}</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        ScanResult scan = service.scan(config, root);
+        Assert.assertEquals(3, scan.getArtifacts().size());
+
+        PomArtifact child1 = scan.getArtifacts().get(new MavenCoord("com.test", "child-1"));
+        PomArtifact child2 = scan.getArtifacts().get(new MavenCoord("com.test", "child-2"));
+
+        Assert.assertEquals("1.0.0-SNAPSHOT", child1.getDependencies().get(0).getResolvedVersion());
+        Assert.assertEquals(parentDir.resolve("pom.xml"), child1.getDependencies().get(0).getPropertyDefiningPom());
+
+        Assert.assertEquals("2.0.0-SNAPSHOT", child2.getDependencies().get(0).getResolvedVersion());
+        Assert.assertEquals(child2Dir.resolve("pom.xml"), child2.getDependencies().get(0).getPropertyDefiningPom());
+    }
+
+    @Test
+    public void testPropertyAliasingBumpingMultipleDependencies() throws Exception {
+        Path root = tempFolder.newFolder("alias-test").toPath();
+        Path pDir = root.resolve("proj");
+
+        createPom(pDir,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.test</groupId>\n" +
+                "  <artifactId>alias-project</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "  <properties>\n" +
+                "    <lib.version>1.0.0-SNAPSHOT</lib.version>\n" +
+                "  </properties>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.common</groupId>\n" +
+                "      <artifactId>lib-core</artifactId>\n" +
+                "      <version>${lib.version}</version>\n" +
+                "    </dependency>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.common</groupId>\n" +
+                "      <artifactId>lib-extra</artifactId>\n" +
+                "      <version>${lib.version}</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+
+        // Also define lib-core in same workspace
+        Path libDir = root.resolve("lib-core");
+        createPom(libDir,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.common</groupId>\n" +
+                "  <artifactId>lib-core</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "</project>");
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        List<BumpInstruction> bumps = Collections.singletonList(
+                new BumpInstruction("com.common", "lib-core", "1.1.0-SNAPSHOT")
+        );
+
+        BumpResult result = service.bump(config, root, bumps, false, true);
+        Assert.assertTrue(result.hasChanges());
+
+        // Check content of alias-project pom.xml on disk
+        String projContent = new String(Files.readAllBytes(pDir.resolve("pom.xml")), StandardCharsets.UTF_8);
+        Assert.assertTrue(projContent.contains("<lib.version>1.1.0-SNAPSHOT</lib.version>"));
+    }
+
+    @Test
+    public void testBomImportCascading() throws Exception {
+        Path root = tempFolder.newFolder("bom-test").toPath();
+        Path bomDir = root.resolve("my-bom");
+        Path consumerDir = root.resolve("consumer");
+
+        createPom(bomDir,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.test</groupId>\n" +
+                "  <artifactId>my-bom</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "  <packaging>pom</packaging>\n" +
+                "</project>");
+
+        createPom(consumerDir,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.test</groupId>\n" +
+                "  <artifactId>consumer-app</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "  <dependencyManagement>\n" +
+                "    <dependencies>\n" +
+                "      <dependency>\n" +
+                "        <groupId>com.test</groupId>\n" +
+                "        <artifactId>my-bom</artifactId>\n" +
+                "        <version>1.0.0-SNAPSHOT</version>\n" +
+                "        <type>pom</type>\n" +
+                "        <scope>import</scope>\n" +
+                "      </dependency>\n" +
+                "    </dependencies>\n" +
+                "  </dependencyManagement>\n" +
+                "</project>");
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        ScanResult scan = service.scan(config, root);
+        PomArtifact consumer = scan.getArtifacts().get(new MavenCoord("com.test", "consumer-app"));
+        Assert.assertTrue(consumer.getDependencyManagement().get(0).isBomImport());
+
+        // Bump the BOM
+        List<BumpInstruction> bumps = Collections.singletonList(
+                new BumpInstruction("com.test", "my-bom", "2.0.0-SNAPSHOT")
+        );
+        BumpResult result = service.bump(config, root, bumps, false, true);
+        Assert.assertTrue(result.hasChanges());
+
+        String consumerContent = new String(Files.readAllBytes(consumerDir.resolve("pom.xml")), StandardCharsets.UTF_8);
+        Assert.assertTrue(consumerContent.contains("<version>2.0.0-SNAPSHOT</version>"));
+    }
+
+    @Test(expected = AmbiguousArtifactException.class)
+    public void testAmbiguousArtifactsFailLoudly() throws Exception {
+        Path root = tempFolder.newFolder("ambig-test").toPath();
+        Path repo1 = root.resolve("repo1");
+        Path repo2 = root.resolve("repo2");
+
+        createPom(repo1,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.dup</groupId>\n" +
+                "  <artifactId>same-artifact</artifactId>\n" +
+                "  <version>1.0.0</version>\n" +
+                "</project>");
+
+        createPom(repo2,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.dup</groupId>\n" +
+                "  <artifactId>same-artifact</artifactId>\n" +
+                "  <version>2.0.0</version>\n" +
+                "</project>");
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Arrays.asList(repo1.toString(), repo2.toString()));
+
+        service.scan(config, root);
+    }
+
+    @Test(expected = CycleDetectedException.class)
+    public void testCycleDetectionFailsLoudly() throws Exception {
+        Path root = tempFolder.newFolder("cycle-test").toPath();
+        Path aDir = root.resolve("a");
+        Path bDir = root.resolve("b");
+
+        createPom(aDir,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.cycle</groupId>\n" +
+                "  <artifactId>art-a</artifactId>\n" +
+                "  <version>1.0.0</version>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.cycle</groupId>\n" +
+                "      <artifactId>art-b</artifactId>\n" +
+                "      <version>1.0.0</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+
+        createPom(bDir,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.cycle</groupId>\n" +
+                "  <artifactId>art-b</artifactId>\n" +
+                "  <version>1.0.0</version>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.cycle</groupId>\n" +
+                "      <artifactId>art-a</artifactId>\n" +
+                "      <version>1.0.0</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        service.scan(config, root);
+    }
+
+    @Test
+    public void testExternalSnapshotIgnoredByDefaultAndFailsStrict() throws Exception {
+        Path root = tempFolder.newFolder("strict-test").toPath();
+        Path aDir = root.resolve("a");
+
+        createPom(aDir,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.app</groupId>\n" +
+                "  <artifactId>my-app</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.external</groupId>\n" +
+                "      <artifactId>ext-snap</artifactId>\n" +
+                "      <version>9.9.9-SNAPSHOT</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        // Non-strict release should succeed
+        ReleaseResult rel = service.release(config, root, null, false, false);
+        Assert.assertEquals("1.0.0", rel.getReleasedArtifacts().get(new MavenCoord("com.app", "my-app")));
+        Assert.assertEquals(1, rel.getUnmanagedSnapshots().size());
+
+        // Strict release should throw StrictSnapshotException
+        try {
+            service.release(config, root, null, true, false);
+            Assert.fail("Expected StrictSnapshotException in strict mode");
+        } catch (StrictSnapshotException expected) {
+            Assert.assertTrue(expected.getMessage().contains("ext-snap"));
+        }
+    }
+
+    @Test
+    public void testDryRunDoesNotModifyFiles() throws Exception {
+        Path root = tempFolder.newFolder("dryrun-test").toPath();
+        Path aDir = root.resolve("a");
+
+        String originalContent =
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.app</groupId>\n" +
+                "  <artifactId>my-app</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "</project>";
+        Path pom = createPom(aDir, originalContent);
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        List<BumpInstruction> bumps = Collections.singletonList(
+                new BumpInstruction("com.app", "my-app", "1.1.0-SNAPSHOT")
+        );
+
+        // Dry run: apply = false
+        BumpResult result = service.bump(config, root, bumps, false, false);
+        Assert.assertTrue(result.hasChanges());
+        Assert.assertFalse(result.getChanges().get(0).getDiffLines().isEmpty());
+
+        // File on disk must remain unchanged!
+        String contentOnDisk = new String(Files.readAllBytes(pom), StandardCharsets.UTF_8);
+        Assert.assertEquals(originalContent, contentOnDisk);
+
+        // Now apply = true
+        service.bump(config, root, bumps, false, true);
+        String updatedOnDisk = new String(Files.readAllBytes(pom), StandardCharsets.UTF_8);
+        Assert.assertTrue(updatedOnDisk.contains("<version>1.1.0-SNAPSHOT</version>"));
+    }
+
+    @Test
+    public void testExclusionFilteringBuildAndTargetDirs() throws Exception {
+        Path root = tempFolder.newFolder("exclude-test").toPath();
+        Path srcDir = root.resolve("module-a");
+        Path targetDir = root.resolve("module-a/target/generated-sources");
+
+        createPom(srcDir,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.app</groupId>\n" +
+                "  <artifactId>mod-a</artifactId>\n" +
+                "  <version>1.0.0</version>\n" +
+                "</project>");
+
+        createPom(targetDir,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.app</groupId>\n" +
+                "  <artifactId>generated-dummy</artifactId>\n" +
+                "  <version>1.0.0</version>\n" +
+                "</project>");
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        ScanResult scan = service.scan(config, root);
+        Assert.assertEquals(1, scan.getArtifacts().size());
+        Assert.assertTrue(scan.getArtifacts().containsKey(new MavenCoord("com.app", "mod-a")));
+        Assert.assertFalse(scan.getArtifacts().containsKey(new MavenCoord("com.app", "generated-dummy")));
+    }
+
+    @Test
+    public void testTsonConfigLoaderRoundtrip() throws Exception {
+        Path root = tempFolder.newFolder("tson-test").toPath();
+        Path configFile = root.resolve("nmvn.tson");
+
+        NMvnConfig cfg = new NMvnConfig();
+        cfg.setRoots(Arrays.asList(".", "../other"));
+        cfg.setExcludes(Arrays.asList("**/target/**", "**/build/**"));
+        cfg.getBumpPolicy().setDefaultIncrement(BumpPolicy.IncrementType.MAJOR);
+        cfg.getBumpPolicy().setCascadePolicy(BumpPolicy.CascadePolicy.CASCADE_VERSIONS);
+        cfg.setInstructions(Collections.singletonList(
+                new BumpInstruction("com.example", "foo", "2.0.0-SNAPSHOT")
+        ));
+
+        NMvnConfigLoader.save(cfg, configFile);
+        Assert.assertTrue(Files.isRegularFile(configFile));
+
+        NMvnConfig loaded = NMvnConfigLoader.load(configFile);
+        Assert.assertEquals(2, loaded.getRoots().size());
+        Assert.assertEquals(BumpPolicy.IncrementType.MAJOR, loaded.getBumpPolicy().getDefaultIncrement());
+        Assert.assertEquals(BumpPolicy.CascadePolicy.CASCADE_VERSIONS, loaded.getBumpPolicy().getCascadePolicy());
+        Assert.assertEquals(1, loaded.getInstructions().size());
+        Assert.assertEquals("foo", loaded.getInstructions().get(0).getArtifactId());
+    }
+
+    @Test
+    public void testFormattingAndCommentsPreserved() throws Exception {
+        Path root = tempFolder.newFolder("format-test").toPath();
+        Path pDir = root.resolve("proj");
+
+        String original =
+                "<!-- Top license comment header with custom layout -->\n" +
+                "<project xmlns=\"http://maven.apache.org/POM/4.0.0\">\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "   <groupId>com.custom</groupId>\n" +
+                "     <artifactId>custom-formatting</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "\n" +
+                "  <!-- Properties section comment -->\n" +
+                "  <properties>\n" +
+                "       <!-- inline comment -->\n" +
+                "       <dep.version>1.0.0-SNAPSHOT</dep.version>  <!-- trailing comment -->\n" +
+                "  </properties>\n" +
+                "\n" +
+                "  <dependencies>\n" +
+                "    <!-- Dependency comment -->\n" +
+                "    <dependency>\n" +
+                "       <groupId>com.custom</groupId>\n" +
+                "       <artifactId>other-lib</artifactId>\n" +
+                "       <version>${dep.version}</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>";
+
+        Path pom = createPom(pDir, original);
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        List<BumpInstruction> bumps = Collections.singletonList(
+                new BumpInstruction("com.custom", "custom-formatting", "1.1.0-SNAPSHOT")
+        );
+
+        service.bump(config, root, bumps, false, true);
+
+        String updated = new String(Files.readAllBytes(pom), StandardCharsets.UTF_8);
+
+        // Verify version changed
+        Assert.assertTrue(updated.contains("<version>1.1.0-SNAPSHOT</version>"));
+
+        // Verify comments preserved
+        Assert.assertTrue(updated.contains("<!-- Top license comment header with custom layout -->"));
+        Assert.assertTrue(updated.contains("<!-- Properties section comment -->"));
+        Assert.assertTrue(updated.contains("<!-- inline comment -->"));
+        Assert.assertTrue(updated.contains("<!-- trailing comment -->"));
+        Assert.assertTrue(updated.contains("<!-- Dependency comment -->"));
+
+        // Verify custom indentation preserved
+        Assert.assertTrue(updated.contains("   <groupId>com.custom</groupId>"));
+        Assert.assertTrue(updated.contains("     <artifactId>custom-formatting</artifactId>"));
+        Assert.assertTrue(updated.contains("       <dep.version>1.0.0-SNAPSHOT</dep.version>  <!-- trailing comment -->"));
+
+        // Verify that the ONLY difference is the exact version tag changed
+        String expected = original.replace("<version>1.0.0-SNAPSHOT</version>", "<version>1.1.0-SNAPSHOT</version>");
+        Assert.assertEquals(expected, updated);
+    }
+
+    @Test
+    public void testCommentsAndNewlinesInsideTagBodyPreserved() throws Exception {
+        Path root = tempFolder.newFolder("inner-comment-test").toPath();
+        Path pDir = root.resolve("proj");
+
+        String original =
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.custom</groupId>\n" +
+                "  <artifactId>inner-comment-test</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "  <properties>\n" +
+                "    <dep.version>1.0.0-SNAPSHOT\n" +
+                "<!-- trailing comment -->\n" +
+                "</dep.version>\n" +
+                "  </properties>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.custom</groupId>\n" +
+                "      <artifactId>inner-lib</artifactId>\n" +
+                "      <version>\n" +
+                "        <!-- inner leading comment -->\n" +
+                "        1.0.0-SNAPSHOT\n" +
+                "        <!-- inner trailing comment -->\n" +
+                "      </version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>";
+
+        Path pom = createPom(pDir, original);
+
+        Path libDir = root.resolve("inner-lib");
+        createPom(libDir,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.custom</groupId>\n" +
+                "  <artifactId>inner-lib</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "</project>");
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        List<BumpInstruction> bumps = Collections.singletonList(
+                new BumpInstruction("com.custom", "inner-lib", "1.1.0-SNAPSHOT")
+        );
+
+        service.bump(config, root, bumps, false, true);
+
+        String updated = new String(Files.readAllBytes(pom), StandardCharsets.UTF_8);
+
+        Assert.assertTrue(updated.contains("1.1.0-SNAPSHOT"));
+        Assert.assertTrue(updated.contains("<!-- inner leading comment -->"));
+        Assert.assertTrue(updated.contains("<!-- inner trailing comment -->"));
+
+        // Also test direct update of <dep.version> with comments inside tag
+        String updatedProp = PomModifier.updateProperty(updated, "dep.version", "2.0.0-SNAPSHOT");
+        Assert.assertTrue(updatedProp.contains("<dep.version>2.0.0-SNAPSHOT\n<!-- trailing comment -->\n</dep.version>"));
+    }
+}
