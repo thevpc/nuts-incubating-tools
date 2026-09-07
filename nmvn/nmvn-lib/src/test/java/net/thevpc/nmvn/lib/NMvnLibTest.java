@@ -5,6 +5,7 @@ import net.thevpc.nmvn.lib.config.NMvnConfigLoader;
 import net.thevpc.nmvn.lib.exception.AmbiguousArtifactException;
 import net.thevpc.nmvn.lib.exception.CycleDetectedException;
 import net.thevpc.nmvn.lib.exception.StrictSnapshotException;
+import net.thevpc.nmvn.lib.diagnostic.*;
 import net.thevpc.nmvn.lib.model.*;
 import net.thevpc.nmvn.lib.modifier.PomModifier;
 import net.thevpc.nmvn.lib.service.BumpResult;
@@ -542,5 +543,247 @@ public class NMvnLibTest {
         // Also test direct update of <dep.version> with comments inside tag
         String updatedProp = PomModifier.updateProperty(updated, "dep.version", "2.0.0-SNAPSHOT");
         Assert.assertTrue(updatedProp.contains("<dep.version>2.0.0-SNAPSHOT\n<!-- trailing comment -->\n</dep.version>"));
+    }
+
+    @Test
+    public void testCheckCleanWorkspaceReportsNoIssues() throws Exception {
+        Path root = tempFolder.newFolder("clean-workspace").toPath();
+        Path mod1 = root.resolve("mod1");
+        createPom(mod1,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.clean</groupId>\n" +
+                "  <artifactId>mod1</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "</project>");
+        Path mod2 = root.resolve("mod2");
+        createPom(mod2,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.clean</groupId>\n" +
+                "  <artifactId>mod2</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.clean</groupId>\n" +
+                "      <artifactId>mod1</artifactId>\n" +
+                "      <version>1.0.0-SNAPSHOT</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        DiagnosticReport report = service.check(config, root);
+        Assert.assertTrue(report.isEmpty());
+        Assert.assertFalse(report.hasErrors());
+        Assert.assertFalse(report.hasWarnings());
+    }
+
+    @Test
+    public void testCheckDetectsMultipleVersionsAndMixedSnapshots() throws Exception {
+        Path root = tempFolder.newFolder("multi-version-check").toPath();
+        Path mod1 = root.resolve("mod1");
+        createPom(mod1,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.check</groupId>\n" +
+                "  <artifactId>mod1</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>org.apache.commons</groupId>\n" +
+                "      <artifactId>commons-lang3</artifactId>\n" +
+                "      <version>3.10</version>\n" +
+                "    </dependency>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.google.guava</groupId>\n" +
+                "      <artifactId>guava</artifactId>\n" +
+                "      <version>30.0-SNAPSHOT</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+        Path mod2 = root.resolve("mod2");
+        createPom(mod2,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.check</groupId>\n" +
+                "  <artifactId>mod2</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>org.apache.commons</groupId>\n" +
+                "      <artifactId>commons-lang3</artifactId>\n" +
+                "      <version>3.12.0</version>\n" +
+                "    </dependency>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.google.guava</groupId>\n" +
+                "      <artifactId>guava</artifactId>\n" +
+                "      <version>30.0-jre</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        DiagnosticReport report = service.check(config, root);
+        Assert.assertTrue(report.hasWarnings());
+        Assert.assertTrue(report.hasErrors());
+
+        List<DiagnosticIssue> multiVer = report.getByRule(DiagnosticRule.MULTI_VERSION_DEPENDENCY);
+        Assert.assertTrue(multiVer.size() >= 2); // commons-lang3 and guava
+
+        List<DiagnosticIssue> mixedSnap = report.getByRule(DiagnosticRule.MIXED_SNAPSHOT_AND_RELEASE);
+        Assert.assertEquals(1, mixedSnap.size());
+        Assert.assertEquals("guava", mixedSnap.get(0).getTargetCoord().getArtifactId());
+    }
+
+    @Test
+    public void testCheckDetectsInternalVersionMismatch() throws Exception {
+        Path root = tempFolder.newFolder("internal-mismatch-check").toPath();
+        Path mod1 = root.resolve("mod1");
+        createPom(mod1,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.check</groupId>\n" +
+                "  <artifactId>mod1</artifactId>\n" +
+                "  <version>2.0.0-SNAPSHOT</version>\n" +
+                "</project>");
+        Path mod2 = root.resolve("mod2");
+        createPom(mod2,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.check</groupId>\n" +
+                "  <artifactId>mod2</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.check</groupId>\n" +
+                "      <artifactId>mod1</artifactId>\n" +
+                "      <version>1.0.0-SNAPSHOT</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        DiagnosticReport report = service.check(config, root);
+        Assert.assertTrue(report.hasErrors());
+
+        List<DiagnosticIssue> issues = report.getByRule(DiagnosticRule.INTERNAL_VERSION_MISMATCH);
+        Assert.assertEquals(1, issues.size());
+        Assert.assertEquals("mod1", issues.get(0).getTargetCoord().getArtifactId());
+    }
+
+    @Test
+    public void testCheckDetectsParentVersionMismatch() throws Exception {
+        Path root = tempFolder.newFolder("parent-mismatch-check").toPath();
+        Path parent = root.resolve("parent");
+        createPom(parent,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.check</groupId>\n" +
+                "  <artifactId>parent-pom</artifactId>\n" +
+                "  <version>2.0.0-SNAPSHOT</version>\n" +
+                "  <packaging>pom</packaging>\n" +
+                "</project>");
+        Path child = root.resolve("child");
+        createPom(child,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <parent>\n" +
+                "    <groupId>com.check</groupId>\n" +
+                "    <artifactId>parent-pom</artifactId>\n" +
+                "    <version>1.0.0-SNAPSHOT</version>\n" +
+                "  </parent>\n" +
+                "  <artifactId>child</artifactId>\n" +
+                "</project>");
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        DiagnosticReport report = service.check(config, root);
+        Assert.assertTrue(report.hasErrors());
+
+        List<DiagnosticIssue> issues = report.getByRule(DiagnosticRule.PARENT_VERSION_MISMATCH);
+        Assert.assertEquals(1, issues.size());
+        Assert.assertEquals("parent-pom", issues.get(0).getTargetCoord().getArtifactId());
+    }
+
+    @Test
+    public void testCheckDetectsSnapshotDependencyInRelease() throws Exception {
+        Path root = tempFolder.newFolder("snapshot-in-release-check").toPath();
+        Path mod1 = root.resolve("mod1");
+        createPom(mod1,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.check</groupId>\n" +
+                "  <artifactId>mod1</artifactId>\n" +
+                "  <version>1.0.0</version>\n" + // Release version
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.external</groupId>\n" +
+                "      <artifactId>ext-lib</artifactId>\n" +
+                "      <version>0.5.0-SNAPSHOT</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        DiagnosticReport report = service.check(config, root);
+        Assert.assertTrue(report.hasErrors());
+
+        List<DiagnosticIssue> issues = report.getByRule(DiagnosticRule.SNAPSHOT_DEPENDENCY_IN_RELEASE);
+        Assert.assertEquals(1, issues.size());
+        Assert.assertEquals("ext-lib", issues.get(0).getTargetCoord().getArtifactId());
+    }
+
+    @Test
+    public void testCheckDetectsCircularDependency() throws Exception {
+        Path root = tempFolder.newFolder("circular-check").toPath();
+        Path mod1 = root.resolve("mod1");
+        createPom(mod1,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.cycle</groupId>\n" +
+                "  <artifactId>mod1</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.cycle</groupId>\n" +
+                "      <artifactId>mod2</artifactId>\n" +
+                "      <version>1.0.0-SNAPSHOT</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+        Path mod2 = root.resolve("mod2");
+        createPom(mod2,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.cycle</groupId>\n" +
+                "  <artifactId>mod2</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.cycle</groupId>\n" +
+                "      <artifactId>mod1</artifactId>\n" +
+                "      <version>1.0.0-SNAPSHOT</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+
+        NMvnConfig config = new NMvnConfig();
+        config.setRoots(Collections.singletonList(root.toString()));
+
+        DiagnosticReport report = service.check(config, root);
+        Assert.assertTrue(report.hasErrors());
+
+        List<DiagnosticIssue> issues = report.getByRule(DiagnosticRule.CIRCULAR_DEPENDENCY);
+        Assert.assertFalse(issues.isEmpty());
     }
 }

@@ -92,17 +92,30 @@ public class MavenDependencyGraph {
      * Throws CycleDetectedException with full cycle path if cycle is found.
      */
     public void detectCycles() {
-        Map<MavenCoord, Integer> state = new HashMap<>(); // 0: unvisited, 1: visiting, 2: visited
-        List<MavenCoord> stack = new ArrayList<>();
-
-        for (MavenCoord node : artifacts.keySet()) {
-            if (state.getOrDefault(node, 0) == 0) {
-                dfsCycle(node, state, stack);
-            }
+        List<List<String>> cycles = findCycles();
+        if (!cycles.isEmpty()) {
+            throw new CycleDetectedException(cycles.get(0));
         }
     }
 
-    private void dfsCycle(MavenCoord node, Map<MavenCoord, Integer> state, List<MavenCoord> stack) {
+    /**
+     * Finds all cycles in the workspace dependency graph.
+     * Returns a list of cycle paths (empty if no cycles).
+     */
+    public List<List<String>> findCycles() {
+        Map<MavenCoord, Integer> state = new HashMap<>(); // 0: unvisited, 1: visiting, 2: visited
+        List<MavenCoord> stack = new ArrayList<>();
+        List<List<String>> cycles = new ArrayList<>();
+
+        for (MavenCoord node : artifacts.keySet()) {
+            if (state.getOrDefault(node, 0) == 0) {
+                dfsFindCycles(node, state, stack, cycles);
+            }
+        }
+        return cycles;
+    }
+
+    private void dfsFindCycles(MavenCoord node, Map<MavenCoord, Integer> state, List<MavenCoord> stack, List<List<String>> cycles) {
         state.put(node, 1);
         stack.add(node);
 
@@ -119,9 +132,9 @@ public class MavenDependencyGraph {
                         cyclePath.add(stack.get(i).toGaString());
                     }
                     cyclePath.add(target.toGaString());
-                    throw new CycleDetectedException(cyclePath);
+                    cycles.add(cyclePath);
                 } else if (targetState == 0) {
-                    dfsCycle(target, state, stack);
+                    dfsFindCycles(target, state, stack, cycles);
                 }
             }
         }

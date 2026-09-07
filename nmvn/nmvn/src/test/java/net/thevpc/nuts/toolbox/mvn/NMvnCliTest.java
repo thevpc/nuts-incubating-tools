@@ -85,4 +85,65 @@ public class NMvnCliTest {
         String mod2Updated = new String(Files.readAllBytes(mod2.resolve("pom.xml")), StandardCharsets.UTF_8);
         Assert.assertTrue(mod2Updated.contains("<version>1.1.0-SNAPSHOT</version>"));
     }
+
+    @Test
+    public void testCliCheckCleanAndDiscrepancy() throws Exception {
+        Path root = temp.newFolder("cli-check-test").toPath();
+        Path mod1 = root.resolve("mod1");
+        Path mod2 = root.resolve("mod2");
+
+        createPom(mod1,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.cli</groupId>\n" +
+                "  <artifactId>mod1</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "</project>");
+
+        createPom(mod2,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.cli</groupId>\n" +
+                "  <artifactId>mod2</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.cli</groupId>\n" +
+                "      <artifactId>mod1</artifactId>\n" +
+                "      <version>1.0.0-SNAPSHOT</version>\n" +
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+
+        NSession session = NSession.of();
+        MvnVersionCli cli = new MvnVersionCli(session);
+
+        // Clean workspace should return 0
+        int checkClean = cli.run(new String[]{"check", "--root", root.toString()}, false);
+        Assert.assertEquals(0, checkClean);
+
+        // Now introduce a version discrepancy in mod2
+        createPom(mod2,
+                "<project>\n" +
+                "  <modelVersion>4.0.0</modelVersion>\n" +
+                "  <groupId>com.cli</groupId>\n" +
+                "  <artifactId>mod2</artifactId>\n" +
+                "  <version>1.0.0-SNAPSHOT</version>\n" +
+                "  <dependencies>\n" +
+                "    <dependency>\n" +
+                "      <groupId>com.cli</groupId>\n" +
+                "      <artifactId>mod1</artifactId>\n" +
+                "      <version>2.0.0-SNAPSHOT</version>\n" + // Discrepancy! mod1 is 1.0.0-SNAPSHOT
+                "    </dependency>\n" +
+                "  </dependencies>\n" +
+                "</project>");
+
+        // Discrepant workspace should return 1
+        int checkDiscrepancy = cli.run(new String[]{"check", "--root", root.toString()}, false);
+        Assert.assertEquals(1, checkDiscrepancy);
+
+        // JSON mode should also return 1
+        int checkJson = cli.run(new String[]{"check", "--root", root.toString(), "--json"}, false);
+        Assert.assertEquals(1, checkJson);
+    }
 }

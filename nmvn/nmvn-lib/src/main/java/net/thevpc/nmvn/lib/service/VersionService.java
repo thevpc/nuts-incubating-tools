@@ -2,6 +2,8 @@ package net.thevpc.nmvn.lib.service;
 
 import net.thevpc.nmvn.lib.config.NMvnConfig;
 import net.thevpc.nmvn.lib.config.VersionHistoryStore;
+import net.thevpc.nmvn.lib.diagnostic.ArtifactChecker;
+import net.thevpc.nmvn.lib.diagnostic.DiagnosticReport;
 import net.thevpc.nmvn.lib.exception.StrictSnapshotException;
 import net.thevpc.nmvn.lib.graph.DependencyEdge;
 import net.thevpc.nmvn.lib.graph.MavenDependencyGraph;
@@ -21,10 +23,21 @@ public class VersionService {
     private final PomModifier modifier = new PomModifier();
 
     public ScanResult scan(NMvnConfig config, Path workingDir) throws IOException {
+        return scan(config, workingDir, true);
+    }
+
+    public ScanResult scan(NMvnConfig config, Path workingDir, boolean detectCycles) throws IOException {
         Map<MavenCoord, PomArtifact> artifacts = scanner.scan(config, workingDir);
         MavenDependencyGraph graph = new MavenDependencyGraph(artifacts);
-        graph.detectCycles();
+        if (detectCycles) {
+            graph.detectCycles();
+        }
         return new ScanResult(artifacts, graph);
+    }
+
+    public DiagnosticReport check(NMvnConfig config, Path workingDir) throws IOException {
+        ScanResult scanResult = scan(config, workingDir, false);
+        return new ArtifactChecker().check(scanResult, config);
     }
 
     public BumpResult bump(NMvnConfig config, Path workingDir, List<BumpInstruction> explicitBumps,

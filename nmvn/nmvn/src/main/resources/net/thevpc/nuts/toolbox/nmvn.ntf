@@ -6,6 +6,7 @@ manage local maven configurations and multi-project versions
 ==nmvn== **version scan**    [**--config** <FILE>] [**-j**|**--json**]
 ==nmvn== **version bump**    [**--config** <FILE>] [**--dry-run**|**--apply**] [**--cascade-references-only**|**--cascade-versions**] [**-a** <GA=VER>]...
 ==nmvn== **version release** [**--config** <FILE>] [**--dry-run**|**--apply**] [**--strict**] [**-a** <GA=VER>]...
+==nmvn== **version check**   [**--config** <FILE>] [**--fail-on-warning**] [**-j**|**--json**]
 
 ##) EXAMPLES:
 
@@ -14,6 +15,9 @@ manage local maven configurations and multi-project versions
 
 ```sh nmvn version scan```
    scan and print multi-project dependency graph
+
+```sh nmvn version check```
+   audit workspace for version discrepancies, mixed snapshot/releases, and cycles
 
 ```sh nmvn version bump --artifact com.example:my-lib=1.1.0-SNAPSHOT --dry-run```
    dry-run bump artifact and cascade references

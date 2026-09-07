@@ -9,6 +9,7 @@ import net.thevpc.nuts.core.NSession;
 import net.thevpc.nuts.io.NOut;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.text.NMsg;
+import net.thevpc.nuts.util.NRef;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -44,40 +45,36 @@ public class NMvnMain  {
 
     @NAppRun
     public void run() {
-        String command = null;
+        NRef<String> command = NRef.ofNull();
         List<String> args2 = new ArrayList<>();
         Options o = new Options();
         NSession session = NSession.of();
         NCmdLine cmd = NApplication.of().cmdLine();
-        NArg a;
         while (cmd.hasNext()) {
-            if (command == null) {
+            if (command.isNull()) {
                 if (session.configureFirst(cmd)) {
-                    //fo nothing
-                } else if ((a = cmd.nextFlag("-j", "--json").orNull()) != null) {
-                    o.json = a.getBooleanValue().get();
-                } else if ((a = cmd.next("build").orNull()) != null) {
-                    command = "build";
-                } else if ((a = cmd.next("get").orNull()) != null) {
-                    command = "get";
-                } else if ((a = cmd.next("version").orNull()) != null) {
-                    command = "version";
-                } else {
-                    command = "default";
+                    // handled by nuts
+                } else if (!cmd.matcher()
+                        .when("-j", "--json").asFlag(a -> o.json = a.booleanValue())
+                        .when("build").asArg(a -> command.set("build"))
+                        .when("get").asArg(a -> command.set("get"))
+                        .when("version").asArg(a -> command.set("version"))
+                        .anyMatch()) {
+                    command.set("default");
                     args2.add(cmd.next().get().image());
                 }
             } else {
                 args2.add(cmd.next().get().image());
             }
         }
-        if (command == null) {
-            command = "build";
+        if (command.isNull()) {
+            command.set("build");
         }
         if (cmd.isExecMode()) {
             MavenCli2 cli = new MavenCli2(session);
 
             String[] args2Arr = args2.toArray(new String[0]);
-            switch (command) {
+            switch (command.get()) {
                 case "build":
                 case "default": {
                     List<String> defaultArgs = new ArrayList<>();
