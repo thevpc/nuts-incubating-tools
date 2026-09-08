@@ -1,5 +1,6 @@
 package net.thevpc.nuts.indexer.services;
 
+import jakarta.annotation.PostConstruct;
 import net.thevpc.nuts.artifact.NDefinition;
 import net.thevpc.nuts.artifact.NDependency;
 import net.thevpc.nuts.artifact.NId;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 
 @Service
 public class RefreshDataService {

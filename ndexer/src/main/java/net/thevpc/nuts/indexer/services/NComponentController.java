@@ -1,5 +1,6 @@
 package net.thevpc.nuts.indexer.services;
 
+import jakarta.annotation.PostConstruct;
 import net.thevpc.nuts.artifact.*;
 import net.thevpc.nuts.command.NSearch;
 import net.thevpc.nuts.core.*;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.StringReader;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 
 @RestController
 @RequestMapping("indexer/" + NConstants.Folders.ID)

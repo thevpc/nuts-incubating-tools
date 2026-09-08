@@ -1,7 +1,7 @@
 package net.thevpc.nuts.indexer.services;
 
-import javax.annotation.PostConstruct;
 
+import jakarta.annotation.PostConstruct;
 import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.core.NWorkspaceList;
 import net.thevpc.nuts.indexer.NIndexSubscriberListManager;

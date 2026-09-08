@@ -3,7 +3,7 @@
     
     <groupId>net.thevpc.nuts.installer</groupId>
     <artifactId>nuts-installer-panels</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0.0</version>
     <name>Nuts Installer Panels</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,7 +28,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.11.0</version>
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <source>1.8</source>
