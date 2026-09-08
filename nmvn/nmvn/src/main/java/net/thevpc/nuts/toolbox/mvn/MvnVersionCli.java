@@ -12,6 +12,7 @@ import net.thevpc.nmvn.lib.service.BumpResult;
 import net.thevpc.nmvn.lib.service.ReleaseResult;
 import net.thevpc.nmvn.lib.service.ScanResult;
 import net.thevpc.nmvn.lib.service.VersionService;
+import net.thevpc.nuts.artifact.NId;
 import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.core.NSession;
@@ -20,13 +21,12 @@ import net.thevpc.nuts.elem.NElement;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NObjectElementBuilder;
 import net.thevpc.nuts.io.NOut;
+import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.text.NMsg;
 import net.thevpc.nuts.text.NTextStyle;
 import net.thevpc.nuts.util.NRef;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class MvnVersionCli {
@@ -51,7 +51,7 @@ public class MvnVersionCli {
         List<String> roots = new ArrayList<>();
         List<String> excludes = new ArrayList<>();
         List<BumpInstruction> cliInstructions = new ArrayList<>();
-        Map<MavenCoord, String> explicitReleases = new LinkedHashMap<>();
+        Map<NId, String> explicitReleases = new LinkedHashMap<>();
 
         while (cmd.hasNext()) {
             if (subCommand.isNull()) {
@@ -70,7 +70,7 @@ public class MvnVersionCli {
                 if (session.configureFirst(cmd)) {
                     // handled by nuts
                 } else if (!cmd.matcher()
-                        .when("--config").asEntry(a -> configPath.set(a.stringValue()))
+                        .when("--workset", "--ws", "--config").asEntry(a -> configPath.set(a.stringValue()))
                         .when("--apply").asFlag(a -> apply.set(a.booleanValue()))
                         .when("--dry-run").asFlag(a -> dryRun.set(a.booleanValue()))
                         .when("--strict").asFlag(a -> strict.set(a.booleanValue()))
@@ -100,8 +100,8 @@ public class MvnVersionCli {
             return 1;
         }
 
-        Path workingDir = Paths.get("").toAbsolutePath();
-        Path cfgFile = NMvnConfigLoader.resolveConfigFile(configPath.get(), workingDir);
+        NPath workingDir = NPath.ofUserDirectory();
+        NPath cfgFile = NMvnConfigLoader.resolveConfigFile(configPath.get(), workingDir);
         NMvnConfig config = NMvnConfigLoader.load(cfgFile);
 
         // Apply CLI overrides
@@ -134,24 +134,24 @@ public class MvnVersionCli {
         }
     }
 
-    private void handleArtifactArg(String subCommand, String val, List<BumpInstruction> cliInstructions, Map<MavenCoord, String> explicitReleases) {
+    private void handleArtifactArg(String subCommand, String val, List<BumpInstruction> cliInstructions, Map<NId, String> explicitReleases) {
         if ("bump".equals(subCommand)) {
             cliInstructions.add(BumpInstruction.parse(val));
         } else if ("release".equals(subCommand)) {
             if (val.contains("=")) {
                 int eq = val.indexOf('=');
-                MavenCoord ga = MavenCoord.parse(val.substring(0, eq).trim());
+                NId ga = MavenCoord.parse(val.substring(0, eq).trim()).shortId();
                 explicitReleases.put(ga, val.substring(eq + 1).trim());
             } else {
-                MavenCoord ga = MavenCoord.parse(val);
-                explicitReleases.put(ga.toGa(), ga.getVersion());
+                NId id = MavenCoord.parse(val);
+                explicitReleases.put(id.shortId(), id.version().value());
             }
         }
     }
 
-    private int doScan(NMvnConfig config, Path workingDir, boolean jsonOutput) throws IOException {
+    private int doScan(NMvnConfig config, NPath workingDir, boolean jsonOutput) throws IOException {
         ScanResult scan = versionService.scan(config, workingDir);
-        Map<MavenCoord, PomArtifact> artifacts = scan.getArtifacts();
+        Map<NId, PomArtifact> artifacts = scan.getArtifacts();
         MavenDependencyGraph graph = scan.getGraph();
 
         if (jsonOutput) {
@@ -189,30 +189,30 @@ public class MvnVersionCli {
                 NOut.println("    References:");
                 for (DependencyEdge edge : outgoing) {
                     boolean internal = artifacts.containsKey(edge.getTarget());
-                    String targetLabel = edge.getTarget().toGaString() + " [" + edge.getEdgeType() + "]" + (internal ? " (internal)" : " (external)");
+                    String targetLabel = edge.getTarget().shortName() + " [" + edge.getEdgeType() + "]" + (internal ? " (internal)" : " (external)");
                     NOut.println(NMsg.ofC("      -> %s", targetLabel));
                 }
             }
 
-            Set<MavenCoord> dependents = graph.getDirectDependents(a.toGa());
+            Set<NId> dependents = graph.getDirectDependents(a.toGa());
             if (!dependents.isEmpty()) {
                 NOut.println("    Dependents (referenced by):");
-                for (MavenCoord d : dependents) {
-                    NOut.println(NMsg.ofC("      <- %s", d.toGaString()));
+                for (NId d : dependents) {
+                    NOut.println(NMsg.ofC("      <- %s", d.shortName()));
                 }
             }
         }
         return 0;
     }
 
-    private int doBump(NMvnConfig config, Path workingDir, List<BumpInstruction> explicitBumps,
+    private int doBump(NMvnConfig config, NPath workingDir, List<BumpInstruction> explicitBumps,
                        Boolean cascadeVersions, boolean apply, boolean jsonOutput) throws IOException {
         BumpResult result = versionService.bump(config, workingDir, explicitBumps, cascadeVersions, apply);
         renderChanges(result.getChanges(), apply, jsonOutput);
         return 0;
     }
 
-    private int doRelease(NMvnConfig config, Path workingDir, Map<MavenCoord, String> explicitReleases,
+    private int doRelease(NMvnConfig config, NPath workingDir, Map<NId, String> explicitReleases,
                           boolean strict, boolean apply, boolean jsonOutput) throws IOException {
         ReleaseResult result = versionService.release(config, workingDir, explicitReleases, strict, apply);
         renderChanges(result.getChanges(), apply, jsonOutput);
@@ -264,7 +264,7 @@ public class MvnVersionCli {
         }
     }
 
-    private int doCheck(NMvnConfig config, Path workingDir, boolean failOnWarning, boolean jsonOutput) throws IOException {
+    private int doCheck(NMvnConfig config, NPath workingDir, boolean failOnWarning, boolean jsonOutput) throws IOException {
         DiagnosticReport report = versionService.check(config, workingDir);
 
         if (jsonOutput) {
@@ -277,8 +277,8 @@ public class MvnVersionCli {
                 NObjectElementBuilder ib = NElement.ofObjectBuilder();
                 ib.set("rule", issue.getRule().name());
                 ib.set("severity", issue.getSeverity().name());
-                if (issue.getTargetCoord() != null) {
-                    ib.set("targetArtifact", issue.getTargetCoord().toGaString());
+                if (issue.getTargetId() != null) {
+                    ib.set("targetArtifact", issue.getTargetId().shortName());
                 }
                 if (issue.getSourcePom() != null) {
                     ib.set("sourcePom", issue.getSourcePom().toString());

@@ -1,13 +1,15 @@
 package net.thevpc.nmvn.lib.model;
 
-import java.nio.file.Path;
+import net.thevpc.nuts.artifact.NId;
+import net.thevpc.nuts.io.NPath;
+
 import java.util.*;
 
 public class PomArtifact {
-    private final MavenCoord coord;
+    private final NId id;
     private String resolvedVersion;
-    private final MavenCoord parentCoord;
-    private final Path path;
+    private final NId parentId;
+    private final NPath path;
     private final Map<String, String> declaredProperties = new LinkedHashMap<>();
     private final Map<String, String> resolvedProperties = new LinkedHashMap<>();
     private final List<PomDependency> dependencies = new ArrayList<>();
@@ -16,34 +18,43 @@ public class PomArtifact {
     private final List<String> modules = new ArrayList<>();
     private String versionPropertyName;
 
-    public PomArtifact(MavenCoord coord, MavenCoord parentCoord, Path path) {
-        this.coord = coord;
-        this.parentCoord = parentCoord;
-        this.path = path;
-        this.resolvedVersion = coord.getVersion();
-        if (coord.getVersion() != null && coord.getVersion().startsWith("${") && coord.getVersion().endsWith("}")) {
-            this.versionPropertyName = coord.getVersion().substring(2, coord.getVersion().length() - 1).trim();
+    public PomArtifact(NId id, NId parentId, NPath path) {
+        this.id = Objects.requireNonNull(id, "id cannot be null");
+        this.parentId = parentId;
+        this.path = Objects.requireNonNull(path, "path cannot be null");
+        String v = id.version().isBlank() ? null : id.version().value();
+        this.resolvedVersion = v;
+        if (v != null && v.startsWith("${") && v.endsWith("}")) {
+            this.versionPropertyName = v.substring(2, v.length() - 1).trim();
         }
     }
 
-    public MavenCoord getCoord() {
-        return coord;
+    public PomArtifact(MavenCoord coord, MavenCoord parentCoord, NPath path) {
+        this(coord != null ? coord.toId() : null, parentCoord != null ? parentCoord.toId() : null, path);
     }
 
-    public MavenCoord toGa() {
-        return coord.toGa();
+    public NId getId() {
+        return id;
+    }
+
+    public NId getCoord() {
+        return id;
+    }
+
+    public NId toGa() {
+        return id.shortId();
     }
 
     public String getGroupId() {
-        return coord.getGroupId();
+        return id.groupId();
     }
 
     public String getArtifactId() {
-        return coord.getArtifactId();
+        return id.artifactId();
     }
 
     public String getRawVersion() {
-        return coord.getVersion();
+        return id.version().isBlank() ? null : id.version().value();
     }
 
     public String getResolvedVersion() {
@@ -54,11 +65,15 @@ public class PomArtifact {
         this.resolvedVersion = resolvedVersion;
     }
 
-    public MavenCoord getParentCoord() {
-        return parentCoord;
+    public NId getParentId() {
+        return parentId;
     }
 
-    public Path getPath() {
+    public NId getParentCoord() {
+        return parentId;
+    }
+
+    public NPath getPath() {
         return path;
     }
 
@@ -96,9 +111,9 @@ public class PomArtifact {
 
     public List<PomDependency> getAllReferences() {
         List<PomDependency> all = new ArrayList<>();
-        if (parentCoord != null) {
-            all.add(new PomDependency(parentCoord.getGroupId(), parentCoord.getArtifactId(),
-                    parentCoord.getVersion(), null, "pom", false, DependencyEdgeType.PARENT));
+        if (parentId != null) {
+            all.add(new PomDependency(parentId.groupId(), parentId.artifactId(),
+                    parentId.version().isBlank() ? null : parentId.version().value(), null, "pom", false, DependencyEdgeType.PARENT));
         }
         all.addAll(dependencies);
         all.addAll(dependencyManagement);
@@ -111,17 +126,17 @@ public class PomArtifact {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PomArtifact that = (PomArtifact) o;
-        return coord.toGa().equals(that.coord.toGa()) && path.equals(that.path);
+        return id.shortId().equals(that.id.shortId()) && path.equals(that.path);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(coord.toGa(), path);
+        return Objects.hash(id.shortId(), path);
     }
 
     @Override
     public String toString() {
-        return coord.toGaString() + ":" + (resolvedVersion != null ? resolvedVersion : coord.getVersion())
+        return id.shortName() + ":" + (resolvedVersion != null ? resolvedVersion : getRawVersion())
                 + " [" + path + "]";
     }
 }

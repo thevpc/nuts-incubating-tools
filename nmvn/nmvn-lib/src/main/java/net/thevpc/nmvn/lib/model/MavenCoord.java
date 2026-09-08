@@ -1,62 +1,112 @@
 package net.thevpc.nmvn.lib.model;
 
+import net.thevpc.nuts.artifact.NId;
+
 import java.util.Objects;
 
 public class MavenCoord implements Comparable<MavenCoord> {
-    private final String groupId;
-    private final String artifactId;
-    private final String version;
+    private final NId id;
 
     public MavenCoord(String groupId, String artifactId) {
-        this(groupId, artifactId, null);
+        this(of(groupId, artifactId));
     }
 
     public MavenCoord(String groupId, String artifactId, String version) {
-        this.groupId = Objects.requireNonNull(groupId, "groupId cannot be null").trim();
-        this.artifactId = Objects.requireNonNull(artifactId, "artifactId cannot be null").trim();
-        this.version = version != null ? version.trim() : null;
+        this(of(groupId, artifactId, version));
     }
 
-    public static MavenCoord parse(String coordStr) {
+    public MavenCoord(NId id) {
+        this.id = Objects.requireNonNull(id, "id cannot be null");
+    }
+
+    public static NId of(String groupId, String artifactId) {
+        return NId.of(Objects.requireNonNull(groupId, "groupId cannot be null").trim(),
+                Objects.requireNonNull(artifactId, "artifactId cannot be null").trim());
+    }
+
+    public static NId of(String groupId, String artifactId, String version) {
+        String g = Objects.requireNonNull(groupId, "groupId cannot be null").trim();
+        String a = Objects.requireNonNull(artifactId, "artifactId cannot be null").trim();
+        if (version == null || version.trim().isEmpty()) {
+            return NId.of(g, a);
+        }
+        return NId.of(g, a, version.trim());
+    }
+
+    public static NId parse(String coordStr) {
         if (coordStr == null || coordStr.trim().isEmpty()) {
             throw new IllegalArgumentException("Coordinate string cannot be null or empty");
         }
-        String[] parts = coordStr.trim().split(":");
+        String s = coordStr.trim();
+        if (s.contains("#")) {
+            return NId.of(s);
+        }
+        String[] parts = s.split(":");
         if (parts.length < 2) {
             throw new IllegalArgumentException("Invalid coordinate format, expected groupId:artifactId[:version], got: " + coordStr);
         }
         String g = parts[0].trim();
         String a = parts[1].trim();
-        String v = parts.length > 2 ? parts[2].trim() : null;
-        return new MavenCoord(g, a, v);
+        if (parts.length == 2) {
+            return NId.of(g, a);
+        }
+        String v = parts[2].trim();
+        return of(g, a, v);
+    }
+
+    public static String toGaString(NId id) {
+        if (id == null) return "";
+        return id.shortName();
+    }
+
+    public static String toGavString(NId id) {
+        if (id == null) return "";
+        if (id.version().isBlank()) {
+            return id.shortName();
+        }
+        return id.groupId() + ":" + id.artifactId() + ":" + id.version().value();
+    }
+
+    public static NId toGa(NId id) {
+        if (id == null) return null;
+        return id.shortId();
+    }
+
+    public static NId withVersion(NId id, String newVersion) {
+        if (id == null) return null;
+        return of(id.groupId(), id.artifactId(), newVersion);
+    }
+
+    public NId toId() {
+        return id;
     }
 
     public String getGroupId() {
-        return groupId;
+        return id.groupId();
     }
 
     public String getArtifactId() {
-        return artifactId;
+        return id.artifactId();
     }
 
     public String getVersion() {
-        return version;
+        return id.version().isBlank() ? null : id.version().value();
     }
 
     public MavenCoord withVersion(String newVersion) {
-        return new MavenCoord(groupId, artifactId, newVersion);
+        return new MavenCoord(withVersion(id, newVersion));
     }
 
     public MavenCoord toGa() {
-        return version == null ? this : new MavenCoord(groupId, artifactId, null);
+        return new MavenCoord(id.shortId());
     }
 
     public String toGaString() {
-        return groupId + ":" + artifactId;
+        return id.shortName();
     }
 
     public String toGavString() {
-        return version != null ? groupId + ":" + artifactId + ":" + version : toGaString();
+        return toGavString(id);
     }
 
     @Override
@@ -64,14 +114,12 @@ public class MavenCoord implements Comparable<MavenCoord> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MavenCoord that = (MavenCoord) o;
-        return groupId.equals(that.groupId) &&
-                artifactId.equals(that.artifactId) &&
-                Objects.equals(version, that.version);
+        return id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupId, artifactId, version);
+        return id.hashCode();
     }
 
     @Override
@@ -81,13 +129,6 @@ public class MavenCoord implements Comparable<MavenCoord> {
 
     @Override
     public int compareTo(MavenCoord o) {
-        int c = groupId.compareTo(o.groupId);
-        if (c != 0) return c;
-        c = artifactId.compareTo(o.artifactId);
-        if (c != 0) return c;
-        if (version == null && o.version == null) return 0;
-        if (version == null) return -1;
-        if (o.version == null) return 1;
-        return version.compareTo(o.version);
+        return id.compareTo(o.id);
     }
 }

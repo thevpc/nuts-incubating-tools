@@ -3,43 +3,162 @@ package net.thevpc.nmvn.lib.config;
 import net.thevpc.nmvn.lib.model.BumpInstruction;
 import net.thevpc.nmvn.lib.model.BumpPolicy;
 import net.thevpc.nuts.Nuts;
+import net.thevpc.nuts.artifact.NId;
+import net.thevpc.nuts.core.NStoreKey;
 import net.thevpc.nuts.elem.*;
 import net.thevpc.nuts.io.NPath;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class NMvnConfigLoader {
 
     public static final String DEFAULT_CONFIG_FILE = "nmvn.tson";
+    public static final String WORKSET_CONFIG_FILE = "workset.tson";
     public static final String ALT_CONFIG_FILE = ".nmvn/config.tson";
+    public static final String RECENT_CONFIGS_FILE = "recent-configs.tson";
+    public static final NId APP_ID = NId.of("net.thevpc.nmvn:nmvn");
 
-    public static Path resolveConfigFile(String cliConfigPath, Path workingDir) {
+    public static NPath getAppConfigFolder() {
+        Nuts.require();
+        return NPath.of(NStoreKey.ofConf(APP_ID));
+    }
+
+    public static NPath resolveConfigFile(String cliConfigPath, NPath workingDir) {
+        Nuts.require();
         if (cliConfigPath != null && !cliConfigPath.trim().isEmpty()) {
-            Path p = Paths.get(cliConfigPath.trim());
-            return p.isAbsolute() ? p : workingDir.resolve(p);
+            String trimmed = cliConfigPath.trim();
+            NPath nPath = NPath.of(trimmed);
+            if (nPath.isName()) {
+                // 1. Check working directory for exact name
+                NPath inWd = workingDir.resolve(trimmed);
+                if (inWd.isRegularFile()) {
+                    return inWd;
+                }
+                // 2. Check working directory with .tson appended
+                if (!trimmed.endsWith(".tson")) {
+                    NPath inWdTson = workingDir.resolve(trimmed + ".tson");
+                    if (inWdTson.isRegularFile()) {
+                        return inWdTson;
+                    }
+                }
+                // 3. Check Nuts config folder for exact name
+                NPath inNutsConf = getAppConfigFolder().resolve(trimmed);
+                if (inNutsConf.isRegularFile()) {
+                    return inNutsConf;
+                }
+                // 4. Check Nuts config folder with .tson appended
+                if (!trimmed.endsWith(".tson")) {
+                    NPath inNutsConfTson = getAppConfigFolder().resolve(trimmed + ".tson");
+                    if (inNutsConfTson.isRegularFile()) {
+                        return inNutsConfTson;
+                    }
+                }
+                // If neither exists yet, default to workingDir resolve
+                return inWd;
+            } else {
+                return nPath.isAbsolute() ? nPath : workingDir.resolve(nPath);
+            }
         }
-        Path p1 = workingDir.resolve(DEFAULT_CONFIG_FILE);
-        if (Files.isRegularFile(p1)) {
+        NPath p0 = workingDir.resolve(WORKSET_CONFIG_FILE);
+        if (p0.isRegularFile()) {
+            return p0;
+        }
+        NPath p1 = workingDir.resolve(DEFAULT_CONFIG_FILE);
+        if (p1.isRegularFile()) {
             return p1;
         }
-        Path p2 = workingDir.resolve(ALT_CONFIG_FILE);
-        if (Files.isRegularFile(p2)) {
+        NPath p2 = workingDir.resolve(ALT_CONFIG_FILE);
+        if (p2.isRegularFile()) {
             return p2;
+        }
+        NPath p3 = getAppConfigFolder().resolve(WORKSET_CONFIG_FILE);
+        if (p3.isRegularFile()) {
+            return p3;
+        }
+        NPath p4 = getAppConfigFolder().resolve(DEFAULT_CONFIG_FILE);
+        if (p4.isRegularFile()) {
+            return p4;
         }
         return p1; // default to nmvn.tson even if doesn't exist yet
     }
 
-    public static NMvnConfig load(Path configFile) {
+    public static List<NPath> loadRecentConfigs() {
+        Nuts.require();
+        NPath recentFile = getAppConfigFolder().resolve(RECENT_CONFIGS_FILE);
+        List<NPath> list = new ArrayList<>();
+        if (!recentFile.isRegularFile()) {
+            return list;
+        }
+        try {
+            NElement elem = NElementReader.ofTson().read(recentFile);
+            if (elem != null) {
+                elem.asArray().ifPresent(arr -> {
+                    for (NElement item : arr) {
+                        item.asStringValue().ifPresent(s -> {
+                            list.add(NPath.of(s));
+                        });
+                    }
+                });
+            }
+        } catch (Exception ignored) {
+        }
+        return list;
+    }
+
+    public static void recordRecentConfig(NPath path) {
+        if (path == null) return;
+        Nuts.require();
+        try {
+            NPath abs = path.toAbsolute().normalize();
+            List<NPath> recent = new ArrayList<>();
+            recent.add(abs);
+            for (NPath p : loadRecentConfigs()) {
+                if (!p.toAbsolute().normalize().equals(abs)) {
+                    recent.add(p);
+                }
+            }
+            if (recent.size() > 20) {
+                recent = recent.subList(0, 20);
+            }
+            NArrayElementBuilder arr = NElement.ofArrayBuilder();
+            for (NPath p : recent) {
+                arr.add(NElement.ofString(p.toString()));
+            }
+            NPath folder = getAppConfigFolder();
+            if (!folder.isDirectory()) {
+                folder.mkdirs();
+            }
+            NElementWriter.ofTson()
+                    .formatter(NElementFormatter.ofPretty())
+                    .write(arr.build(), folder.resolve(RECENT_CONFIGS_FILE));
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static List<NPath> listNamedConfigs() {
+        Nuts.require();
+        NPath folder = getAppConfigFolder();
+        List<NPath> result = new ArrayList<>();
+        if (folder.isDirectory()) {
+            for (NPath p : folder.list()) {
+                String name = p.name();
+                if (name.endsWith(".tson") && !RECENT_CONFIGS_FILE.equals(name)) {
+                    result.add(p);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static NMvnConfig load(NPath configFile) {
         Nuts.require();
         NMvnConfig config = new NMvnConfig();
-        if (configFile == null || !Files.isRegularFile(configFile)) {
+        if (configFile == null || !configFile.isRegularFile()) {
             return config;
         }
+        recordRecentConfig(configFile);
 
-        NElement element = NElementReader.ofTson().read(NPath.of(configFile));
+        NElement element = NElementReader.ofTson().read(configFile);
         if (element == null) {
             return config;
         }
@@ -120,7 +239,7 @@ public class NMvnConfigLoader {
         return config;
     }
 
-    public static void save(NMvnConfig config, Path targetFile) {
+    public static void save(NMvnConfig config, NPath targetFile) {
         Nuts.require();
         NObjectElementBuilder builder = NElement.ofObjectBuilder();
 
@@ -173,14 +292,13 @@ public class NMvnConfigLoader {
 
         builder.set("historyFile", NElement.ofString(config.getHistoryFile()));
 
-        if (targetFile.getParent() != null) {
-            try {
-                Files.createDirectories(targetFile.getParent());
-            } catch (Exception ignored) {
-            }
+        NPath parent = targetFile.parent();
+        if (parent != null && !parent.isDirectory()) {
+            parent.mkdirs();
         }
         NElementWriter.ofTson()
                 .formatter(NElementFormatter.ofPretty())
-                .write(builder.build(), NPath.of(targetFile));
+                .write(builder.build(), targetFile);
+        recordRecentConfig(targetFile);
     }
 }

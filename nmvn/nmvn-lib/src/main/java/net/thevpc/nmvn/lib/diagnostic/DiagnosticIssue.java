@@ -1,8 +1,9 @@
 package net.thevpc.nmvn.lib.diagnostic;
 
 import net.thevpc.nmvn.lib.model.MavenCoord;
+import net.thevpc.nuts.artifact.NId;
+import net.thevpc.nuts.io.NPath;
 
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,24 +11,29 @@ import java.util.Map;
 public class DiagnosticIssue {
     private final DiagnosticRule rule;
     private final DiagnosticSeverity severity;
-    private final MavenCoord targetCoord;
-    private final Path sourcePom;
+    private final NId targetId;
+    private final NPath sourcePom;
     private final String message;
     private final Map<String, String> details;
 
-    public DiagnosticIssue(DiagnosticRule rule, DiagnosticSeverity severity, MavenCoord targetCoord,
-                           Path sourcePom, String message) {
-        this(rule, severity, targetCoord, sourcePom, message, Collections.emptyMap());
+    public DiagnosticIssue(DiagnosticRule rule, DiagnosticSeverity severity, NId targetId,
+                           NPath sourcePom, String message) {
+        this(rule, severity, targetId, sourcePom, message, Collections.emptyMap());
     }
 
-    public DiagnosticIssue(DiagnosticRule rule, DiagnosticSeverity severity, MavenCoord targetCoord,
-                           Path sourcePom, String message, Map<String, String> details) {
+    public DiagnosticIssue(DiagnosticRule rule, DiagnosticSeverity severity, NId targetId,
+                           NPath sourcePom, String message, Map<String, String> details) {
         this.rule = rule;
         this.severity = severity;
-        this.targetCoord = targetCoord;
+        this.targetId = targetId != null ? targetId.shortId() : null;
         this.sourcePom = sourcePom;
         this.message = message;
         this.details = details != null ? new LinkedHashMap<>(details) : Collections.emptyMap();
+    }
+
+    public DiagnosticIssue(DiagnosticRule rule, DiagnosticSeverity severity, MavenCoord targetCoord,
+                           NPath sourcePom, String message) {
+        this(rule, severity, targetCoord != null ? targetCoord.toId() : null, sourcePom, message);
     }
 
     public DiagnosticRule getRule() {
@@ -38,11 +44,15 @@ public class DiagnosticIssue {
         return severity;
     }
 
-    public MavenCoord getTargetCoord() {
-        return targetCoord;
+    public NId getTargetId() {
+        return targetId;
     }
 
-    public Path getSourcePom() {
+    public NId getTargetCoord() {
+        return targetId;
+    }
+
+    public NPath getSourcePom() {
         return sourcePom;
     }
 

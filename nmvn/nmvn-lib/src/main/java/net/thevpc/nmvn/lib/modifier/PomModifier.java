@@ -1,11 +1,8 @@
 package net.thevpc.nmvn.lib.modifier;
 
 import net.thevpc.nmvn.lib.model.PomChange;
+import net.thevpc.nuts.io.NPath;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -13,8 +10,8 @@ import java.util.regex.Pattern;
 
 public class PomModifier {
 
-    public PomChange createPomChange(Path pomFile, String updatedContent) throws IOException {
-        String originalContent = new String(Files.readAllBytes(pomFile), StandardCharsets.UTF_8);
+    public PomChange createPomChange(NPath pomFile, String updatedContent) {
+        String originalContent = pomFile.readString();
         return new PomChange(pomFile, originalContent, updatedContent);
     }
 

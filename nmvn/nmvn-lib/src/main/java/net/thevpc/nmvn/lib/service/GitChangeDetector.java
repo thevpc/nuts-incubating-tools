@@ -1,12 +1,12 @@
 package net.thevpc.nmvn.lib.service;
 
 import net.thevpc.nmvn.lib.config.VersionHistoryStore;
-import net.thevpc.nmvn.lib.model.MavenCoord;
 import net.thevpc.nmvn.lib.model.PomArtifact;
+import net.thevpc.nuts.artifact.NId;
+import net.thevpc.nuts.io.NPath;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
 import java.util.*;
 
 public interface GitChangeDetector {
@@ -20,12 +20,12 @@ public interface GitChangeDetector {
      * @param history   Persisted version history store
      * @return List of artifacts whose underlying directories had file changes
      */
-    Set<MavenCoord> detectChangedArtifacts(String fromRef, String toRef, Map<MavenCoord, PomArtifact> artifacts, VersionHistoryStore history);
+    Set<NId> detectChangedArtifacts(String fromRef, String toRef, Map<NId, PomArtifact> artifacts, VersionHistoryStore history);
 
     class Default implements GitChangeDetector {
         @Override
-        public Set<MavenCoord> detectChangedArtifacts(String fromRef, String toRef, Map<MavenCoord, PomArtifact> artifacts, VersionHistoryStore history) {
-            Set<MavenCoord> changed = new LinkedHashSet<>();
+        public Set<NId> detectChangedArtifacts(String fromRef, String toRef, Map<NId, PomArtifact> artifacts, VersionHistoryStore history) {
+            Set<NId> changed = new LinkedHashSet<>();
             if (fromRef == null || fromRef.trim().isEmpty()) {
                 return changed;
             }
@@ -48,10 +48,10 @@ public interface GitChangeDetector {
                 // Map changed file paths to artifacts
                 for (String file : changedFiles) {
                     for (PomArtifact artifact : artifacts.values()) {
-                        Path pomDir = artifact.getPath().getParent();
+                        NPath pomDir = artifact.getPath().parent();
                         if (pomDir != null) {
                             String dirStr = pomDir.toString().replace('\\', '/');
-                            if (file.contains(dirStr) || pomDir.endsWith(file) || file.startsWith(dirStr)) {
+                            if (file.contains(dirStr) || pomDir.name().equals(file) || file.startsWith(dirStr)) {
                                 changed.add(artifact.toGa());
                             }
                         }

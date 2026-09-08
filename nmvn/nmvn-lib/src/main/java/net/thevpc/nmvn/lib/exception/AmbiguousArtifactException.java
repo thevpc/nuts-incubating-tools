@@ -1,14 +1,15 @@
 package net.thevpc.nmvn.lib.exception;
 
-import java.nio.file.Path;
+import net.thevpc.nuts.io.NPath;
+
 import java.util.List;
 
 public class AmbiguousArtifactException extends NMvnException {
     private final String groupId;
     private final String artifactId;
-    private final List<Path> definingPoms;
+    private final List<NPath> definingPoms;
 
-    public AmbiguousArtifactException(String groupId, String artifactId, List<Path> definingPoms) {
+    public AmbiguousArtifactException(String groupId, String artifactId, List<NPath> definingPoms) {
         super(String.format("Ambiguous artifact %s:%s found in multiple locations: %s",
                 groupId, artifactId, definingPoms));
         this.groupId = groupId;
@@ -24,7 +25,7 @@ public class AmbiguousArtifactException extends NMvnException {
         return artifactId;
     }
 
-    public List<Path> getDefiningPoms() {
+    public List<NPath> getDefiningPoms() {
         return definingPoms;
     }
 }

@@ -20,8 +20,8 @@ public class BumpInstruction {
         int eq = str.indexOf('=');
         String gaStr = str.substring(0, eq).trim();
         String ver = str.substring(eq + 1).trim();
-        MavenCoord ga = MavenCoord.parse(gaStr);
-        return new BumpInstruction(ga.getGroupId(), ga.getArtifactId(), ver);
+        net.thevpc.nuts.artifact.NId ga = MavenCoord.parse(gaStr);
+        return new BumpInstruction(ga.groupId(), ga.artifactId(), ver);
     }
 
     public String getGroupId() {
@@ -36,12 +36,16 @@ public class BumpInstruction {
         return toVersion;
     }
 
-    public MavenCoord toGa() {
-        return new MavenCoord(groupId, artifactId);
+    public net.thevpc.nuts.artifact.NId toGa() {
+        return net.thevpc.nuts.artifact.NId.of(groupId, artifactId);
     }
 
-    public MavenCoord toGav() {
-        return new MavenCoord(groupId, artifactId, toVersion);
+    public net.thevpc.nuts.artifact.NId toId() {
+        return net.thevpc.nuts.artifact.NId.of(groupId, artifactId, toVersion);
+    }
+
+    public net.thevpc.nuts.artifact.NId toGav() {
+        return toId();
     }
 
     @Override

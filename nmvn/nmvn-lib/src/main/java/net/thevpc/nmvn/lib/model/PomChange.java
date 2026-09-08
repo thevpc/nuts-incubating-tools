@@ -1,25 +1,26 @@
 package net.thevpc.nmvn.lib.model;
 
-import java.nio.file.Path;
+import net.thevpc.nuts.io.NPath;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class PomChange {
-    private final Path pomFile;
+    private final NPath pomFile;
     private final String originalContent;
     private final String newContent;
     private final List<String> descriptions = new ArrayList<>();
     private List<String> diffLines;
 
-    public PomChange(Path pomFile, String originalContent, String newContent) {
+    public PomChange(NPath pomFile, String originalContent, String newContent) {
         this.pomFile = pomFile;
         this.originalContent = originalContent;
         this.newContent = newContent;
     }
 
-    public Path getPomFile() {
+    public NPath getPomFile() {
         return pomFile;
     }
 

@@ -3,27 +3,32 @@ package net.thevpc.nmvn.lib.graph;
 import net.thevpc.nmvn.lib.model.DependencyEdgeType;
 import net.thevpc.nmvn.lib.model.MavenCoord;
 import net.thevpc.nmvn.lib.model.PomDependency;
+import net.thevpc.nuts.artifact.NId;
 
 import java.util.Objects;
 
 public class DependencyEdge {
-    private final MavenCoord source;
-    private final MavenCoord target;
+    private final NId source;
+    private final NId target;
     private final DependencyEdgeType edgeType;
     private final PomDependency dependency;
 
-    public DependencyEdge(MavenCoord source, MavenCoord target, DependencyEdgeType edgeType, PomDependency dependency) {
-        this.source = source.toGa();
-        this.target = target.toGa();
+    public DependencyEdge(NId source, NId target, DependencyEdgeType edgeType, PomDependency dependency) {
+        this.source = Objects.requireNonNull(source, "source cannot be null").shortId();
+        this.target = Objects.requireNonNull(target, "target cannot be null").shortId();
         this.edgeType = edgeType;
         this.dependency = dependency;
     }
 
-    public MavenCoord getSource() {
+    public DependencyEdge(MavenCoord source, MavenCoord target, DependencyEdgeType edgeType, PomDependency dependency) {
+        this(source != null ? source.toId() : null, target != null ? target.toId() : null, edgeType, dependency);
+    }
+
+    public NId getSource() {
         return source;
     }
 
-    public MavenCoord getTarget() {
+    public NId getTarget() {
         return target;
     }
 
@@ -52,6 +57,6 @@ public class DependencyEdge {
 
     @Override
     public String toString() {
-        return source.toGaString() + " -[" + edgeType + "]-> " + target.toGaString();
+        return source.shortName() + " -[" + edgeType + "]-> " + target.shortName();
     }
 }

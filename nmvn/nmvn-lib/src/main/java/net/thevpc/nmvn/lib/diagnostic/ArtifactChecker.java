@@ -8,15 +8,16 @@ import net.thevpc.nmvn.lib.model.MavenCoord;
 import net.thevpc.nmvn.lib.model.PomArtifact;
 import net.thevpc.nmvn.lib.model.PomDependency;
 import net.thevpc.nmvn.lib.service.ScanResult;
+import net.thevpc.nuts.artifact.NId;
+import net.thevpc.nuts.io.NPath;
 
-import java.nio.file.Path;
 import java.util.*;
 
 public class ArtifactChecker {
 
     public DiagnosticReport check(ScanResult scanResult, NMvnConfig config) {
         List<DiagnosticIssue> issues = new ArrayList<>();
-        Map<MavenCoord, PomArtifact> artifacts = scanResult.getArtifacts();
+        Map<NId, PomArtifact> artifacts = scanResult.getArtifacts();
         MavenDependencyGraph graph = scanResult.getGraph();
 
         // 1. Check for cycles
@@ -40,11 +41,11 @@ public class ArtifactChecker {
         return new DiagnosticReport(issues);
     }
 
-    private void checkCycles(MavenDependencyGraph graph, Map<MavenCoord, PomArtifact> artifacts, List<DiagnosticIssue> issues) {
+    private void checkCycles(MavenDependencyGraph graph, Map<NId, PomArtifact> artifacts, List<DiagnosticIssue> issues) {
         List<List<String>> cycles = graph.findCycles();
         for (List<String> cycle : cycles) {
             String cycleStr = String.join(" -> ", cycle);
-            MavenCoord firstGa = MavenCoord.parse(cycle.get(0));
+            NId firstGa = MavenCoord.parse(cycle.get(0));
             PomArtifact src = artifacts.get(firstGa);
             issues.add(new DiagnosticIssue(
                     DiagnosticRule.CIRCULAR_DEPENDENCY,
@@ -56,7 +57,7 @@ public class ArtifactChecker {
         }
     }
 
-    private void checkPropertiesAndMissingVersions(Map<MavenCoord, PomArtifact> artifacts, List<DiagnosticIssue> issues) {
+    private void checkPropertiesAndMissingVersions(Map<NId, PomArtifact> artifacts, List<DiagnosticIssue> issues) {
         for (PomArtifact artifact : artifacts.values()) {
             // Artifact's own version property
             if (artifact.getRawVersion() != null && artifact.getRawVersion().startsWith("${") && artifact.getRawVersion().endsWith("}")) {
@@ -80,7 +81,7 @@ public class ArtifactChecker {
                             DiagnosticSeverity.ERROR,
                             ref.toGa(),
                             artifact.getPath(),
-                            "Version property " + resVer + " for " + ref.toGa().toGaString() + " could not be resolved"
+                            "Version property " + resVer + " for " + ref.toGa().shortName() + " could not be resolved"
                     ));
                 }
             }
@@ -94,16 +95,16 @@ public class ArtifactChecker {
                             DiagnosticSeverity.WARNING,
                             dep.toGa(),
                             artifact.getPath(),
-                            "Direct dependency " + dep.toGa().toGaString() + " has no declared version"
+                            "Direct dependency " + dep.toGa().shortName() + " has no declared version"
                     ));
                 }
             }
         }
     }
 
-    private void checkInternalVersionMismatches(Map<MavenCoord, PomArtifact> artifacts,
-                                               MavenDependencyGraph graph,
-                                               List<DiagnosticIssue> issues) {
+    private void checkInternalVersionMismatches(Map<NId, PomArtifact> artifacts,
+                                                MavenDependencyGraph graph,
+                                                List<DiagnosticIssue> issues) {
         for (PomArtifact workspaceArtifact : artifacts.values()) {
             String declaredVer = workspaceArtifact.getResolvedVersion();
             if (declaredVer == null) {
@@ -116,8 +117,8 @@ public class ArtifactChecker {
                 String refVer = dep.getResolvedVersion();
 
                 if (refVer != null && !refVer.equals(declaredVer)) {
-                    Path consumerPom = consumer != null ? consumer.getPath() : null;
-                    String consumerDesc = consumer != null ? consumer.getCoord().toGaString() : edge.getSource().toGaString();
+                    NPath consumerPom = consumer != null ? consumer.getPath() : null;
+                    String consumerDesc = consumer != null ? consumer.getId().shortName() : edge.getSource().shortName();
 
                     if (edge.getEdgeType() == DependencyEdgeType.PARENT) {
                         issues.add(new DiagnosticIssue(
@@ -134,7 +135,7 @@ public class ArtifactChecker {
                                 DiagnosticSeverity.ERROR,
                                 workspaceArtifact.toGa(),
                                 consumerPom,
-                                "Project " + consumerDesc + " references internal artifact " + workspaceArtifact.toGa().toGaString()
+                                "Project " + consumerDesc + " references internal artifact " + workspaceArtifact.toGa().shortName()
                                         + ":" + refVer + " but workspace artifact is declared as " + declaredVer
                         ));
                     }
@@ -143,7 +144,7 @@ public class ArtifactChecker {
         }
     }
 
-    private void checkSnapshotInRelease(Map<MavenCoord, PomArtifact> artifacts, List<DiagnosticIssue> issues) {
+    private void checkSnapshotInRelease(Map<NId, PomArtifact> artifacts, List<DiagnosticIssue> issues) {
         for (PomArtifact artifact : artifacts.values()) {
             String myVer = artifact.getResolvedVersion();
             if (myVer != null && !myVer.toUpperCase().endsWith("-SNAPSHOT")) {
@@ -156,8 +157,8 @@ public class ArtifactChecker {
                                 DiagnosticSeverity.ERROR,
                                 ref.toGa(),
                                 artifact.getPath(),
-                                "Release artifact " + artifact.getCoord().toGaString() + ":" + myVer
-                                        + " depends on SNAPSHOT " + ref.toGa().toGaString() + ":" + refVer
+                                "Release artifact " + artifact.getId().shortName() + ":" + myVer
+                                        + " depends on SNAPSHOT " + ref.toGa().shortName() + ":" + refVer
                         ));
                     }
                 }
@@ -165,11 +166,11 @@ public class ArtifactChecker {
         }
     }
 
-    private void checkMultiVersionUsage(Map<MavenCoord, PomArtifact> artifacts,
+    private void checkMultiVersionUsage(Map<NId, PomArtifact> artifacts,
                                         MavenDependencyGraph graph,
                                         List<DiagnosticIssue> issues) {
         // Collect all referenced GAs across incoming edges
-        Set<MavenCoord> allReferencedGas = new LinkedHashSet<>();
+        Set<NId> allReferencedGas = new LinkedHashSet<>();
         for (PomArtifact a : artifacts.values()) {
             allReferencedGas.add(a.toGa());
             for (PomDependency dep : a.getAllReferences()) {
@@ -177,14 +178,14 @@ public class ArtifactChecker {
             }
         }
 
-        for (MavenCoord ga : allReferencedGas) {
+        for (NId ga : allReferencedGas) {
             Map<String, List<String>> versionToProjects = new LinkedHashMap<>();
 
             // If it's a workspace artifact, include its own declared version
             PomArtifact workspaceArtifact = artifacts.get(ga);
             if (workspaceArtifact != null && workspaceArtifact.getResolvedVersion() != null) {
                 versionToProjects.computeIfAbsent(workspaceArtifact.getResolvedVersion(), k -> new ArrayList<>())
-                        .add(workspaceArtifact.getCoord().toGaString() + " [declared]");
+                        .add(workspaceArtifact.getId().shortName() + " [declared]");
             }
 
             // Check all incoming edges
@@ -192,7 +193,7 @@ public class ArtifactChecker {
                 String refVer = edge.getDependency().getResolvedVersion();
                 if (refVer != null && !refVer.trim().isEmpty() && !refVer.startsWith("${")) {
                     PomArtifact consumer = artifacts.get(edge.getSource());
-                    String desc = (consumer != null ? consumer.getCoord().toGaString() : edge.getSource().toGaString())
+                    String desc = (consumer != null ? consumer.getId().shortName() : edge.getSource().shortName())
                             + " (" + edge.getEdgeType() + ")";
                     List<String> projects = versionToProjects.computeIfAbsent(refVer, k -> new ArrayList<>());
                     if (!projects.contains(desc)) {
@@ -227,7 +228,7 @@ public class ArtifactChecker {
                             DiagnosticSeverity.ERROR,
                             ga,
                             null,
-                            "Artifact " + ga.toGaString() + " has mixed SNAPSHOT and release versions: " + versionsSummary,
+                            "Artifact " + ga.shortName() + " has mixed SNAPSHOT and release versions: " + versionsSummary,
                             details
                     ));
                 }
@@ -237,14 +238,14 @@ public class ArtifactChecker {
                         DiagnosticSeverity.WARNING,
                         ga,
                         null,
-                        "Multiple versions of " + ga.toGaString() + " referenced across workspace: " + versionsSummary,
+                        "Multiple versions of " + ga.shortName() + " referenced across workspace: " + versionsSummary,
                         details
                 ));
             }
         }
     }
 
-    private void checkWorkspaceGroupConsistency(Map<MavenCoord, PomArtifact> artifacts, List<DiagnosticIssue> issues) {
+    private void checkWorkspaceGroupConsistency(Map<NId, PomArtifact> artifacts, List<DiagnosticIssue> issues) {
         Map<String, List<PomArtifact>> byGroup = new LinkedHashMap<>();
         for (PomArtifact a : artifacts.values()) {
             byGroup.computeIfAbsent(a.getGroupId(), k -> new ArrayList<>()).add(a);
@@ -277,7 +278,7 @@ public class ArtifactChecker {
                 issues.add(new DiagnosticIssue(
                         DiagnosticRule.MIXED_WORKSPACE_SNAPSHOT_RELEASE,
                         DiagnosticSeverity.WARNING,
-                        new MavenCoord(groupId, "*", null),
+                        NId.of(groupId, "*"),
                         null,
                         "Workspace group '" + groupId + "' has mixed SNAPSHOT and release modules",
                         details

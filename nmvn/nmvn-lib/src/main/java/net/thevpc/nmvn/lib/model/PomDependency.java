@@ -1,10 +1,14 @@
 package net.thevpc.nmvn.lib.model;
 
-import java.nio.file.Path;
+import net.thevpc.nuts.artifact.NDependency;
+import net.thevpc.nuts.artifact.NDependencyBuilder;
+import net.thevpc.nuts.artifact.NId;
+import net.thevpc.nuts.io.NPath;
+
 import java.util.Objects;
 
 public class PomDependency {
-    private final MavenCoord coord;
+    private final NId id;
     private final String rawVersion;
     private String resolvedVersion;
     private final String scope;
@@ -13,38 +17,58 @@ public class PomDependency {
     private final boolean inDependencyManagement;
     private final DependencyEdgeType edgeType;
     private String versionPropertyName;
-    private Path propertyDefiningPom;
+    private NPath propertyDefiningPom;
 
-    public PomDependency(String groupId, String artifactId, String rawVersion, String scope, String type,
+    public PomDependency(NId id, String scope, String type,
                          boolean inDependencyManagement, DependencyEdgeType edgeType) {
-        this.coord = new MavenCoord(groupId, artifactId, rawVersion);
-        this.rawVersion = rawVersion;
-        this.resolvedVersion = rawVersion;
+        this.id = Objects.requireNonNull(id, "id cannot be null");
+        String v = id.version().isBlank() ? null : id.version().value();
+        this.rawVersion = v;
+        this.resolvedVersion = v;
         this.scope = scope != null ? scope.trim() : "compile";
         this.type = type != null ? type.trim() : "jar";
         this.inDependencyManagement = inDependencyManagement;
         this.edgeType = edgeType;
         this.bomImport = "pom".equalsIgnoreCase(this.type) && "import".equalsIgnoreCase(this.scope);
 
-        if (rawVersion != null && rawVersion.startsWith("${") && rawVersion.endsWith("}")) {
-            this.versionPropertyName = rawVersion.substring(2, rawVersion.length() - 1).trim();
+        if (v != null && v.startsWith("${") && v.endsWith("}")) {
+            this.versionPropertyName = v.substring(2, v.length() - 1).trim();
         }
     }
 
-    public MavenCoord getCoord() {
-        return coord;
+    public PomDependency(String groupId, String artifactId, String rawVersion, String scope, String type,
+                         boolean inDependencyManagement, DependencyEdgeType edgeType) {
+        this(rawVersion == null || rawVersion.trim().isEmpty() ? NId.of(groupId, artifactId) : NId.of(groupId, artifactId, rawVersion.trim()),
+                scope, type, inDependencyManagement, edgeType);
+    }
+
+    public NDependency toDependency() {
+        net.thevpc.nuts.Nuts.require();
+        return NDependencyBuilder.of()
+                .id(id)
+                .scope(scope)
+                .type(type)
+                .build();
+    }
+
+    public NId getId() {
+        return id;
+    }
+
+    public NId getCoord() {
+        return id;
     }
 
     public String getGroupId() {
-        return coord.getGroupId();
+        return id.groupId();
     }
 
     public String getArtifactId() {
-        return coord.getArtifactId();
+        return id.artifactId();
     }
 
-    public MavenCoord toGa() {
-        return coord.toGa();
+    public NId toGa() {
+        return id.shortId();
     }
 
     public String getRawVersion() {
@@ -87,11 +111,11 @@ public class PomDependency {
         return versionPropertyName;
     }
 
-    public Path getPropertyDefiningPom() {
+    public NPath getPropertyDefiningPom() {
         return propertyDefiningPom;
     }
 
-    public void setPropertyDefiningPom(Path propertyDefiningPom) {
+    public void setPropertyDefiningPom(NPath propertyDefiningPom) {
         this.propertyDefiningPom = propertyDefiningPom;
     }
 
@@ -102,7 +126,7 @@ public class PomDependency {
         PomDependency that = (PomDependency) o;
         return bomImport == that.bomImport &&
                 inDependencyManagement == that.inDependencyManagement &&
-                coord.equals(that.coord) &&
+                id.equals(that.id) &&
                 Objects.equals(scope, that.scope) &&
                 Objects.equals(type, that.type) &&
                 edgeType == that.edgeType;
@@ -110,12 +134,12 @@ public class PomDependency {
 
     @Override
     public int hashCode() {
-        return Objects.hash(coord, scope, type, bomImport, inDependencyManagement, edgeType);
+        return Objects.hash(id, scope, type, bomImport, inDependencyManagement, edgeType);
     }
 
     @Override
     public String toString() {
-        return coord.toGaString() + ":" + (resolvedVersion != null ? resolvedVersion : rawVersion)
+        return id.shortName() + ":" + (resolvedVersion != null ? resolvedVersion : rawVersion)
                 + (bomImport ? " (BOM)" : "");
     }
 }

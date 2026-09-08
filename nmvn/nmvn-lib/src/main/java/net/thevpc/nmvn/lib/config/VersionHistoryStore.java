@@ -1,11 +1,10 @@
 package net.thevpc.nmvn.lib.config;
 
 import net.thevpc.nmvn.lib.model.MavenCoord;
+import net.thevpc.nuts.artifact.NId;
 import net.thevpc.nuts.elem.*;
 import net.thevpc.nuts.io.NPath;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
 
@@ -52,12 +51,16 @@ public class VersionHistoryStore {
         public MavenCoord toGav() {
             return new MavenCoord(groupId, artifactId, version);
         }
+
+        public NId toId() {
+            return NId.of(groupId, artifactId, version);
+        }
     }
 
-    private final Path file;
+    private final NPath file;
     private final List<Entry> entries = new ArrayList<>();
 
-    public VersionHistoryStore(Path file) {
+    public VersionHistoryStore(NPath file) {
         net.thevpc.nuts.Nuts.require();
         this.file = file;
         load();
@@ -67,14 +70,19 @@ public class VersionHistoryStore {
         entries.add(new Entry(commitHash, groupId, artifactId, version, Instant.now().toString()));
     }
 
-    public synchronized Optional<Entry> findLastRelease(MavenCoord ga) {
+    public synchronized Optional<Entry> findLastRelease(NId ga) {
+        if (ga == null) return Optional.empty();
         for (int i = entries.size() - 1; i >= 0; i--) {
             Entry e = entries.get(i);
-            if (e.getGroupId().equals(ga.getGroupId()) && e.getArtifactId().equals(ga.getArtifactId())) {
+            if (e.getGroupId().equals(ga.groupId()) && e.getArtifactId().equals(ga.artifactId())) {
                 return Optional.of(e);
             }
         }
         return Optional.empty();
+    }
+
+    public synchronized Optional<Entry> findLastRelease(MavenCoord ga) {
+        return ga != null ? findLastRelease(ga.toGa()) : Optional.empty();
     }
 
     public List<Entry> getEntries() {
@@ -83,11 +91,11 @@ public class VersionHistoryStore {
 
     public synchronized void load() {
         entries.clear();
-        if (file == null || !Files.isRegularFile(file)) {
+        if (file == null || !file.isRegularFile()) {
             return;
         }
         try {
-            NElement elem = NElementReader.ofTson().read(NPath.of(file));
+            NElement elem = NElementReader.ofTson().read(file);
             if (elem == null) return;
             elem.asObject().flatMap(obj -> obj.get("history")).flatMap(NElement::asArray).ifPresent(arr -> {
                 for (NElement item : arr) {
@@ -110,8 +118,9 @@ public class VersionHistoryStore {
     public synchronized void save() {
         if (file == null) return;
         try {
-            if (file.getParent() != null) {
-                Files.createDirectories(file.getParent());
+            NPath parent = file.parent();
+            if (parent != null && !parent.isDirectory()) {
+                parent.mkdirs();
             }
             NObjectElementBuilder root = NElement.ofObjectBuilder();
             NArrayElementBuilder arr = NElement.ofArrayBuilder();
@@ -128,7 +137,7 @@ public class VersionHistoryStore {
 
             NElementWriter.ofTson()
                     .formatter(NElementFormatter.ofPretty())
-                    .write(root.build(), NPath.of(file));
+                    .write(root.build(), file);
         } catch (Exception ignored) {
         }
     }

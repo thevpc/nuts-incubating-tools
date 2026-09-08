@@ -3,13 +3,14 @@ package net.thevpc.nmvn.lib.parser;
 import net.thevpc.nmvn.lib.model.MavenCoord;
 import net.thevpc.nmvn.lib.model.PomArtifact;
 import net.thevpc.nmvn.lib.model.PomDependency;
+import net.thevpc.nuts.artifact.NId;
+import net.thevpc.nuts.io.NPath;
 
-import java.nio.file.Path;
 import java.util.*;
 
 public class PropertyResolver {
 
-    public static void resolveAll(Map<MavenCoord, PomArtifact> artifactsByGa) {
+    public static void resolveAll(Map<NId, PomArtifact> artifactsByGa) {
         // First, resolve full property sets for each artifact (handling inheritance)
         for (PomArtifact artifact : artifactsByGa.values()) {
             resolveArtifactProperties(artifact, artifactsByGa);
@@ -24,13 +25,13 @@ public class PropertyResolver {
                 if (val != null) {
                     artifact.setResolvedVersion(val);
                 }
-            } else if (artifact.getRawVersion() == null && artifact.getParentCoord() != null) {
+            } else if (artifact.getRawVersion() == null && artifact.getParentId() != null) {
                 // Inherited version from parent
-                PomArtifact parent = artifactsByGa.get(artifact.getParentCoord().toGa());
+                PomArtifact parent = artifactsByGa.get(artifact.getParentId().shortId());
                 if (parent != null) {
                     artifact.setResolvedVersion(parent.getResolvedVersion());
                 } else {
-                    artifact.setResolvedVersion(artifact.getParentCoord().getVersion());
+                    artifact.setResolvedVersion(artifact.getParentId().version().isBlank() ? null : artifact.getParentId().version().value());
                 }
             }
 
@@ -49,19 +50,19 @@ public class PropertyResolver {
         }
     }
 
-    private static void resolveArtifactProperties(PomArtifact artifact, Map<MavenCoord, PomArtifact> artifactsByGa) {
+    private static void resolveArtifactProperties(PomArtifact artifact, Map<NId, PomArtifact> artifactsByGa) {
         if (!artifact.getResolvedProperties().isEmpty()) {
             return;
         }
 
         // Collect hierarchy: root parent -> ... -> parent -> artifact
         List<PomArtifact> hierarchy = new ArrayList<>();
-        Set<MavenCoord> visited = new HashSet<>();
+        Set<NId> visited = new HashSet<>();
         PomArtifact curr = artifact;
         while (curr != null && visited.add(curr.toGa())) {
             hierarchy.add(0, curr);
-            if (curr.getParentCoord() != null) {
-                curr = artifactsByGa.get(curr.getParentCoord().toGa());
+            if (curr.getParentId() != null) {
+                curr = artifactsByGa.get(curr.getParentId().shortId());
             } else {
                 curr = null;
             }
@@ -82,7 +83,7 @@ public class PropertyResolver {
         artifact.getResolvedProperties().putAll(interpolated);
     }
 
-    private static void resolveDependencyVersion(PomDependency dep, PomArtifact artifact, Map<MavenCoord, PomArtifact> artifactsByGa) {
+    private static void resolveDependencyVersion(PomDependency dep, PomArtifact artifact, Map<NId, PomArtifact> artifactsByGa) {
         if (dep.isPropertyIndirected()) {
             String propName = dep.getVersionPropertyName();
             String resolvedVal = artifact.getResolvedProperties().get(propName);
@@ -91,7 +92,7 @@ public class PropertyResolver {
             }
 
             // Find defining POM (starting at artifact and walking up parents)
-            Path definingPom = findDefiningPomForProperty(propName, artifact, artifactsByGa);
+            NPath definingPom = findDefiningPomForProperty(propName, artifact, artifactsByGa);
             dep.setPropertyDefiningPom(definingPom != null ? definingPom : artifact.getPath());
         } else {
             dep.setResolvedVersion(dep.getRawVersion());
@@ -99,15 +100,15 @@ public class PropertyResolver {
         }
     }
 
-    public static Path findDefiningPomForProperty(String propertyName, PomArtifact artifact, Map<MavenCoord, PomArtifact> artifactsByGa) {
-        Set<MavenCoord> visited = new HashSet<>();
+    public static NPath findDefiningPomForProperty(String propertyName, PomArtifact artifact, Map<NId, PomArtifact> artifactsByGa) {
+        Set<NId> visited = new HashSet<>();
         PomArtifact curr = artifact;
         while (curr != null && visited.add(curr.toGa())) {
             if (curr.getDeclaredProperties().containsKey(propertyName)) {
                 return curr.getPath();
             }
-            if (curr.getParentCoord() != null) {
-                curr = artifactsByGa.get(curr.getParentCoord().toGa());
+            if (curr.getParentId() != null) {
+                curr = artifactsByGa.get(curr.getParentId().shortId());
             } else {
                 curr = null;
             }

@@ -71,11 +71,15 @@ public class DiagnosticReport {
         return list;
     }
 
-    public Map<MavenCoord, List<DiagnosticIssue>> groupByTargetCoord() {
-        Map<MavenCoord, List<DiagnosticIssue>> map = new LinkedHashMap<>();
+    public Map<net.thevpc.nuts.artifact.NId, List<DiagnosticIssue>> groupByTargetId() {
+        Map<net.thevpc.nuts.artifact.NId, List<DiagnosticIssue>> map = new LinkedHashMap<>();
         for (DiagnosticIssue issue : issues) {
-            map.computeIfAbsent(issue.getTargetCoord(), k -> new ArrayList<>()).add(issue);
+            map.computeIfAbsent(issue.getTargetId(), k -> new ArrayList<>()).add(issue);
         }
         return map;
+    }
+
+    public Map<net.thevpc.nuts.artifact.NId, List<DiagnosticIssue>> groupByTargetCoord() {
+        return groupByTargetId();
     }
 }

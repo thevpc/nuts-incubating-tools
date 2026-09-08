@@ -10,11 +10,10 @@ import net.thevpc.nmvn.lib.graph.MavenDependencyGraph;
 import net.thevpc.nmvn.lib.model.*;
 import net.thevpc.nmvn.lib.modifier.PomModifier;
 import net.thevpc.nmvn.lib.scanner.PomScanner;
+import net.thevpc.nuts.artifact.NId;
+import net.thevpc.nuts.io.NPath;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 public class VersionService {
@@ -22,12 +21,12 @@ public class VersionService {
     private final PomScanner scanner = new PomScanner();
     private final PomModifier modifier = new PomModifier();
 
-    public ScanResult scan(NMvnConfig config, Path workingDir) throws IOException {
+    public ScanResult scan(NMvnConfig config, NPath workingDir) throws IOException {
         return scan(config, workingDir, true);
     }
 
-    public ScanResult scan(NMvnConfig config, Path workingDir, boolean detectCycles) throws IOException {
-        Map<MavenCoord, PomArtifact> artifacts = scanner.scan(config, workingDir);
+    public ScanResult scan(NMvnConfig config, NPath workingDir, boolean detectCycles) throws IOException {
+        Map<NId, PomArtifact> artifacts = scanner.scan(config, workingDir);
         MavenDependencyGraph graph = new MavenDependencyGraph(artifacts);
         if (detectCycles) {
             graph.detectCycles();
@@ -35,22 +34,22 @@ public class VersionService {
         return new ScanResult(artifacts, graph);
     }
 
-    public DiagnosticReport check(NMvnConfig config, Path workingDir) throws IOException {
+    public DiagnosticReport check(NMvnConfig config, NPath workingDir) throws IOException {
         ScanResult scanResult = scan(config, workingDir, false);
         return new ArtifactChecker().check(scanResult, config);
     }
 
-    public BumpResult bump(NMvnConfig config, Path workingDir, List<BumpInstruction> explicitBumps,
+    public BumpResult bump(NMvnConfig config, NPath workingDir, List<BumpInstruction> explicitBumps,
                            Boolean cascadeVersionsOverride, boolean apply) throws IOException {
         ScanResult scanResult = scan(config, workingDir);
-        Map<MavenCoord, PomArtifact> artifacts = scanResult.getArtifacts();
+        Map<NId, PomArtifact> artifacts = scanResult.getArtifacts();
         MavenDependencyGraph graph = scanResult.getGraph();
 
         boolean cascadeVersions = cascadeVersionsOverride != null ? cascadeVersionsOverride
                 : config.getBumpPolicy().getCascadePolicy() == BumpPolicy.CascadePolicy.CASCADE_VERSIONS;
 
         // Combine instructions from config + explicit CLI instructions
-        Map<MavenCoord, String> targetVersions = new LinkedHashMap<>();
+        Map<NId, String> targetVersions = new LinkedHashMap<>();
         if (config.getInstructions() != null) {
             for (BumpInstruction inst : config.getInstructions()) {
                 targetVersions.put(inst.toGa(), inst.getToVersion());
@@ -67,14 +66,14 @@ public class VersionService {
         }
 
         // Cascade to dependents
-        Queue<MavenCoord> dirtyQueue = new ArrayDeque<>(targetVersions.keySet());
-        Set<MavenCoord> visited = new HashSet<>(targetVersions.keySet());
+        Queue<NId> dirtyQueue = new ArrayDeque<>(targetVersions.keySet());
+        Set<NId> visited = new HashSet<>(targetVersions.keySet());
 
         while (!dirtyQueue.isEmpty()) {
-            MavenCoord currGa = dirtyQueue.poll();
-            Set<MavenCoord> dependents = graph.getDirectDependents(currGa);
+            NId currGa = dirtyQueue.poll();
+            Set<NId> dependents = graph.getDirectDependents(currGa);
 
-            for (MavenCoord depGa : dependents) {
+            for (NId depGa : dependents) {
                 if (cascadeVersions && !targetVersions.containsKey(depGa)) {
                     PomArtifact depArtifact = artifacts.get(depGa);
                     if (depArtifact != null) {
@@ -100,17 +99,17 @@ public class VersionService {
         return new BumpResult(changes, targetVersions);
     }
 
-    public ReleaseResult release(NMvnConfig config, Path workingDir, Map<MavenCoord, String> explicitReleases,
+    public ReleaseResult release(NMvnConfig config, NPath workingDir, Map<NId, String> explicitReleases,
                                  boolean strict, boolean apply) throws IOException {
         ScanResult scanResult = scan(config, workingDir);
-        Map<MavenCoord, PomArtifact> artifacts = scanResult.getArtifacts();
+        Map<NId, PomArtifact> artifacts = scanResult.getArtifacts();
 
-        Map<MavenCoord, String> targetVersions = new LinkedHashMap<>();
+        Map<NId, String> targetVersions = new LinkedHashMap<>();
         List<String> unmanagedSnapshots = new ArrayList<>();
 
         // Check each artifact in workspace
         for (PomArtifact artifact : artifacts.values()) {
-            MavenCoord ga = artifact.toGa();
+            NId ga = artifact.toGa();
             String explicit = explicitReleases != null ? explicitReleases.get(ga) : null;
             if (explicit != null) {
                 targetVersions.put(ga, explicit);
@@ -124,7 +123,7 @@ public class VersionService {
                 if (!artifacts.containsKey(ref.toGa())) {
                     String refVer = ref.getResolvedVersion();
                     if (refVer != null && refVer.contains("-SNAPSHOT")) {
-                        unmanagedSnapshots.add(artifact.getCoord().toGaString() + " -> " + ref.getCoord().toGavString());
+                        unmanagedSnapshots.add(artifact.getId().shortName() + " -> " + MavenCoord.toGavString(ref.getId()));
                     }
                 }
             }
@@ -144,29 +143,28 @@ public class VersionService {
         return new ReleaseResult(changes, targetVersions, unmanagedSnapshots);
     }
 
-    private List<PomChange> applyModifications(Map<MavenCoord, PomArtifact> artifacts, Map<MavenCoord, String> targetVersions) throws IOException {
+    private List<PomChange> applyModifications(Map<NId, PomArtifact> artifacts, Map<NId, String> targetVersions) throws IOException {
         // Map file paths to in-memory modified text content
-        Map<Path, String> contentByPath = new LinkedHashMap<>();
+        Map<NPath, String> contentByPath = new LinkedHashMap<>();
         for (PomArtifact a : artifacts.values()) {
             if (!contentByPath.containsKey(a.getPath())) {
-                String raw = new String(Files.readAllBytes(a.getPath()), StandardCharsets.UTF_8);
-                contentByPath.put(a.getPath(), raw);
+                contentByPath.put(a.getPath(), a.getPath().readString());
             }
         }
 
         // 1. Update artifact own versions or property-defined versions
-        for (Map.Entry<MavenCoord, String> entry : targetVersions.entrySet()) {
-            MavenCoord ga = entry.getKey();
+        for (Map.Entry<NId, String> entry : targetVersions.entrySet()) {
+            NId ga = entry.getKey();
             String newVer = entry.getValue();
             PomArtifact artifact = artifacts.get(ga);
             if (artifact == null) continue;
 
-            Path pomPath = artifact.getPath();
+            NPath pomPath = artifact.getPath();
             String content = contentByPath.get(pomPath);
 
             if (artifact.isVersionPropertyIndirected()) {
                 String propName = artifact.getVersionPropertyName();
-                Path definingPom = artifact.getPath(); // or parent if defined in parent
+                NPath definingPom = artifact.getPath(); // or parent if defined in parent
                 String defContent = contentByPath.get(definingPom);
                 if (defContent != null) {
                     contentByPath.put(definingPom, PomModifier.updateProperty(defContent, propName, newVer));
@@ -180,11 +178,11 @@ public class VersionService {
         Set<String> updatedProperties = new HashSet<>();
 
         for (PomArtifact artifact : artifacts.values()) {
-            Path pomPath = artifact.getPath();
+            NPath pomPath = artifact.getPath();
 
             // Check parent update
-            if (artifact.getParentCoord() != null) {
-                MavenCoord parentGa = artifact.getParentCoord().toGa();
+            if (artifact.getParentId() != null) {
+                NId parentGa = artifact.getParentId().shortId();
                 if (targetVersions.containsKey(parentGa)) {
                     String newParentVer = targetVersions.get(parentGa);
                     String content = contentByPath.get(pomPath);
@@ -195,13 +193,13 @@ public class VersionService {
             // Check dependencies, dependencyManagement, plugins
             List<PomDependency> allRefs = artifact.getAllReferences();
             for (PomDependency ref : allRefs) {
-                MavenCoord refGa = ref.toGa();
+                NId refGa = ref.toGa();
                 if (targetVersions.containsKey(refGa)) {
                     String newVer = targetVersions.get(refGa);
 
                     if (ref.isPropertyIndirected()) {
                         String propName = ref.getVersionPropertyName();
-                        Path definingPom = ref.getPropertyDefiningPom();
+                        NPath definingPom = ref.getPropertyDefiningPom();
                         if (definingPom != null && contentByPath.containsKey(definingPom)) {
                             String propKey = definingPom.toString() + "#" + propName;
                             if (updatedProperties.add(propKey)) {
@@ -224,8 +222,8 @@ public class VersionService {
 
         // 3. Build PomChange list
         List<PomChange> changes = new ArrayList<>();
-        for (Map.Entry<Path, String> entry : contentByPath.entrySet()) {
-            Path p = entry.getKey();
+        for (Map.Entry<NPath, String> entry : contentByPath.entrySet()) {
+            NPath p = entry.getKey();
             String newContent = entry.getValue();
             PomChange change = modifier.createPomChange(p, newContent);
             if (change.hasChanges()) {
@@ -238,19 +236,19 @@ public class VersionService {
     private void applyChangesToDisk(List<PomChange> changes) throws IOException {
         for (PomChange c : changes) {
             if (c.hasChanges()) {
-                Files.write(c.getPomFile(), c.getNewContent().getBytes(StandardCharsets.UTF_8));
+                c.getPomFile().writeString(c.getNewContent());
             }
         }
     }
 
-    private void recordHistory(NMvnConfig config, Path workingDir, Map<MavenCoord, String> bumped) {
+    private void recordHistory(NMvnConfig config, NPath workingDir, Map<NId, String> bumped) {
         String histPath = config.getHistoryFile();
         if (histPath != null && !histPath.trim().isEmpty()) {
-            Path p = workingDir.resolve(histPath);
+            NPath p = workingDir.resolve(histPath);
             VersionHistoryStore store = new VersionHistoryStore(p);
             String commit = getGitCommitHash();
-            for (Map.Entry<MavenCoord, String> e : bumped.entrySet()) {
-                store.record(commit, e.getKey().getGroupId(), e.getKey().getArtifactId(), e.getValue());
+            for (Map.Entry<NId, String> e : bumped.entrySet()) {
+                store.record(commit, e.getKey().groupId(), e.getKey().artifactId(), e.getValue());
             }
             store.save();
         }

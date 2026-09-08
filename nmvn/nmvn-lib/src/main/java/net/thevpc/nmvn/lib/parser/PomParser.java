@@ -4,17 +4,18 @@ import net.thevpc.nmvn.lib.model.DependencyEdgeType;
 import net.thevpc.nmvn.lib.model.MavenCoord;
 import net.thevpc.nmvn.lib.model.PomArtifact;
 import net.thevpc.nmvn.lib.model.PomDependency;
+import net.thevpc.nuts.artifact.NId;
 import org.w3c.dom.*;
+
+import net.thevpc.nuts.io.NPath;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class PomParser {
 
-    public PomArtifact parse(Path pomPath) throws Exception {
+    public PomArtifact parse(NPath pomPath) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(false);
         factory.setValidating(false);
@@ -22,7 +23,7 @@ public class PomParser {
         DocumentBuilder builder = factory.newDocumentBuilder();
 
         Document doc;
-        try (InputStream in = Files.newInputStream(pomPath)) {
+        try (InputStream in = pomPath.getInputStream()) {
             doc = builder.parse(in);
         }
 
@@ -33,32 +34,36 @@ public class PomParser {
 
         // Parse parent
         Element parentElem = getDirectChild(projectElem, "parent");
-        MavenCoord parentCoord = null;
+        NId parentCoord = null;
         if (parentElem != null) {
             String pGroup = getChildText(parentElem, "groupId");
             String pArtifact = getChildText(parentElem, "artifactId");
             String pVersion = getChildText(parentElem, "version");
             if (pGroup != null && pArtifact != null) {
-                parentCoord = new MavenCoord(pGroup, pArtifact, pVersion);
+                parentCoord = (pVersion == null || pVersion.trim().isEmpty())
+                        ? NId.of(pGroup, pArtifact)
+                        : NId.of(pGroup, pArtifact, pVersion.trim());
             }
         }
 
         // Parse coordinates
         String groupId = getChildText(projectElem, "groupId");
         if (groupId == null && parentCoord != null) {
-            groupId = parentCoord.getGroupId();
+            groupId = parentCoord.groupId();
         }
         String artifactId = getChildText(projectElem, "artifactId");
         String version = getChildText(projectElem, "version");
-        if (version == null && parentCoord != null) {
-            version = parentCoord.getVersion();
+        if (version == null && parentCoord != null && !parentCoord.version().isBlank()) {
+            version = parentCoord.version().value();
         }
 
         if (groupId == null || artifactId == null) {
             throw new IllegalArgumentException("Missing groupId or artifactId in " + pomPath);
         }
 
-        MavenCoord coord = new MavenCoord(groupId, artifactId, version);
+        NId coord = (version == null || version.trim().isEmpty())
+                ? NId.of(groupId, artifactId)
+                : NId.of(groupId, artifactId, version.trim());
         PomArtifact artifact = new PomArtifact(coord, parentCoord, pomPath);
 
         // Parse properties

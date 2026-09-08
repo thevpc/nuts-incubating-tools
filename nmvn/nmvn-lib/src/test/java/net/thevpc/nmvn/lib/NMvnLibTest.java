@@ -7,6 +7,8 @@ import net.thevpc.nmvn.lib.exception.CycleDetectedException;
 import net.thevpc.nmvn.lib.exception.StrictSnapshotException;
 import net.thevpc.nmvn.lib.diagnostic.*;
 import net.thevpc.nmvn.lib.model.*;
+import net.thevpc.nuts.Nuts;
+import net.thevpc.nuts.artifact.NId;
 import net.thevpc.nmvn.lib.modifier.PomModifier;
 import net.thevpc.nmvn.lib.service.BumpResult;
 import net.thevpc.nmvn.lib.service.ReleaseResult;
@@ -19,9 +21,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import net.thevpc.nuts.io.NPath;
 import java.util.*;
 
 public class NMvnLibTest {
@@ -33,22 +33,23 @@ public class NMvnLibTest {
 
     @Before
     public void setup() {
+        Nuts.require();
         service = new VersionService();
     }
 
-    private Path createPom(Path dir, String content) throws IOException {
-        Files.createDirectories(dir);
-        Path pomFile = dir.resolve("pom.xml");
-        Files.write(pomFile, content.getBytes(StandardCharsets.UTF_8));
+    private NPath createPom(NPath dir, String content) {
+        dir.mkdirs();
+        NPath pomFile = dir.resolve("pom.xml");
+        pomFile.writeString(content);
         return pomFile;
     }
 
     @Test
     public void testPropertyInheritanceAndChildOverride() throws Exception {
-        Path root = tempFolder.newFolder("prop-test").toPath();
-        Path parentDir = root.resolve("parent");
-        Path child1Dir = root.resolve("child1");
-        Path child2Dir = root.resolve("child2");
+        NPath root = NPath.of(tempFolder.newFolder("prop-test"));
+        NPath parentDir = root.resolve("parent");
+        NPath child1Dir = root.resolve("child1");
+        NPath child2Dir = root.resolve("child2");
 
         createPom(parentDir,
                 "<project>\n" +
@@ -109,8 +110,8 @@ public class NMvnLibTest {
         ScanResult scan = service.scan(config, root);
         Assert.assertEquals(3, scan.getArtifacts().size());
 
-        PomArtifact child1 = scan.getArtifacts().get(new MavenCoord("com.test", "child-1"));
-        PomArtifact child2 = scan.getArtifacts().get(new MavenCoord("com.test", "child-2"));
+        PomArtifact child1 = scan.getArtifacts().get(NId.of("com.test", "child-1"));
+        PomArtifact child2 = scan.getArtifacts().get(NId.of("com.test", "child-2"));
 
         Assert.assertEquals("1.0.0-SNAPSHOT", child1.getDependencies().get(0).getResolvedVersion());
         Assert.assertEquals(parentDir.resolve("pom.xml"), child1.getDependencies().get(0).getPropertyDefiningPom());
@@ -121,8 +122,8 @@ public class NMvnLibTest {
 
     @Test
     public void testPropertyAliasingBumpingMultipleDependencies() throws Exception {
-        Path root = tempFolder.newFolder("alias-test").toPath();
-        Path pDir = root.resolve("proj");
+        NPath root = NPath.of(tempFolder.newFolder("alias-test"));
+        NPath pDir = root.resolve("proj");
 
         createPom(pDir,
                 "<project>\n" +
@@ -148,7 +149,7 @@ public class NMvnLibTest {
                 "</project>");
 
         // Also define lib-core in same workspace
-        Path libDir = root.resolve("lib-core");
+        NPath libDir = root.resolve("lib-core");
         createPom(libDir,
                 "<project>\n" +
                 "  <modelVersion>4.0.0</modelVersion>\n" +
@@ -168,15 +169,15 @@ public class NMvnLibTest {
         Assert.assertTrue(result.hasChanges());
 
         // Check content of alias-project pom.xml on disk
-        String projContent = new String(Files.readAllBytes(pDir.resolve("pom.xml")), StandardCharsets.UTF_8);
+        String projContent = pDir.resolve("pom.xml").readString();
         Assert.assertTrue(projContent.contains("<lib.version>1.1.0-SNAPSHOT</lib.version>"));
     }
 
     @Test
     public void testBomImportCascading() throws Exception {
-        Path root = tempFolder.newFolder("bom-test").toPath();
-        Path bomDir = root.resolve("my-bom");
-        Path consumerDir = root.resolve("consumer");
+        NPath root = NPath.of(tempFolder.newFolder("bom-test"));
+        NPath bomDir = root.resolve("my-bom");
+        NPath consumerDir = root.resolve("consumer");
 
         createPom(bomDir,
                 "<project>\n" +
@@ -210,7 +211,7 @@ public class NMvnLibTest {
         config.setRoots(Collections.singletonList(root.toString()));
 
         ScanResult scan = service.scan(config, root);
-        PomArtifact consumer = scan.getArtifacts().get(new MavenCoord("com.test", "consumer-app"));
+        PomArtifact consumer = scan.getArtifacts().get(NId.of("com.test", "consumer-app"));
         Assert.assertTrue(consumer.getDependencyManagement().get(0).isBomImport());
 
         // Bump the BOM
@@ -220,15 +221,15 @@ public class NMvnLibTest {
         BumpResult result = service.bump(config, root, bumps, false, true);
         Assert.assertTrue(result.hasChanges());
 
-        String consumerContent = new String(Files.readAllBytes(consumerDir.resolve("pom.xml")), StandardCharsets.UTF_8);
+        String consumerContent = consumerDir.resolve("pom.xml").readString();
         Assert.assertTrue(consumerContent.contains("<version>2.0.0-SNAPSHOT</version>"));
     }
 
     @Test(expected = AmbiguousArtifactException.class)
     public void testAmbiguousArtifactsFailLoudly() throws Exception {
-        Path root = tempFolder.newFolder("ambig-test").toPath();
-        Path repo1 = root.resolve("repo1");
-        Path repo2 = root.resolve("repo2");
+        NPath root = NPath.of(tempFolder.newFolder("ambig-test"));
+        NPath repo1 = root.resolve("repo1");
+        NPath repo2 = root.resolve("repo2");
 
         createPom(repo1,
                 "<project>\n" +
@@ -254,9 +255,9 @@ public class NMvnLibTest {
 
     @Test(expected = CycleDetectedException.class)
     public void testCycleDetectionFailsLoudly() throws Exception {
-        Path root = tempFolder.newFolder("cycle-test").toPath();
-        Path aDir = root.resolve("a");
-        Path bDir = root.resolve("b");
+        NPath root = NPath.of(tempFolder.newFolder("cycle-test"));
+        NPath aDir = root.resolve("a");
+        NPath bDir = root.resolve("b");
 
         createPom(aDir,
                 "<project>\n" +
@@ -296,8 +297,8 @@ public class NMvnLibTest {
 
     @Test
     public void testExternalSnapshotIgnoredByDefaultAndFailsStrict() throws Exception {
-        Path root = tempFolder.newFolder("strict-test").toPath();
-        Path aDir = root.resolve("a");
+        NPath root = NPath.of(tempFolder.newFolder("strict-test"));
+        NPath aDir = root.resolve("a");
 
         createPom(aDir,
                 "<project>\n" +
@@ -319,7 +320,7 @@ public class NMvnLibTest {
 
         // Non-strict release should succeed
         ReleaseResult rel = service.release(config, root, null, false, false);
-        Assert.assertEquals("1.0.0", rel.getReleasedArtifacts().get(new MavenCoord("com.app", "my-app")));
+        Assert.assertEquals("1.0.0", rel.getReleasedArtifacts().get(NId.of("com.app", "my-app")));
         Assert.assertEquals(1, rel.getUnmanagedSnapshots().size());
 
         // Strict release should throw StrictSnapshotException
@@ -333,8 +334,8 @@ public class NMvnLibTest {
 
     @Test
     public void testDryRunDoesNotModifyFiles() throws Exception {
-        Path root = tempFolder.newFolder("dryrun-test").toPath();
-        Path aDir = root.resolve("a");
+        NPath root = NPath.of(tempFolder.newFolder("dryrun-test"));
+        NPath aDir = root.resolve("a");
 
         String originalContent =
                 "<project>\n" +
@@ -343,7 +344,7 @@ public class NMvnLibTest {
                 "  <artifactId>my-app</artifactId>\n" +
                 "  <version>1.0.0-SNAPSHOT</version>\n" +
                 "</project>";
-        Path pom = createPom(aDir, originalContent);
+        NPath pom = createPom(aDir, originalContent);
 
         NMvnConfig config = new NMvnConfig();
         config.setRoots(Collections.singletonList(root.toString()));
@@ -358,20 +359,20 @@ public class NMvnLibTest {
         Assert.assertFalse(result.getChanges().get(0).getDiffLines().isEmpty());
 
         // File on disk must remain unchanged!
-        String contentOnDisk = new String(Files.readAllBytes(pom), StandardCharsets.UTF_8);
+        String contentOnDisk = pom.readString();
         Assert.assertEquals(originalContent, contentOnDisk);
 
         // Now apply = true
         service.bump(config, root, bumps, false, true);
-        String updatedOnDisk = new String(Files.readAllBytes(pom), StandardCharsets.UTF_8);
+        String updatedOnDisk = pom.readString();
         Assert.assertTrue(updatedOnDisk.contains("<version>1.1.0-SNAPSHOT</version>"));
     }
 
     @Test
     public void testExclusionFilteringBuildAndTargetDirs() throws Exception {
-        Path root = tempFolder.newFolder("exclude-test").toPath();
-        Path srcDir = root.resolve("module-a");
-        Path targetDir = root.resolve("module-a/target/generated-sources");
+        NPath root = NPath.of(tempFolder.newFolder("exclude-test"));
+        NPath srcDir = root.resolve("module-a");
+        NPath targetDir = root.resolve("module-a/target/generated-sources");
 
         createPom(srcDir,
                 "<project>\n" +
@@ -394,14 +395,14 @@ public class NMvnLibTest {
 
         ScanResult scan = service.scan(config, root);
         Assert.assertEquals(1, scan.getArtifacts().size());
-        Assert.assertTrue(scan.getArtifacts().containsKey(new MavenCoord("com.app", "mod-a")));
-        Assert.assertFalse(scan.getArtifacts().containsKey(new MavenCoord("com.app", "generated-dummy")));
+        Assert.assertTrue(scan.getArtifacts().containsKey(NId.of("com.app", "mod-a")));
+        Assert.assertFalse(scan.getArtifacts().containsKey(NId.of("com.app", "generated-dummy")));
     }
 
     @Test
     public void testTsonConfigLoaderRoundtrip() throws Exception {
-        Path root = tempFolder.newFolder("tson-test").toPath();
-        Path configFile = root.resolve("nmvn.tson");
+        NPath root = NPath.of(tempFolder.newFolder("tson-test"));
+        NPath configFile = root.resolve("nmvn.tson");
 
         NMvnConfig cfg = new NMvnConfig();
         cfg.setRoots(Arrays.asList(".", "../other"));
@@ -413,7 +414,7 @@ public class NMvnLibTest {
         ));
 
         NMvnConfigLoader.save(cfg, configFile);
-        Assert.assertTrue(Files.isRegularFile(configFile));
+        Assert.assertTrue(configFile.isRegularFile());
 
         NMvnConfig loaded = NMvnConfigLoader.load(configFile);
         Assert.assertEquals(2, loaded.getRoots().size());
@@ -425,8 +426,8 @@ public class NMvnLibTest {
 
     @Test
     public void testFormattingAndCommentsPreserved() throws Exception {
-        Path root = tempFolder.newFolder("format-test").toPath();
-        Path pDir = root.resolve("proj");
+        NPath root = NPath.of(tempFolder.newFolder("format-test"));
+        NPath pDir = root.resolve("proj");
 
         String original =
                 "<!-- Top license comment header with custom layout -->\n" +
@@ -452,7 +453,7 @@ public class NMvnLibTest {
                 "  </dependencies>\n" +
                 "</project>";
 
-        Path pom = createPom(pDir, original);
+        NPath pom = createPom(pDir, original);
 
         NMvnConfig config = new NMvnConfig();
         config.setRoots(Collections.singletonList(root.toString()));
@@ -463,7 +464,7 @@ public class NMvnLibTest {
 
         service.bump(config, root, bumps, false, true);
 
-        String updated = new String(Files.readAllBytes(pom), StandardCharsets.UTF_8);
+        String updated = pom.readString();
 
         // Verify version changed
         Assert.assertTrue(updated.contains("<version>1.1.0-SNAPSHOT</version>"));
@@ -487,8 +488,8 @@ public class NMvnLibTest {
 
     @Test
     public void testCommentsAndNewlinesInsideTagBodyPreserved() throws Exception {
-        Path root = tempFolder.newFolder("inner-comment-test").toPath();
-        Path pDir = root.resolve("proj");
+        NPath root = NPath.of(tempFolder.newFolder("inner-comment-test"));
+        NPath pDir = root.resolve("proj");
 
         String original =
                 "<project>\n" +
@@ -514,9 +515,9 @@ public class NMvnLibTest {
                 "  </dependencies>\n" +
                 "</project>";
 
-        Path pom = createPom(pDir, original);
+        NPath pom = createPom(pDir, original);
 
-        Path libDir = root.resolve("inner-lib");
+        NPath libDir = root.resolve("inner-lib");
         createPom(libDir,
                 "<project>\n" +
                 "  <modelVersion>4.0.0</modelVersion>\n" +
@@ -534,7 +535,7 @@ public class NMvnLibTest {
 
         service.bump(config, root, bumps, false, true);
 
-        String updated = new String(Files.readAllBytes(pom), StandardCharsets.UTF_8);
+        String updated = pom.readString();
 
         Assert.assertTrue(updated.contains("1.1.0-SNAPSHOT"));
         Assert.assertTrue(updated.contains("<!-- inner leading comment -->"));
@@ -547,8 +548,8 @@ public class NMvnLibTest {
 
     @Test
     public void testCheckCleanWorkspaceReportsNoIssues() throws Exception {
-        Path root = tempFolder.newFolder("clean-workspace").toPath();
-        Path mod1 = root.resolve("mod1");
+        NPath root = NPath.of(tempFolder.newFolder("clean-workspace"));
+        NPath mod1 = root.resolve("mod1");
         createPom(mod1,
                 "<project>\n" +
                 "  <modelVersion>4.0.0</modelVersion>\n" +
@@ -556,7 +557,7 @@ public class NMvnLibTest {
                 "  <artifactId>mod1</artifactId>\n" +
                 "  <version>1.0.0-SNAPSHOT</version>\n" +
                 "</project>");
-        Path mod2 = root.resolve("mod2");
+        NPath mod2 = root.resolve("mod2");
         createPom(mod2,
                 "<project>\n" +
                 "  <modelVersion>4.0.0</modelVersion>\n" +
@@ -583,8 +584,8 @@ public class NMvnLibTest {
 
     @Test
     public void testCheckDetectsMultipleVersionsAndMixedSnapshots() throws Exception {
-        Path root = tempFolder.newFolder("multi-version-check").toPath();
-        Path mod1 = root.resolve("mod1");
+        NPath root = NPath.of(tempFolder.newFolder("multi-version-check"));
+        NPath mod1 = root.resolve("mod1");
         createPom(mod1,
                 "<project>\n" +
                 "  <modelVersion>4.0.0</modelVersion>\n" +
@@ -604,7 +605,7 @@ public class NMvnLibTest {
                 "    </dependency>\n" +
                 "  </dependencies>\n" +
                 "</project>");
-        Path mod2 = root.resolve("mod2");
+        NPath mod2 = root.resolve("mod2");
         createPom(mod2,
                 "<project>\n" +
                 "  <modelVersion>4.0.0</modelVersion>\n" +
@@ -637,13 +638,13 @@ public class NMvnLibTest {
 
         List<DiagnosticIssue> mixedSnap = report.getByRule(DiagnosticRule.MIXED_SNAPSHOT_AND_RELEASE);
         Assert.assertEquals(1, mixedSnap.size());
-        Assert.assertEquals("guava", mixedSnap.get(0).getTargetCoord().getArtifactId());
+        Assert.assertEquals("guava", mixedSnap.get(0).getTargetId().artifactId());
     }
 
     @Test
     public void testCheckDetectsInternalVersionMismatch() throws Exception {
-        Path root = tempFolder.newFolder("internal-mismatch-check").toPath();
-        Path mod1 = root.resolve("mod1");
+        NPath root = NPath.of(tempFolder.newFolder("internal-mismatch-check"));
+        NPath mod1 = root.resolve("mod1");
         createPom(mod1,
                 "<project>\n" +
                 "  <modelVersion>4.0.0</modelVersion>\n" +
@@ -651,7 +652,7 @@ public class NMvnLibTest {
                 "  <artifactId>mod1</artifactId>\n" +
                 "  <version>2.0.0-SNAPSHOT</version>\n" +
                 "</project>");
-        Path mod2 = root.resolve("mod2");
+        NPath mod2 = root.resolve("mod2");
         createPom(mod2,
                 "<project>\n" +
                 "  <modelVersion>4.0.0</modelVersion>\n" +
@@ -675,13 +676,13 @@ public class NMvnLibTest {
 
         List<DiagnosticIssue> issues = report.getByRule(DiagnosticRule.INTERNAL_VERSION_MISMATCH);
         Assert.assertEquals(1, issues.size());
-        Assert.assertEquals("mod1", issues.get(0).getTargetCoord().getArtifactId());
+        Assert.assertEquals("mod1", issues.get(0).getTargetId().artifactId());
     }
 
     @Test
     public void testCheckDetectsParentVersionMismatch() throws Exception {
-        Path root = tempFolder.newFolder("parent-mismatch-check").toPath();
-        Path parent = root.resolve("parent");
+        NPath root = NPath.of(tempFolder.newFolder("parent-mismatch-check"));
+        NPath parent = root.resolve("parent");
         createPom(parent,
                 "<project>\n" +
                 "  <modelVersion>4.0.0</modelVersion>\n" +
@@ -690,7 +691,7 @@ public class NMvnLibTest {
                 "  <version>2.0.0-SNAPSHOT</version>\n" +
                 "  <packaging>pom</packaging>\n" +
                 "</project>");
-        Path child = root.resolve("child");
+        NPath child = root.resolve("child");
         createPom(child,
                 "<project>\n" +
                 "  <modelVersion>4.0.0</modelVersion>\n" +
@@ -710,13 +711,13 @@ public class NMvnLibTest {
 
         List<DiagnosticIssue> issues = report.getByRule(DiagnosticRule.PARENT_VERSION_MISMATCH);
         Assert.assertEquals(1, issues.size());
-        Assert.assertEquals("parent-pom", issues.get(0).getTargetCoord().getArtifactId());
+        Assert.assertEquals("parent-pom", issues.get(0).getTargetId().artifactId());
     }
 
     @Test
     public void testCheckDetectsSnapshotDependencyInRelease() throws Exception {
-        Path root = tempFolder.newFolder("snapshot-in-release-check").toPath();
-        Path mod1 = root.resolve("mod1");
+        NPath root = NPath.of(tempFolder.newFolder("snapshot-in-release-check"));
+        NPath mod1 = root.resolve("mod1");
         createPom(mod1,
                 "<project>\n" +
                 "  <modelVersion>4.0.0</modelVersion>\n" +
@@ -740,13 +741,13 @@ public class NMvnLibTest {
 
         List<DiagnosticIssue> issues = report.getByRule(DiagnosticRule.SNAPSHOT_DEPENDENCY_IN_RELEASE);
         Assert.assertEquals(1, issues.size());
-        Assert.assertEquals("ext-lib", issues.get(0).getTargetCoord().getArtifactId());
+        Assert.assertEquals("ext-lib", issues.get(0).getTargetId().artifactId());
     }
 
     @Test
     public void testCheckDetectsCircularDependency() throws Exception {
-        Path root = tempFolder.newFolder("circular-check").toPath();
-        Path mod1 = root.resolve("mod1");
+        NPath root = NPath.of(tempFolder.newFolder("circular-check"));
+        NPath mod1 = root.resolve("mod1");
         createPom(mod1,
                 "<project>\n" +
                 "  <modelVersion>4.0.0</modelVersion>\n" +
@@ -761,7 +762,7 @@ public class NMvnLibTest {
                 "    </dependency>\n" +
                 "  </dependencies>\n" +
                 "</project>");
-        Path mod2 = root.resolve("mod2");
+        NPath mod2 = root.resolve("mod2");
         createPom(mod2,
                 "<project>\n" +
                 "  <modelVersion>4.0.0</modelVersion>\n" +
@@ -785,5 +786,63 @@ public class NMvnLibTest {
 
         List<DiagnosticIssue> issues = report.getByRule(DiagnosticRule.CIRCULAR_DEPENDENCY);
         Assert.assertFalse(issues.isEmpty());
+    }
+
+    @Test
+    public void testPomDependencyToNutsDependency() {
+        PomDependency dep = new PomDependency("org.apache.commons", "commons-lang3", "3.14.0", "compile", "jar", false, DependencyEdgeType.DIRECT_DEPENDENCY);
+        net.thevpc.nuts.artifact.NDependency nutsDep = dep.toDependency();
+        Assert.assertNotNull(nutsDep);
+        Assert.assertEquals("org.apache.commons", nutsDep.groupId());
+        Assert.assertEquals("commons-lang3", nutsDep.artifactId());
+        Assert.assertEquals("api", nutsDep.scope());
+        Assert.assertEquals("jar", nutsDep.type());
+        Assert.assertEquals("org.apache.commons:commons-lang3#3.14.0", nutsDep.toId().longName());
+    }
+
+    @Test
+    public void testConfigResolutionNutsLayoutAndRecent() throws Exception {
+        NPath root = NPath.of(tempFolder.newFolder("config-test"));
+
+        // 1. Resolve default in working dir
+        NPath resolvedDefault = NMvnConfigLoader.resolveConfigFile(null, root);
+        Assert.assertEquals(root.resolve("nmvn.tson"), resolvedDefault);
+
+        // 2. Simple name resolution in working directory
+        NPath localCfg = root.resolve("custom.tson");
+        localCfg.writeString("{}");
+        NPath resolvedNamed = NMvnConfigLoader.resolveConfigFile("custom", root);
+        Assert.assertEquals(localCfg, resolvedNamed);
+
+        // 3. Simple name resolution in Nuts layout config folder
+        NPath nutsConf = NMvnConfigLoader.getAppConfigFolder();
+        Assert.assertNotNull(nutsConf);
+        NPath nutsCfg = nutsConf.resolve("global-test.tson");
+        if (nutsCfg.parent() != null && !nutsCfg.parent().isDirectory()) {
+            nutsCfg.parent().mkdirs();
+        }
+        nutsCfg.writeString("{}");
+        try {
+            NPath resolvedGlobal = NMvnConfigLoader.resolveConfigFile("global-test", root);
+            Assert.assertEquals(nutsCfg, resolvedGlobal);
+
+            // 4. Test list named configs
+            List<NPath> namedConfigs = NMvnConfigLoader.listNamedConfigs();
+            boolean found = false;
+            for (NPath np : namedConfigs) {
+                if ("global-test.tson".equals(np.name())) {
+                    found = true;
+                    break;
+                }
+            }
+            Assert.assertTrue(found);
+
+            // 5. Test recent configs tracking
+            NMvnConfigLoader.recordRecentConfig(localCfg);
+            List<NPath> recent = NMvnConfigLoader.loadRecentConfigs();
+            Assert.assertTrue(recent.contains(localCfg.toAbsolute().normalize()));
+        } finally {
+            nutsCfg.delete();
+        }
     }
 }

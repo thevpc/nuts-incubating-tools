@@ -1,7 +1,7 @@
 package net.thevpc.nmvn.lib.service;
 
-import net.thevpc.nmvn.lib.model.MavenCoord;
 import net.thevpc.nmvn.lib.model.PomChange;
+import net.thevpc.nuts.artifact.NId;
 
 import java.util.Collections;
 import java.util.List;
@@ -9,10 +9,10 @@ import java.util.Map;
 
 public class ReleaseResult {
     private final List<PomChange> changes;
-    private final Map<MavenCoord, String> releasedArtifacts;
+    private final Map<NId, String> releasedArtifacts;
     private final List<String> unmanagedSnapshots;
 
-    public ReleaseResult(List<PomChange> changes, Map<MavenCoord, String> releasedArtifacts, List<String> unmanagedSnapshots) {
+    public ReleaseResult(List<PomChange> changes, Map<NId, String> releasedArtifacts, List<String> unmanagedSnapshots) {
         this.changes = changes;
         this.releasedArtifacts = releasedArtifacts;
         this.unmanagedSnapshots = unmanagedSnapshots;
@@ -22,7 +22,7 @@ public class ReleaseResult {
         return Collections.unmodifiableList(changes);
     }
 
-    public Map<MavenCoord, String> getReleasedArtifacts() {
+    public Map<NId, String> getReleasedArtifacts() {
         return Collections.unmodifiableMap(releasedArtifacts);
     }
 

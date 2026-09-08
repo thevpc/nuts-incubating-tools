@@ -12,13 +12,6 @@ import net.thevpc.nuts.text.NMsg;
 import net.thevpc.nuts.util.NRef;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.io.Writer;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,6 +52,7 @@ public class NMvnMain  {
                         .when("build").asArg(a -> command.set("build"))
                         .when("get").asArg(a -> command.set("get"))
                         .when("version").asArg(a -> command.set("version"))
+                        .when("workset", "ws", "config").asArg(a -> command.set("workset"))
                         .anyMatch()) {
                     command.set("default");
                     args2.add(cmd.next().get().image());
@@ -108,14 +102,10 @@ public class NMvnMain  {
                     if (repo != null) {
                         cli.setRepoUrl(repo);
                     }
-                    Path dir = createTempPom(session);
+                    NPath dir = createTempPom(session);
                     cli.setWorkingDirectory(dir.toString());
                     int r = callMvn(cli,session, o,  "dependency:get");
-                    try {
-                        delete(dir);
-                    } catch (IOException ex) {
-                        throw new IllegalArgumentException(ex);
-                    }
+                    dir.delete(true);
                     if (r == NExecutionException.SUCCESS) {
                         return;
                     } else {
@@ -129,6 +119,16 @@ public class NMvnMain  {
                         return;
                     } else {
                         throw new NExecutionException(NMsg.ofC("Version command failed with code %s", r), r);
+                    }
+                }
+                case "workset":
+                case "config": {
+                    MvnWorksetCli worksetCli = new MvnWorksetCli(session);
+                    int r = worksetCli.run(args2Arr, o.json);
+                    if (r == NExecutionException.SUCCESS) {
+                        return;
+                    } else {
+                        throw new NExecutionException(NMsg.ofC("Workset command failed with code %s", r), r);
                     }
                 }
             }
@@ -171,81 +171,49 @@ public class NMvnMain  {
         }
     }
 
-    private static Path createTempPom(NSession session) {
-        Path d = NPath.ofTempFolder().toPath().get();
-        try (Writer out = Files.newBufferedWriter(d.resolve("pom.xml"))) {
-            out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                    + "<project xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://maven.apache.org/POM/4.0.0\"\n"
-                    + "         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n"
-                    + "    <modelVersion>4.0.0</modelVersion>\n"
-                    + "    <groupId>temp</groupId>\n"
-                    + "    <artifactId>temp-nuts</artifactId>\n"
-                    + "    <version>1.0.0</version>\n"
-                    + "    <packaging>jar</packaging>\n"
-                    + "    <properties>\n"
-                    + "        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>\n"
-                    + "        <maven.compiler.source>1.8</maven.compiler.source>\n"
-                    + "        <maven.compiler.target>1.8</maven.compiler.target>\n"
-                    + "    </properties>\n"
-                    + "    <dependencies>\n"
-                    + "    </dependencies>\n"
-                    + "    <repositories>\n"
-                    + "        <repository>\n"
-                    + "            <id>vpc-public-maven</id>\n"
-                    + "            <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>\n"
-                    + "            <snapshots>\n"
-                    + "                <enabled>true</enabled>\n"
-                    + "                <updatePolicy>always</updatePolicy>\n"
-                    + "            </snapshots>\n"
-                    + "        </repository>\n"
-                    + "    </repositories>\n"
-                    + "    <pluginRepositories>\n"
-                    + "        <pluginRepository>\n"
-                    + "            <id>vpc-public-maven</id>\n"
-                    + "            <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>\n"
-                    + "            <snapshots>\n"
-                    + "                <enabled>true</enabled>\n"
-                    + "                <updatePolicy>always</updatePolicy>\n"
-                    + "            </snapshots>\n"
-                    + "        </pluginRepository>\n"
-                    + "    </pluginRepositories>\n"
-                    + "</project>\n");
-            out.write(System.getProperty("line.separator"));
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
-        }
+    private static NPath createTempPom(NSession session) {
+        NPath d = NPath.ofTempFolder();
+        d.resolve("pom.xml").writeString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<project xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://maven.apache.org/POM/4.0.0\"\n"
+                + "         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n"
+                + "    <modelVersion>4.0.0</modelVersion>\n"
+                + "    <groupId>temp</groupId>\n"
+                + "    <artifactId>temp-nuts</artifactId>\n"
+                + "    <version>1.0.0</version>\n"
+                + "    <packaging>jar</packaging>\n"
+                + "    <properties>\n"
+                + "        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>\n"
+                + "        <maven.compiler.source>1.8</maven.compiler.source>\n"
+                + "        <maven.compiler.target>1.8</maven.compiler.target>\n"
+                + "    </properties>\n"
+                + "    <dependencies>\n"
+                + "    </dependencies>\n"
+                + "    <repositories>\n"
+                + "        <repository>\n"
+                + "            <id>vpc-public-maven</id>\n"
+                + "            <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>\n"
+                + "            <snapshots>\n"
+                + "                <enabled>true</enabled>\n"
+                + "                <updatePolicy>always</updatePolicy>\n"
+                + "            </snapshots>\n"
+                + "        </repository>\n"
+                + "    </repositories>\n"
+                + "    <pluginRepositories>\n"
+                + "        <pluginRepository>\n"
+                + "            <id>vpc-public-maven</id>\n"
+                + "            <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>\n"
+                + "            <snapshots>\n"
+                + "                <enabled>true</enabled>\n"
+                + "                <updatePolicy>always</updatePolicy>\n"
+                + "            </snapshots>\n"
+                + "        </pluginRepository>\n"
+                + "    </pluginRepositories>\n"
+                + "</project>\n");
         return d;
     }
 
-    public static int[] delete(Path file) throws IOException {
-        final int[] deleted = new int[]{0, 0};
-        Files.walkFileTree(file, new FileVisitor<Path>() {
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                Files.delete(file);
-//                log.log(Level.FINEST, "Delete file " + file);
-                deleted[1]++;
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                Files.delete(dir);
-//                log.log(Level.FINEST, "Delete folder " + dir);
-                deleted[0]++;
-                return FileVisitResult.CONTINUE;
-            }
-        });
-        return deleted;
+    public static int[] delete(NPath file) {
+        file.delete(true);
+        return new int[]{1, 0};
     }
 }

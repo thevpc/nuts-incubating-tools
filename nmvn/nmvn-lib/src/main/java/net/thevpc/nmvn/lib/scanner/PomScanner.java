@@ -7,6 +7,9 @@ import net.thevpc.nmvn.lib.model.PomArtifact;
 import net.thevpc.nmvn.lib.parser.PomParser;
 import net.thevpc.nmvn.lib.parser.PropertyResolver;
 
+import net.thevpc.nuts.artifact.NId;
+import net.thevpc.nuts.io.NPath;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -16,19 +19,20 @@ public class PomScanner {
 
     private final PomParser pomParser = new PomParser();
 
-    public Map<MavenCoord, PomArtifact> scan(NMvnConfig config, Path workingDir) throws IOException {
+    public Map<NId, PomArtifact> scan(NMvnConfig config, NPath workingDir) throws IOException {
         List<String> roots = config.getRoots();
         if (roots == null || roots.isEmpty()) {
             roots = Collections.singletonList(".");
         }
 
-        Map<MavenCoord, List<PomArtifact>> collectedByGa = new LinkedHashMap<>();
+        Map<NId, List<PomArtifact>> collectedByGa = new LinkedHashMap<>();
 
         for (String rootStr : roots) {
-            Path rootPath = workingDir.resolve(rootStr).normalize().toAbsolutePath();
-            if (!Files.exists(rootPath)) {
+            NPath rootNPath = workingDir.resolve(rootStr).normalize().toAbsolute();
+            if (!rootNPath.exists()) {
                 continue;
             }
+            Path rootPath = rootNPath.toPath().get();
 
             // Combine global excludes + root-specific excludes
             List<String> combinedExcludes = new ArrayList<>(config.getExcludes());
@@ -61,8 +65,8 @@ public class PomScanner {
                         Path rel = rootPath.relativize(file);
                         if (!isExcluded(rel, matchers)) {
                             try {
-                                PomArtifact artifact = pomParser.parse(file);
-                                MavenCoord ga = artifact.toGa();
+                                PomArtifact artifact = pomParser.parse(NPath.of(file));
+                                NId ga = artifact.toGa();
                                 List<PomArtifact> list = collectedByGa.computeIfAbsent(ga, k -> new ArrayList<>());
                                 list.add(artifact);
                             } catch (Exception e) {
@@ -76,15 +80,15 @@ public class PomScanner {
         }
 
         // Check for ambiguous artifacts (same GA found in multiple places)
-        Map<MavenCoord, PomArtifact> result = new LinkedHashMap<>();
-        for (Map.Entry<MavenCoord, List<PomArtifact>> entry : collectedByGa.entrySet()) {
+        Map<NId, PomArtifact> result = new LinkedHashMap<>();
+        for (Map.Entry<NId, List<PomArtifact>> entry : collectedByGa.entrySet()) {
             List<PomArtifact> list = entry.getValue();
             if (list.size() > 1) {
-                List<Path> paths = new ArrayList<>();
+                List<NPath> paths = new ArrayList<>();
                 for (PomArtifact pa : list) {
                     paths.add(pa.getPath());
                 }
-                throw new AmbiguousArtifactException(entry.getKey().getGroupId(), entry.getKey().getArtifactId(), paths);
+                throw new AmbiguousArtifactException(entry.getKey().groupId(), entry.getKey().artifactId(), paths);
             }
             result.put(entry.getKey(), list.get(0));
         }
