@@ -18,3 +18,6 @@ nlib-talk-agent/target
 /nserver/nserver-lib/target/
 
 /nserver/runtime/nuts-http-server.log
+
+# Maven build output
+target/
